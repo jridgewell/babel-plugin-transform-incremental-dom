@@ -37,14 +37,14 @@ $ npm install babel-plugin-incremental-dom
 ```json
 {
   "blacklist": ["react"],
-  "plugins": ["flow-comments"]
+  "plugins": ["incremental-dom"]
 }
 ```
 
 ### Via CLI
 
 ```sh
-$ babel --blacklist react --plugins flow-comments script.js
+$ babel --blacklist react --plugins incremental-dom script.js
 ```
 
 ### Via Node API

@@ -1,0 +1,21 @@
+{
+  "name": "babel-plugin-incremental-dom",
+  "version": "1.0.4",
+  "description": "Turn jsx into incremental-dom",
+  "repository": "thejameskyle/babel-plugin-incremental-dom",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "babel": "^5.6.0",
+    "mocha": "^2.2.5"
+  },
+  "scripts": {
+    "build": "babel-plugin build",
+    "push": "babel-plugin publish",
+    "test": "babel-plugin test",
+    "test-mocha": "mocha --compilers js:babel/register"
+  },
+  "keywords": [
+    "babel-plugin"
+  ]
+}

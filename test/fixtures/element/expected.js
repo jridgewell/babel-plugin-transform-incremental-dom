@@ -1,3 +1,4 @@
 "use strict";
 
-elementOpen("div")elementClose("div");
+elementOpen("div");
+elementClose("div");

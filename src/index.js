@@ -27,14 +27,43 @@ export default function ({ Plugin, types: t }) {
         args = args.concat(attrs);
       }
 
-      return t.callExpression(t.identifier("elementOpen"), args);
+      return t.expressionStatement(
+        t.callExpression(t.identifier("elementOpen"), args)
+      );
     }
   };
 
   visitor.JSXClosingElement = {
     exit(node, parent, scope, file) {
-      return t.callExpression(t.identifier("elementClose"), [
-        t.literal(node.name.name)
+      return t.expressionStatement(
+        t.callExpression(
+          t.identifier("elementClose"), [
+          t.literal(node.name.name)
+        ])
+      );
+    }
+  };
+
+  // visitor.JSXElement = {
+  //   exit(node, parent, scope, file) {
+  //     var nodes = [];
+  //     var visitor = {};
+  //
+  //     visitor.JSXElement = function(node) {
+  //       nodes.push(node.openingElement, node.closingElement);
+  //     };
+  //
+  //     this.traverse(parent, visitor, scope, nodes);
+  //
+  //     this.parentPath.replaceWithMultiple(body);
+  //   }
+  // };
+
+  visitor.JSXElement = {
+    exit(node, parent, scope, file) {
+      this.parentPath.replaceWithMultiple([
+        node.openingElement,
+        node.closingElement
       ]);
     }
   };

@@ -12,10 +12,12 @@
   "scripts": {
     "build": "babel-plugin build",
     "push": "babel-plugin publish",
-    "test": "babel-plugin test",
-    "test-mocha": "mocha --compilers js:babel/register"
+    "test": "mocha --compilers js:babel/register"
   },
   "keywords": [
     "babel-plugin"
-  ]
+  ],
+  "babel": {
+      "loose": true
+  }
 }

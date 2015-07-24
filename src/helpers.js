@@ -114,7 +114,7 @@ export default function(t) {
           } else if (value) {
             value = value.expression;
 
-            if (name === "key") {
+            if (name === "key" || t.isLiteral(value)) {
               statics.push(attr, value);
             } else {
               attrs.push([ attr, value ]);

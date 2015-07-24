@@ -21,7 +21,7 @@ export default function ({ Plugin, types: t }) {
 
       // Only push arguments if they're needed
       if (key || statics || attrs) {
-        args.push(key ? key : t.literal(null));
+        args.push(key || t.literal(null));
       }
       if (statics || attrs) {
         args.push(statics ? t.arrayExpression(statics) : t.literal(null));

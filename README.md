@@ -2,8 +2,6 @@
 
 Turn jsx into [incremental-dom](http://google.github.io/incremental-dom/).
 
-> [WIP]
-
 ## Example
 
 **In**

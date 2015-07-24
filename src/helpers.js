@@ -109,22 +109,20 @@ export default function(t) {
           let attr = t.literal(name);
           let value = attribute.value;
 
-          if (t.isLiteral(value)) {
-            statics.push(attr, value)
-          } else if (value) {
+          if (!value) {
+            value = t.literal(true);
+          } else if (t.isJSXExpressionContainer(value)) {
             value = value.expression;
-
-            if (name === "key") {
-              statics.push(attr, value);
-            } else {
-              attrs.push([ attr, value ]);
-            }
-          } else {
-            statics.push(attr, t.literal(true));
           }
 
           if (name === "key") {
             key = value;
+          }
+
+          if (name === "key" || t.isLiteral(value)) {
+            statics.push(attr, value)
+          } else {
+            attrs.push([ attr, value ]);
           }
         }
       }

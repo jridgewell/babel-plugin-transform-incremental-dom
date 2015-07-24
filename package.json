@@ -15,7 +15,9 @@
     "test": "mocha --compilers js:babel/register"
   },
   "keywords": [
-    "babel-plugin"
+    "babel-plugin",
+    "incremental-dom",
+    "jsx"
   ],
   "babel": {
     "loose": true

@@ -1,0 +1,5 @@
+<div /* inline */ >
+{/*
+  child
+*/}
+</div>

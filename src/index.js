@@ -1,70 +1,71 @@
+import helpers from "./helpers";
+
 export default function ({ Plugin, types: t }) {
   let visitor = {};
+  const {
+    buildChildren,
+    extractOpenArguments,
+    flattenExpressions,
+    toReference,
+    toFunctionCall,
+    toFunctionCallStatement,
+    attrsToAttrCalls
+  } = helpers(t);
 
   visitor.JSXOpeningElement = {
-    exit(node, parent, scope, file) {
-      let args = [t.literal(node.name.name)];
-      let key = null;
-      let attrs = [];
+    exit({ name, attributes, selfClosing }, parent, scope) {
+      let tag = toReference(name);
+      let args = [tag];
+      let { key, statics, attrs, hasSpread } = extractOpenArguments(attributes);
+      let elementFunction = selfClosing ? "elementVoid" : "elementOpen";
 
-      for (let attr of node.attributes) {
-        if (attr.name.name === "key") {
-          key = attr.value.value;
-        } else {
-          attrs.push(
-            t.literal(attr.name.name),
-            t.literal(attr.value.value)
-          );
+      // Only push arguments if they're needed
+      if (key || statics || attrs) {
+        args.push(key || t.literal(null));
+      }
+      if (statics || attrs) {
+        args.push(statics ? t.arrayExpression(statics) : t.literal(null));
+      }
+
+      // If there is a spread element, we need to use
+      // the elementOpenStart/elementOpenEnd syntax.
+      // This allows spreads to be transformed into
+      // attr(name, value) calls.
+      if (hasSpread) {
+        attrs = attrs.map(attrsToAttrCalls(scope));
+
+        return t.sequenceExpression([
+          toFunctionCall("elementOpenStart", args),
+          ...attrs,
+          toFunctionCall("elementOpenEnd", [tag])
+        ]);
+      } else if (attrs) {
+        for (let [name, value] of attrs) {
+          args.push(name, value);
         }
       }
 
-      if (key || attrs.length) {
-        args.push(t.literal(key));
-      }
-
-      if (attrs.length) {
-        args.push(t.literal(null));
-        args = args.concat(attrs);
-      }
-
-      return t.expressionStatement(
-        t.callExpression(t.identifier("elementOpen"), args)
-      );
+      return toFunctionCallStatement(elementFunction, args);
     }
   };
 
   visitor.JSXClosingElement = {
-    exit(node, parent, scope, file) {
-      return t.expressionStatement(
-        t.callExpression(
-          t.identifier("elementClose"), [
-          t.literal(node.name.name)
-        ])
-      );
+    exit({ name }) {
+      return toFunctionCallStatement("elementClose", [toReference(name)]);
     }
   };
 
-  // visitor.JSXElement = {
-  //   exit(node, parent, scope, file) {
-  //     var nodes = [];
-  //     var visitor = {};
-  //
-  //     visitor.JSXElement = function(node) {
-  //       nodes.push(node.openingElement, node.closingElement);
-  //     };
-  //
-  //     this.traverse(parent, visitor, scope, nodes);
-  //
-  //     this.parentPath.replaceWithMultiple(body);
-  //   }
-  // };
-
   visitor.JSXElement = {
-    exit(node, parent, scope, file) {
-      this.parentPath.replaceWithMultiple([
-        node.openingElement,
-        node.closingElement
-      ]);
+    exit({ openingElement, children, closingElement }) {
+      // Filter out empty children, and transform JSX expressions
+      // into normal expressions.
+      children = buildChildren(children);
+
+      let elements = [openingElement, ...children];
+      if (closingElement) { elements.push(closingElement); }
+
+      // Turn all sequence expressions into function statements.
+      return flattenExpressions(elements)
     }
   };
 

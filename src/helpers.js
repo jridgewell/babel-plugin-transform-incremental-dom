@@ -52,13 +52,18 @@ export default function(t) {
       child = child.expression;
     }
 
-    if (t.isJSXEmptyExpression(child)) {
-      return children;
-    } else if (t.isLiteral(child) && typeof child.value === "string") {
+    if (t.isLiteral(child) && typeof child.value === "string") {
       let text = cleanText(child);
       if (!text) { return children; }
 
       child = toFunctionCallStatement("text", [t.literal(text)]);
+    }
+
+    if (t.isJSXExpressionContainer(child)) child = child.expression;
+    if (t.isJSXEmptyExpression(child)) {
+      return children;
+    } else if (t.isIdentifier(child)) {
+      child = toFunctionCallStatement("text", [child]);
     }
 
     children.push(child);

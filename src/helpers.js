@@ -1,11 +1,10 @@
 const nonWhitespace = /\S/;
 const newlines = /\r\n?|\n/;
-const whitespaceTimmer = /^\s+|\s+$/g;
 
 // Trims the whitespace off the lines.
-function lineFilter(lines, line) {
-  line = line.replace(whitespaceTimmer, "");
-
+function lineFilter(lines, line, i, { length }) {
+  if (i > 0) { line = line.trimLeft(); }
+  if (i + 1 < length) { line = line.trimRight(); }
   if (line) { lines.push(line); }
 
   return lines;
@@ -52,13 +51,20 @@ export default function(t) {
       child = child.expression;
     }
 
-    if (t.isJSXEmptyExpression(child)) {
-      return children;
-    } else if (t.isLiteral(child) && typeof child.value === "string") {
+    if (t.isLiteral(child) && typeof child.value === "string") {
       let text = cleanText(child);
       if (!text) { return children; }
 
       child = toFunctionCallStatement("text", [t.literal(text)]);
+    }
+
+    if (t.isJSXExpressionContainer(child)) child = child.expression;
+    if (t.isJSXEmptyExpression(child)) {
+      return children;
+    } else if (t.isIdentifier(child)) {
+      child = toFunctionCallStatement("text", [child]);
+    } else if (t.isArrayExpression(child)) {
+      child = t.sequenceExpression(buildChildren(child.elements));
     }
 
     children.push(child);
@@ -77,7 +83,7 @@ export default function(t) {
   // expression statements.
   function sequenceReducer(nodes, node) {
     if (t.isSequenceExpression(node)) {
-      let expressions = node.expressions.map(callToStatement);
+      let expressions = flattenExpressions(node.expressions);
       nodes.push(...expressions);
     } else {
       nodes.push(callToStatement(node));
@@ -85,10 +91,25 @@ export default function(t) {
     return nodes;
   }
 
-  return {
-    buildChildren(children) {
+  function buildChildren(children) {
       return children.reduce(childFilter, []);
-    },
+  }
+
+  function flattenExpressions(expressions) {
+    return expressions.reduce(sequenceReducer, []);
+  }
+
+  return {
+    buildChildren: buildChildren,
+
+    flattenExpressions: flattenExpressions,
+
+    toFunctionCall: toFunctionCall,
+
+    toFunctionCallStatement: toFunctionCallStatement,
+
+    toReference: toReference,
+
 
     // Extracts attributes into the appropriate
     // attribute array. Static attributes and the key
@@ -133,10 +154,6 @@ export default function(t) {
       return { key, statics, attrs, hasSpread };
     },
 
-    flattenExpressions(expressions) {
-      return expressions.reduce(sequenceReducer, []);
-    },
-
     // Transforms an attribute array into sequential attr calls.
     attrsToAttrCalls(scope) {
       return function(attr) {
@@ -155,12 +172,6 @@ export default function(t) {
           return toFunctionCall("attr", attr);
         }
       }
-    },
-
-    toFunctionCall: toFunctionCall,
-
-    toFunctionCallStatement: toFunctionCallStatement,
-
-    toReference: toReference
+    }
   };
 };

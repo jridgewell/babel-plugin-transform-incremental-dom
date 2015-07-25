@@ -35,6 +35,9 @@ export default function(t) {
 
   // Helper to transform a JSX identifier into a normal reference.
   function toReference(node, identifier) {
+    if (t.isIdentifier(node)) {
+        return node;
+    }
     if (t.isJSXIdentifier(node)) {
       return identifier ? t.identifier(node.name) : t.literal(node.name);
     }
@@ -61,10 +64,10 @@ export default function(t) {
     if (t.isJSXExpressionContainer(child)) child = child.expression;
     if (t.isJSXEmptyExpression(child)) {
       return children;
-    } else if (t.isIdentifier(child)) {
-      child = toFunctionCallStatement("text", [child]);
     } else if (t.isArrayExpression(child)) {
       child = t.sequenceExpression(buildChildren(child.elements));
+    } else if (t.isIdentifier(child) || t.isMemberExpression(child)) {
+      child = toFunctionCallStatement("text", [toReference(child)]);
     }
 
     children.push(child);

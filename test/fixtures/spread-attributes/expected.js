@@ -10,7 +10,7 @@ for (var _attr2 in props.attrs) attr(_attr2, props.attrs[_attr2]);
 elementOpenEnd("div");
 
 (function () {
-  elementOpenStart("div", null, null);
+  elementOpenStart("div");
 
   for (var _attr3 in props) attr(_attr3, props[_attr3]);
 

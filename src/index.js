@@ -19,11 +19,11 @@ export default function ({ Plugin, types: t }) {
       let elementFunction = selfClosing ? "elementVoid" : "elementOpen";
 
       // Only push arguments if they're needed
-      if (key || statics || attrs) {
+      if (key || statics) {
         args.push(key || t.literal(null));
       }
-      if (statics || attrs) {
-        args.push(statics ? t.arrayExpression(statics) : t.literal(null));
+      if (statics) {
+        args.push(t.arrayExpression(statics));
       }
 
       // If there is a spread element, we need to use
@@ -44,6 +44,16 @@ export default function ({ Plugin, types: t }) {
 
         return t.sequenceExpression(expressions);
       } else if (attrs) {
+
+        // Only push key and statics if they have not
+        // already been pushed.
+        if (!statics) {
+          if (!key) {
+            args.push(t.literal(null));
+          }
+          args.push(t.literal(null));
+        }
+
         for (let [name, value] of attrs) {
           args.push(name, value);
         }

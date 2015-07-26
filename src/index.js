@@ -33,11 +33,16 @@ export default function ({ Plugin, types: t }) {
       if (hasSpread) {
         attrs = attrs.map(attrsToAttrCalls(scope));
 
-        return t.sequenceExpression([
+        var expressions = [
           toFunctionCall("elementOpenStart", args),
           ...attrs,
           toFunctionCall("elementOpenEnd", [tag])
-        ]);
+        ];
+        if (selfClosing) {
+          expressions.push(toFunctionCall("elementClose", [tag]));
+        }
+
+        return t.sequenceExpression(expressions);
       } else if (attrs) {
         for (let [name, value] of attrs) {
           args.push(name, value);

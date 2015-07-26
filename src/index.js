@@ -78,8 +78,14 @@ export default function ({ Plugin, types: t }) {
       let elements = [openingElement, ...children];
       if (closingElement) { elements.push(closingElement); }
 
-      // Turn all sequence expressions into function statements.
-      return flattenExpressions(elements)
+      if (t.isJSX(this.parent)) {
+        // If we're inside a JSX node, flattening expressions
+        // may force us into an unwanted function scope.
+        return elements;
+      } else {
+        // Turn all sequence expressions into function statements.
+        return flattenExpressions(elements);
+      }
     }
   };
 

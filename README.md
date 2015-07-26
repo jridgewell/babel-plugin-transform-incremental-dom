@@ -1,4 +1,4 @@
-# babel-plugin-incremental-dom [![Build Status](https://travis-ci.org/babel-plugins/babel-plugin-incremental-dom.svg?branch=master)](https://travis-ci.org/thejameskyle/babel-plugin-incremental-dom)
+# babel-plugin-incremental-dom [![Build Status](https://travis-ci.org/babel-plugins/babel-plugin-incremental-dom.svg?branch=master)](https://travis-ci.org/babel-plugins/babel-plugin-incremental-dom)
 
 Turn jsx into [incremental-dom](http://google.github.io/incremental-dom/).
 

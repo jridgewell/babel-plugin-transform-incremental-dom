@@ -102,14 +102,10 @@ export default function(t) {
   }
 
   return {
-    buildChildren: buildChildren,
-
-    flattenExpressions: flattenExpressions,
-
-    toFunctionCall: toFunctionCall,
-
-    toReference: toReference,
-
+    buildChildren,
+    flattenExpressions,
+    toFunctionCall,
+    toReference,
 
     // Extracts attributes into the appropriate
     // attribute array. Static attributes and the key

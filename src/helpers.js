@@ -58,7 +58,7 @@ export default function(t) {
       let text = cleanText(child);
       if (!text) { return children; }
 
-      child = toFunctionCallStatement("text", [t.literal(text)]);
+      child = toFunctionCall("text", [t.literal(text)]);
     }
 
     if (t.isJSXExpressionContainer(child)) child = child.expression;
@@ -74,9 +74,9 @@ export default function(t) {
     return children;
   }
 
-  // Helper to transform a call expression into an expression statement.
-  function callToStatement(expression) {
-    if (t.isCallExpression(expression)) {
+  // Helper to transform an expression into an expression statement.
+  function toStatement(expression) {
+    if (!t.isStatement(expression)) {
       return t.expressionStatement(expression);
     }
     return expression;
@@ -89,7 +89,7 @@ export default function(t) {
       let expressions = flattenExpressions(node.expressions);
       nodes.push(...expressions);
     } else {
-      nodes.push(callToStatement(node));
+      nodes.push(toStatement(node));
     }
     return nodes;
   }
@@ -108,8 +108,6 @@ export default function(t) {
     flattenExpressions: flattenExpressions,
 
     toFunctionCall: toFunctionCall,
-
-    toFunctionCallStatement: toFunctionCallStatement,
 
     toReference: toReference,
 

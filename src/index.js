@@ -8,7 +8,6 @@ export default function ({ Plugin, types: t }) {
     flattenExpressions,
     toReference,
     toFunctionCall,
-    toFunctionCallStatement,
     attrsToAttrCalls
   } = helpers(t);
 
@@ -45,13 +44,13 @@ export default function ({ Plugin, types: t }) {
         }
       }
 
-      return toFunctionCallStatement(elementFunction, args);
+      return toFunctionCall(elementFunction, args);
     }
   };
 
   visitor.JSXClosingElement = {
     exit({ name }) {
-      return toFunctionCallStatement("elementClose", [toReference(name)]);
+      return toFunctionCall("elementClose", [toReference(name)]);
     }
   };
 

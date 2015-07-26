@@ -61,7 +61,6 @@ export default function(t) {
       child = toFunctionCall("text", [t.literal(text)]);
     }
 
-    if (t.isJSXExpressionContainer(child)) child = child.expression;
     if (t.isJSXEmptyExpression(child)) {
       return children;
     } else if (t.isArrayExpression(child)) {

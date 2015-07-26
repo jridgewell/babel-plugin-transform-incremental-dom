@@ -1,21 +1,20 @@
-import helpers from "./helpers";
+import {
+  buildChildren,
+  extractOpenArguments,
+  flattenExpressions,
+  toReference,
+  toFunctionCall,
+  attrsToAttrCalls
+} from "./helpers";
 
 export default function ({ Plugin, types: t }) {
   let visitor = {};
-  const {
-    buildChildren,
-    extractOpenArguments,
-    flattenExpressions,
-    toReference,
-    toFunctionCall,
-    attrsToAttrCalls
-  } = helpers(t);
 
   visitor.JSXOpeningElement = {
     exit({ name, attributes, selfClosing }, parent, scope) {
-      let tag = toReference(name);
+      let tag = toReference(t, name);
       let args = [tag];
-      let { key, statics, attrs, hasSpread } = extractOpenArguments(attributes);
+      let { key, statics, attrs, hasSpread } = extractOpenArguments(t, attributes);
       let elementFunction = selfClosing ? "elementVoid" : "elementOpen";
 
       // Only push arguments if they're needed
@@ -31,15 +30,15 @@ export default function ({ Plugin, types: t }) {
       // This allows spreads to be transformed into
       // attr(name, value) calls.
       if (hasSpread) {
-        attrs = attrs.map(attrsToAttrCalls(scope));
+        attrs = attrsToAttrCalls(t, scope, attrs);
 
         var expressions = [
-          toFunctionCall("elementOpenStart", args),
+          toFunctionCall(t, "elementOpenStart", args),
           ...attrs,
-          toFunctionCall("elementOpenEnd", [tag])
+          toFunctionCall(t, "elementOpenEnd", [tag])
         ];
         if (selfClosing) {
-          expressions.push(toFunctionCall("elementClose", [tag]));
+          expressions.push(toFunctionCall(t, "elementClose", [tag]));
         }
 
         return t.sequenceExpression(expressions);
@@ -59,13 +58,13 @@ export default function ({ Plugin, types: t }) {
         }
       }
 
-      return toFunctionCall(elementFunction, args);
+      return toFunctionCall(t, elementFunction, args);
     }
   };
 
   visitor.JSXClosingElement = {
     exit({ name }) {
-      return toFunctionCall("elementClose", [toReference(name)]);
+      return toFunctionCall(t, "elementClose", [toReference(t, name)]);
     }
   };
 
@@ -73,7 +72,7 @@ export default function ({ Plugin, types: t }) {
     exit({ openingElement, children, closingElement }) {
       // Filter out empty children, and transform JSX expressions
       // into normal expressions.
-      children = buildChildren(children);
+      children = buildChildren(t, children);
 
       let elements = [openingElement, ...children];
       if (closingElement) { elements.push(closingElement); }
@@ -84,7 +83,7 @@ export default function ({ Plugin, types: t }) {
         return elements;
       } else {
         // Turn all sequence expressions into function statements.
-        return flattenExpressions(elements);
+        return flattenExpressions(t, elements);
       }
     }
   };

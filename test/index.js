@@ -16,7 +16,7 @@ describe("turn jsx into incremental-dom", () => {
       const fixtureDir = path.join(fixturesDir, caseName);
       const actual     = babel.transformFileSync(
         path.join(fixtureDir, "actual.js"), {
-          blacklist: ['react'],
+          blacklist: ['strict', 'react'],
           plugins: [plugin]
         }
       ).code;

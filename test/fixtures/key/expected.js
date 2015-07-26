@@ -1,5 +1,3 @@
-"use strict";
-
 elementOpen("div");
 elementOpen("div", "1", ["key", "1"]);
 elementClose("div");

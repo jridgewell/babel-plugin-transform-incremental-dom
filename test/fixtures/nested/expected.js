@@ -1,5 +1,3 @@
-"use strict";
-
 elementOpen("div");
 elementOpen("div");
 elementClose("div");

@@ -1,5 +1,3 @@
-"use strict";
-
 elementOpenStart("div", "test", ["class", "test", "key", "test"]);
 attr("id", id);
 

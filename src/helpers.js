@@ -12,13 +12,14 @@ function lineFilter(lines, line, i, { length }) {
 
 // Cleans the whitespace from a text node.
 function cleanText(node) {
-  if (nonWhitespace.test(node.value)) {
-    let lines = node.value.split(newlines);
-
-    lines = lines.reduce(lineFilter, []);
-
-    return lines.join(" ");
+  if (!nonWhitespace.test(node.value)) {
+    return '';
   }
+
+  let lines = node.value.split(newlines);
+  lines = lines.reduce(lineFilter, []);
+
+  return lines.join(" ");
 }
 
 // Helper to transform an expression into an expression statement.
@@ -69,26 +70,27 @@ export function extractOpenArguments(t, attributes) {
     if (t.isJSXSpreadAttribute(attribute)) {
       hasSpread = true;
       attrs.push(attribute);
+      continue;
+    }
+
+    let name = attribute.name.name;
+    let attr = t.literal(name);
+    let value = attribute.value;
+
+    if (!value) {
+      value = t.literal(true);
+    } else if (t.isJSXExpressionContainer(value)) {
+      value = value.expression;
+    }
+
+    if (name === "key") {
+      key = value;
+    }
+
+    if (name === "key" || t.isLiteral(value)) {
+      statics.push(attr, value)
     } else {
-      let name = attribute.name.name;
-      let attr = t.literal(name);
-      let value = attribute.value;
-
-      if (!value) {
-        value = t.literal(true);
-      } else if (t.isJSXExpressionContainer(value)) {
-        value = value.expression;
-      }
-
-      if (name === "key") {
-        key = value;
-      }
-
-      if (name === "key" || t.isLiteral(value)) {
-        statics.push(attr, value)
-      } else {
-        attrs.push([ attr, value ]);
-      }
+      attrs.push([ attr, value ]);
     }
   }
 
@@ -112,9 +114,9 @@ export function attrsToAttrCalls(t, scope, attrs) {
           t.memberExpression(attr.argument, iterator, true)
         ])
       );
-    } else {
-      return toFunctionCall(t, "attr", attr);
     }
+
+    return toFunctionCall(t, "attr", attr);
   });
 }
 

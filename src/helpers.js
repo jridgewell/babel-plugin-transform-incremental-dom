@@ -11,9 +11,9 @@ function lineFilter(lines, line, i, { length }) {
 }
 
 // Cleans the whitespace from a text node.
-function cleanText({ value }) {
-  if (nonWhitespace.test(value)) {
-    let lines = value.split(newlines);
+function cleanText(node) {
+  if (nonWhitespace.test(node.value)) {
+    let lines = node.value.split(newlines);
 
     lines = lines.reduce(lineFilter, []);
 

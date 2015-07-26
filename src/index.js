@@ -10,11 +10,16 @@ import {
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
     JSXOpeningElement: {
-      exit({ name, attributes, selfClosing }, parent, scope) {
-        let tag = toReference(t, name);
+      exit(node, parent, scope) {
+        let tag = toReference(t, node.name);
         let args = [tag];
-        let { key, statics, attrs, hasSpread } = extractOpenArguments(t, attributes);
-        let elementFunction = selfClosing ? "elementVoid" : "elementOpen";
+        let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
+        let {
+          key,
+          statics,
+          attrs,
+          hasSpread
+        } = extractOpenArguments(t, node.attributes);
 
         // Only push arguments if they're needed
         if (key || statics) {
@@ -36,7 +41,7 @@ export default function ({ Plugin, types: t }) {
             ...attrs,
             toFunctionCall(t, "elementOpenEnd", [tag])
           ];
-          if (selfClosing) {
+          if (node.selfClosing) {
             expressions.push(toFunctionCall(t, "elementClose", [tag]));
           }
 
@@ -62,19 +67,19 @@ export default function ({ Plugin, types: t }) {
     },
 
     JSXClosingElement: {
-      exit({ name }) {
-        return toFunctionCall(t, "elementClose", [toReference(t, name)]);
+      exit(node) {
+        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
       }
     },
 
     JSXElement: {
-      exit({ openingElement, children, closingElement }) {
+      exit(node) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        children = buildChildren(t, children);
+        let children = buildChildren(t, node.children);
 
-        let elements = [openingElement, ...children];
-        if (closingElement) { elements.push(closingElement); }
+        let elements = [node.openingElement, ...children];
+        if (node.closingElement) { elements.push(node.closingElement); }
 
         if (t.isJSX(this.parent)) {
           // If we're inside a JSX node, flattening expressions

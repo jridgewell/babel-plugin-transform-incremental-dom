@@ -67,7 +67,7 @@ export default function(t) {
     } else if (t.isArrayExpression(child)) {
       child = t.sequenceExpression(buildChildren(child.elements));
     } else if (t.isIdentifier(child) || t.isMemberExpression(child)) {
-      child = toFunctionCallStatement("text", [toReference(child)]);
+      child = toReference(child);
     }
 
     children.push(child);

@@ -1,5 +1,3 @@
-"use strict";
-
 elementOpen("div");
 elementOpen("div", null, ["class", "my-class"]);
 elementClose("div");

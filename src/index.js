@@ -1,73 +1,95 @@
-import helpers from "./helpers";
+import {
+  buildChildren,
+  extractOpenArguments,
+  flattenExpressions,
+  toReference,
+  toFunctionCall,
+  attrsToAttrCalls
+} from "./helpers";
 
 export default function ({ Plugin, types: t }) {
-  let visitor = {};
-  const {
-    buildChildren,
-    extractOpenArguments,
-    flattenExpressions,
-    toReference,
-    toFunctionCall,
-    toFunctionCallStatement,
-    attrsToAttrCalls
-  } = helpers(t);
+  return new Plugin("incremental-dom", { visitor : {
+    JSXOpeningElement: {
+      exit(node, parent, scope) {
+        let tag = toReference(t, node.name);
+        let args = [tag];
+        let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
+        let {
+          key,
+          statics,
+          attrs,
+          hasSpread
+        } = extractOpenArguments(t, node.attributes);
 
-  visitor.JSXOpeningElement = {
-    exit({ name, attributes, selfClosing }, parent, scope) {
-      let tag = toReference(name);
-      let args = [tag];
-      let { key, statics, attrs, hasSpread } = extractOpenArguments(attributes);
-      let elementFunction = selfClosing ? "elementVoid" : "elementOpen";
+        // Only push arguments if they're needed
+        if (key || statics) {
+          args.push(key || t.literal(null));
+        }
+        if (statics) {
+          args.push(t.arrayExpression(statics));
+        }
 
-      // Only push arguments if they're needed
-      if (key || statics || attrs) {
-        args.push(key || t.literal(null));
+        // If there is a spread element, we need to use
+        // the elementOpenStart/elementOpenEnd syntax.
+        // This allows spreads to be transformed into
+        // attr(name, value) calls.
+        if (hasSpread) {
+          attrs = attrsToAttrCalls(t, scope, attrs);
+
+          var expressions = [
+            toFunctionCall(t, "elementOpenStart", args),
+            ...attrs,
+            toFunctionCall(t, "elementOpenEnd", [tag])
+          ];
+          if (node.selfClosing) {
+            expressions.push(toFunctionCall(t, "elementClose", [tag]));
+          }
+
+          return t.sequenceExpression(expressions);
+        } else if (attrs) {
+
+          // Only push key and statics if they have not
+          // already been pushed.
+          if (!statics) {
+            if (!key) {
+              args.push(t.literal(null));
+            }
+            args.push(t.literal(null));
+          }
+
+          for (let [name, value] of attrs) {
+            args.push(name, value);
+          }
+        }
+
+        return toFunctionCall(t, elementFunction, args);
       }
-      if (statics || attrs) {
-        args.push(statics ? t.arrayExpression(statics) : t.literal(null));
+    },
+
+    JSXClosingElement: {
+      exit(node) {
+        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
       }
+    },
 
-      // If there is a spread element, we need to use
-      // the elementOpenStart/elementOpenEnd syntax.
-      // This allows spreads to be transformed into
-      // attr(name, value) calls.
-      if (hasSpread) {
-        attrs = attrs.map(attrsToAttrCalls(scope));
+    JSXElement: {
+      exit(node) {
+        // Filter out empty children, and transform JSX expressions
+        // into normal expressions.
+        let children = buildChildren(t, node.children);
 
-        return t.sequenceExpression([
-          toFunctionCall("elementOpenStart", args),
-          ...attrs,
-          toFunctionCall("elementOpenEnd", [tag])
-        ]);
-      } else if (attrs) {
-        for (let [name, value] of attrs) {
-          args.push(name, value);
+        let elements = [node.openingElement, ...children];
+        if (node.closingElement) { elements.push(node.closingElement); }
+
+        if (t.isJSX(this.parent)) {
+          // If we're inside a JSX node, flattening expressions
+          // may force us into an unwanted function scope.
+          return elements;
+        } else {
+          // Turn all sequence expressions into function statements.
+          return flattenExpressions(t, elements);
         }
       }
-
-      return toFunctionCallStatement(elementFunction, args);
     }
-  };
-
-  visitor.JSXClosingElement = {
-    exit({ name }) {
-      return toFunctionCallStatement("elementClose", [toReference(name)]);
-    }
-  };
-
-  visitor.JSXElement = {
-    exit({ openingElement, children, closingElement }) {
-      // Filter out empty children, and transform JSX expressions
-      // into normal expressions.
-      children = buildChildren(children);
-
-      let elements = [openingElement, ...children];
-      if (closingElement) { elements.push(closingElement); }
-
-      // Turn all sequence expressions into function statements.
-      return flattenExpressions(elements)
-    }
-  };
-
-  return new Plugin("incremental-dom", { visitor });
+  }});
 }

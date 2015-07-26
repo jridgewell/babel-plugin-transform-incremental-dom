@@ -7,12 +7,15 @@
   "main": "lib/index.js",
   "devDependencies": {
     "babel": "^5.6.0",
+    "babel-eslint": "^4.0.0",
+    "eslint": "^0.24.1",
     "mocha": "^2.2.5"
   },
   "scripts": {
     "build": "babel-plugin build",
     "push": "babel-plugin publish",
-    "test": "mocha --compilers js:babel/register"
+    "test": "mocha --compilers js:babel/register",
+    "lint": "eslint src"
   },
   "keywords": [
     "babel-plugin",

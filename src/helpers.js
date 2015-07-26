@@ -13,7 +13,7 @@ function lineFilter(lines, line, i, { length }) {
 // Cleans the whitespace from a text node.
 function cleanText(node) {
   if (!nonWhitespace.test(node.value)) {
-    return '';
+    return "";
   }
 
   let lines = node.value.split(newlines);
@@ -38,7 +38,7 @@ function toFunctionCallStatement(t, functionName, args) {
 
 // Helper to create a function call in AST.
 export function toFunctionCall(t, functionName, args) {
-  return t.callExpression(t.identifier(functionName), args)
+  return t.callExpression(t.identifier(functionName), args);
 }
 
 // Helper to transform a JSX identifier into a normal reference.
@@ -88,7 +88,7 @@ export function extractOpenArguments(t, attributes) {
     }
 
     if (name === "key" || t.isLiteral(value)) {
-      statics.push(attr, value)
+      statics.push(attr, value);
     } else {
       attrs.push([ attr, value ]);
     }

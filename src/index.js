@@ -81,21 +81,42 @@ export default function ({ Plugin, types: t }) {
         let elements = [node.openingElement, ...children];
         if (node.closingElement) { elements.push(node.closingElement); }
 
-        if (t.isJSX(this.parent)) {
+        if (t.isJSX(parent)) {
           // If we're inside a JSX node, flattening expressions
           // may force us into an unwanted function scope.
           return elements;
-        } else {
-          elements = flattenExpressions(t, elements);
-          if (t.isReturnStatement(this.parent)) {
-            // Turn all sequence expressions into function statements.
-            let element = elements.pop();
-            elements.push(t.returnStatement(element.expression));
-            this.parentPath.replaceWithMultiple(elements);
-          } else {
-            return t.functionExpression(null, [], t.blockStatement(elements));
-          }
         }
+
+        if (t.isReturnStatement(parent)) {
+          // Turn all sequence expressions into function statements.
+          elements = flattenExpressions(t, elements);
+          let element = elements.pop();
+          elements.push(t.returnStatement(element.expression));
+          this.parentPath.replaceWithMultiple(elements);
+          return;
+        }
+
+        if (this.inType('JSXExpressionContainer')) {
+          return elements;
+        }
+
+        if (t.isAssignmentExpression(this.parentPath)) {
+          return t.functionExpression(
+            null,
+            [],
+            t.blockStatement(flattenExpressions(t, elements))
+          );
+        }
+
+        // Values are useless if they aren't assigned.
+        // ```
+        //   var a = 1;
+        //   <div /> // Useless JSX node
+        // ```
+        console.log('**************');
+        console.log('removing node!');
+        console.log('**************');
+        this.parentPath.dangerouslyRemove();
       }
     }
   }});

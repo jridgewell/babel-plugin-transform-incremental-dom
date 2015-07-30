@@ -101,12 +101,15 @@ export function toFunctionCall(t, functionName, args) {
 }
 
 // Helper to transform a JSX identifier into a normal reference.
-export function toReference(t, node) {
+export function toReference(t, node, identifier) {
   if (t.isJSXIdentifier(node)) {
-    return t.literal(node.name);
+    return identifier ? t.identifier(node.name) : t.literal(node.name);
   }
   if (t.isJSXMemberExpression(node)) {
-    return t.toMemberExpression(node);
+    return t.memberExpression(
+      toReference(t, node.object, true),
+      toReference(t, node.property, true)
+    );
   }
   return node;
 }

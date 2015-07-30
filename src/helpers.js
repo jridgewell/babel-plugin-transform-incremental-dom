@@ -84,7 +84,7 @@ function isDOMWrapper(t, value) {
 // be expanded.
 function renderArbitrary(t, scope, child) {
   let ref = toReference(t, child);
-  let memoised = scope.maybeGenerateMemoised(ref) || ref;
+  let memoised = scope.maybeGenerateMemoised(ref, true) || ref;
 
   let ifStatement = t.IfStatement(
     isTextual(t, memoised),
@@ -180,7 +180,6 @@ export function attrsToAttrCalls(t, scope, attrs) {
   return attrs.map((attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
       let iterator = scope.generateUidIdentifier("attr");
-      // scope.push({ id: iterator });
 
       return t.forInStatement(
         t.variableDeclaration("var", [iterator]),

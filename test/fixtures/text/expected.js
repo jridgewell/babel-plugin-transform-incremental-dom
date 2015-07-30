@@ -13,4 +13,4 @@ text("·");
 elementClose("span");
 text(" Second");
 elementClose("div");
-elementClose("div");
+return elementClose("div");

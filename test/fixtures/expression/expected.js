@@ -14,4 +14,4 @@ elementClose("div");
 elementOpen("div");
 data.message;
 elementClose("div");
-elementClose("div");
+return elementClose("div");

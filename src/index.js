@@ -73,10 +73,10 @@ export default function ({ Plugin, types: t }) {
     },
 
     JSXElement: {
-      exit(node) {
+      exit(node, parent, scope) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        let children = buildChildren(t, node.children);
+        let children = buildChildren(t, scope, node.children);
 
         let elements = [node.openingElement, ...children];
         if (node.closingElement) { elements.push(node.closingElement); }
@@ -86,8 +86,15 @@ export default function ({ Plugin, types: t }) {
           // may force us into an unwanted function scope.
           return elements;
         } else {
-          // Turn all sequence expressions into function statements.
-          return flattenExpressions(t, elements);
+          elements = flattenExpressions(t, elements);
+          if (t.isReturnStatement(this.parent)) {
+            // Turn all sequence expressions into function statements.
+            let element = elements.pop();
+            elements.push(t.returnStatement(element.expression));
+            this.parentPath.replaceWithMultiple(elements);
+          } else {
+            return t.functionExpression(null, [], t.blockStatement(elements));
+          }
         }
       }
     }

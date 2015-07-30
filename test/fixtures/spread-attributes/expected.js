@@ -14,4 +14,4 @@ for (var _attr3 in props) attr(_attr3, props[_attr3]);
 
 elementOpenEnd("div");
 elementClose("div");
-elementClose("div");
+return elementClose("div");

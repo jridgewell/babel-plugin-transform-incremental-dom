@@ -1,1 +1,1 @@
-<input type="text" />
+return (<input type="text" />);

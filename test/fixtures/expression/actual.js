@@ -1,4 +1,4 @@
-<div>
+return (<div>
   {
     queries.forEach(function(query) {
       return (<div key={query.id}></div>);
@@ -10,4 +10,4 @@
   <div>{a()}</div>
   <div>{message}</div>
   <div>{data.message}</div>
-</div>
+</div>);

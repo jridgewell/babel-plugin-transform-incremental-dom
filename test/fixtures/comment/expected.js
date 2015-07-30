@@ -1,5 +1,5 @@
 elementOpen("div");
-elementClose("div");
+return elementClose("div");
 /* inline */ /*
               child
              */

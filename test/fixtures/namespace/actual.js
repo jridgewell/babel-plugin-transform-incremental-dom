@@ -1,1 +1,1 @@
-<a.b.div></a.b.div>
+return (<a.b.div></a.b.div>);

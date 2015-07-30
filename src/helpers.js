@@ -24,7 +24,9 @@ function cleanText(node) {
 
 // Helper to transform an expression into an expression statement.
 function toStatement(t, expression) {
-  if (!t.isStatement(expression)) {
+  if (t.isConditionalExpression(expression)) {
+    expression = toIfStatement(t, expression);
+  } else if (!t.isStatement(expression)) {
     return t.expressionStatement(expression);
   }
   return expression;
@@ -35,6 +37,79 @@ function toFunctionCallStatement(t, functionName, args) {
   return t.expressionStatement(toFunctionCall(t, functionName, args));
 }
 
+// Helper to turn a ternary into an if statement.
+function toIfStatement(t, node) {
+  let statement = t.ifStatement(
+    node.test,
+    toStatement(t, node.consequent)
+  );
+  if (node.alternate && !t.isIdentifier(node.alternate, { name: 'undefined' })) {
+    statement.alternate = toStatement(t, node.alternate);
+  }
+  return statement;
+}
+
+// Helper to determine if a value is a string in AST.
+function isTextual(t, value) {
+  let type = t.unaryExpression('typeof', value);
+  return t.binaryExpression(
+    "||",
+    t.binaryExpression("===", type, t.literal('number')),
+    t.binaryExpression(
+      "||",
+      t.binaryExpression("===", type, t.literal('string')),
+      t.binaryExpression(
+        "&&",
+        value,
+        t.binaryExpression("instanceof", value, t.identifier('String'))
+      )
+    )
+  );
+}
+
+function isDOMWrapper(t, value) {
+  var type = t.unaryExpression("typeof", value);
+  return t.binaryExpression(
+    "&&",
+    t.binaryExpression("===", type, t.literal("function")),
+    t.memberExpression(
+      value,
+      t.identifier("__jsxDOMWrapper")
+    )
+  );
+}
+
+// Helper function to render an arbitrary identifier.
+// For now, limited to just strings, though this will
+// be expanded.
+function renderArbitrary(t, scope, child) {
+  let ref = toReference(t, child);
+  let memoised = scope.maybeGenerateMemoised(ref) || ref;
+
+  let ifStatement = t.IfStatement(
+    isTextual(t, memoised),
+    toFunctionCallStatement(t, "text", [memoised]),
+    t.ifStatement(
+      isDOMWrapper(t, memoised),
+      toStatement(t, t.callExpression(memoised, []))
+    )
+  );
+
+  if (memoised === ref) {
+    return ifStatement;
+  } else {
+    return t.sequenceExpression([
+      t.variableDeclaration("var", [
+        t.variableDeclarator(memoised, ref)
+      ]),
+      ifStatement
+    ]);
+  }
+}
+
+function validArbitraryExpression(t, node) {
+  return t.isExpression(node) && !node._idom;
+}
 
 // Helper to create a function call in AST.
 export function toFunctionCall(t, functionName, args) {
@@ -43,16 +118,16 @@ export function toFunctionCall(t, functionName, args) {
 
 // Helper to transform a JSX identifier into a normal reference.
 export function toReference(t, node, identifier) {
-  if (t.isIdentifier(node)) {
-    return node;
-  }
   if (t.isJSXIdentifier(node)) {
     return identifier ? t.identifier(node.name) : t.literal(node.name);
   }
-  return t.memberExpression(
-    toReference(t, node.object, true),
-    toReference(t, node.property, true)
-  );
+  if (t.isJSXMemberExpression(node)) {
+    return t.memberExpression(
+      toReference(t, node.object, true),
+      toReference(t, node.property, true)
+    );
+  }
+  return node;
 }
 
 
@@ -105,6 +180,7 @@ export function attrsToAttrCalls(t, scope, attrs) {
   return attrs.map((attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
       let iterator = scope.generateUidIdentifier("attr");
+      // scope.push({ id: iterator });
 
       return t.forInStatement(
         t.variableDeclaration("var", [iterator]),
@@ -122,25 +198,24 @@ export function attrsToAttrCalls(t, scope, attrs) {
 
 // Filters out empty children, and transform JSX expressions
 // into normal expressions.
-export function buildChildren(t, children) {
+export function buildChildren(t, scope, children) {
   return children.reduce((children, child) => {
-    if (t.isJSXExpressionContainer(child)) {
+    const wasExpressionContainer = t.isJSXExpressionContainer(child);
+    if (wasExpressionContainer) {
       child = child.expression;
     }
+
+    if (t.isJSXEmptyExpression(child)) { return children; }
 
     if (t.isLiteral(child) && typeof child.value === "string") {
       let text = cleanText(child);
       if (!text) { return children; }
 
       child = toFunctionCall(t, "text", [t.literal(text)]);
-    }
-
-    if (t.isJSXEmptyExpression(child)) {
-      return children;
     } else if (t.isArrayExpression(child)) {
-      child = t.sequenceExpression(buildChildren(t, child.elements));
-    } else if (t.isIdentifier(child) || t.isMemberExpression(child)) {
-      child = toReference(t, child);
+      child = t.sequenceExpression(buildChildren(t, scope, child.elements));
+    } else if (wasExpressionContainer && t.isExpression(child)) {
+      child = renderArbitrary(t, scope, child);
     }
 
     children.push(child);

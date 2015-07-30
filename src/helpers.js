@@ -25,7 +25,7 @@ function cleanText(node) {
 // Helper to transform an expression into an expression statement.
 function toStatement(t, expression) {
   if (t.isConditionalExpression(expression)) {
-    expression = toIfStatement(t, expression);
+    expression = t.toIfStatement(expression);
   } else if (!t.isStatement(expression)) {
     return t.expressionStatement(expression);
   }
@@ -35,18 +35,6 @@ function toStatement(t, expression) {
 // Helper to create a function call statement in AST.
 function toFunctionCallStatement(t, functionName, args) {
   return t.expressionStatement(toFunctionCall(t, functionName, args));
-}
-
-// Helper to turn a ternary into an if statement.
-function toIfStatement(t, node) {
-  let statement = t.ifStatement(
-    node.test,
-    toStatement(t, node.consequent)
-  );
-  if (node.alternate && !t.isIdentifier(node.alternate, { name: 'undefined' })) {
-    statement.alternate = toStatement(t, node.alternate);
-  }
-  return statement;
 }
 
 // Helper to determine if a value is a string in AST.
@@ -107,25 +95,18 @@ function renderArbitrary(t, scope, child) {
   }
 }
 
-function validArbitraryExpression(t, node) {
-  return t.isExpression(node) && !node._idom;
-}
-
 // Helper to create a function call in AST.
 export function toFunctionCall(t, functionName, args) {
   return t.callExpression(t.identifier(functionName), args);
 }
 
 // Helper to transform a JSX identifier into a normal reference.
-export function toReference(t, node, identifier) {
+export function toReference(t, node) {
   if (t.isJSXIdentifier(node)) {
-    return identifier ? t.identifier(node.name) : t.literal(node.name);
+    return t.literal(node.name);
   }
   if (t.isJSXMemberExpression(node)) {
-    return t.memberExpression(
-      toReference(t, node.object, true),
-      toReference(t, node.property, true)
-    );
+    return t.toMemberExpression(node);
   }
   return node;
 }

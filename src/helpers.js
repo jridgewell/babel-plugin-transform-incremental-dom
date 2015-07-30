@@ -70,29 +70,34 @@ function isDOMWrapper(t, value) {
 // Helper function to render an arbitrary identifier.
 // For now, limited to just strings, though this will
 // be expanded.
-function renderArbitrary(t, scope, child) {
+function renderArbitrary(t, child, renderArbitraryRef) {
   let ref = toReference(t, child);
-  let memoised = scope.maybeGenerateMemoised(ref, true) || ref;
+  return t.callExpression(renderArbitraryRef, [ref]);
+}
 
-  let ifStatement = t.IfStatement(
-    isTextual(t, memoised),
-    toFunctionCallStatement(t, "text", [memoised]),
-    t.ifStatement(
-      isDOMWrapper(t, memoised),
-      toStatement(t, t.callExpression(memoised, []))
+function injectRenderArbitrary(t, scope) {
+  let id = scope.generateUidIdentifier("renderArbitrary");
+  let child = t.identifier('child');
+
+  scope.push({
+    id: id,
+    init: t.functionExpression(
+      null,
+      [child],
+      t.blockStatement([
+        t.IfStatement(
+          isTextual(t, child),
+          toFunctionCallStatement(t, "text", [child]),
+          t.ifStatement(
+            isDOMWrapper(t, child),
+            toStatement(t, t.callExpression(child, []))
+          )
+        )
+      ])
     )
-  );
+  });
 
-  if (memoised === ref) {
-    return ifStatement;
-  } else {
-    return t.sequenceExpression([
-      t.variableDeclaration("var", [
-        t.variableDeclarator(memoised, ref)
-      ]),
-      ifStatement
-    ]);
-  }
+  return id;
 }
 
 // Helper to create a function call in AST.
@@ -182,6 +187,8 @@ export function attrsToAttrCalls(t, scope, attrs) {
 // Filters out empty children, and transform JSX expressions
 // into normal expressions.
 export function buildChildren(t, scope, children) {
+  let renderArbitraryRef;
+
   return children.reduce((children, child) => {
     const wasExpressionContainer = t.isJSXExpressionContainer(child);
     if (wasExpressionContainer) {
@@ -198,7 +205,10 @@ export function buildChildren(t, scope, children) {
     } else if (t.isArrayExpression(child)) {
       child = t.sequenceExpression(buildChildren(t, scope, child.elements));
     } else if (wasExpressionContainer && t.isExpression(child)) {
-      child = renderArbitrary(t, scope, child);
+      if (!renderArbitraryRef) {
+        renderArbitraryRef = injectRenderArbitrary(t, scope);
+      }
+      child = renderArbitrary(t, child, renderArbitraryRef);
     }
 
     children.push(child);

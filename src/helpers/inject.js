@@ -35,7 +35,7 @@ function set(hash, filename, name, value) {
 // the top scope.
 // Optionally takes a forced reference identifier, in case a dependent defined
 // the reference for the helper.
-export default function injectHelper(t, file, forcedRef, name, helperAstFn, dependencyInjectors = {}) {
+export default function inject(t, file, forcedRef, name, helperAstFn, dependencyInjectors = {}) {
   let filename = file.opts.filename;
   if (helperIsDefined(filename, name)) {
     return getHelperRef(filename, name);

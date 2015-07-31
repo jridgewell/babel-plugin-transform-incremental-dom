@@ -1,4 +1,4 @@
-import injectHelper from "../inject-helper";
+import inject from "../inject";
 import injectHasOwn from "./has-own";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 
@@ -44,7 +44,7 @@ function forOwnAST(t, ref, deps) {
 }
 
 export default function injectForOwn(t, file, forcedRef = null) {
-  return injectHelper(t, file, forcedRef, "forOwn", forOwnAST, {
+  return inject(t, file, forcedRef, "forOwn", forOwnAST, {
     hasOwn: injectHasOwn
   });
 }

@@ -1,4 +1,4 @@
-import injectHelper from "../inject-helper";
+import inject from "../inject";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Flip flops the arguments when calling iDOM's
@@ -23,5 +23,5 @@ function attrAST(t, ref) {
 }
 
 export default function injectAttr(t, file, forcedRef = null) {
-  return injectHelper(t, file, forcedRef, "attr", attrAST);
+  return inject(t, file, forcedRef, "attr", attrAST);
 }

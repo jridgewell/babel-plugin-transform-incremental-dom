@@ -1,4 +1,4 @@
-import injectHelper from "../inject-helper";
+import inject from "../inject";
 
 // Caches a reference to Object#hasOwnProperty.
 function hasOwnAST(t, ref) {
@@ -14,5 +14,5 @@ function hasOwnAST(t, ref) {
 }
 
 export default function injectHasOwn(t, file, forcedRef = null) {
-  return injectHelper(t, file, forcedRef, "hasOwn", hasOwnAST);
+  return inject(t, file, forcedRef, "hasOwn", hasOwnAST);
 }

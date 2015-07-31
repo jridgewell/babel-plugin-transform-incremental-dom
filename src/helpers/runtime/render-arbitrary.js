@@ -1,4 +1,4 @@
-import injectHelper from "../inject-helper";
+import inject from "../inject";
 import injectForOwn from "./for-own";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 
@@ -109,7 +109,7 @@ function renderArbitraryAST(t, ref, deps) {
 }
 
 export default function injectRenderArbitrary(t, file, forcedRef = null) {
-  return injectHelper(t, file, forcedRef, "renderArbitrary", renderArbitraryAST, {
+  return inject(t, file, forcedRef, "renderArbitrary", renderArbitraryAST, {
     forOwn: injectForOwn
   });
 }

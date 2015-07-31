@@ -13,6 +13,6 @@ function hasOwnAST(t, ref) {
   ]);
 }
 
-export default function injectHasOwn(t, file, forcedRef) {
+export default function injectHasOwn(t, file, forcedRef = null) {
   return injectHelper(t, file, forcedRef, "hasOwn", hasOwnAST);
 }

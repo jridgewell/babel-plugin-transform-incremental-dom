@@ -1,9 +1,9 @@
 const nonWhitespace = /\S/;
 const newlines = /\r\n?|\n/;
 
-import injectAttr from "./helpers/attr";
-import injectForOwn from "./helpers/for-own";
-import injectRenderArbitrary from "./helpers/render-arbitrary";
+import injectAttr from "./helpers/runtime/attr";
+import injectForOwn from "./helpers/runtime/for-own";
+import injectRenderArbitrary from "./helpers/runtime/render-arbitrary";
 
 // Trims the whitespace off the lines.
 function lineFilter(lines, line, i, { length }) {

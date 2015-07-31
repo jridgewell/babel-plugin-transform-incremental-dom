@@ -1,5 +1,6 @@
 import injectHelper from "../inject-helper";
 import injectForOwn from "./for-own";
+import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Isolated AST code to determine if a value is textual
 // (strings and numbers).
@@ -53,6 +54,10 @@ function renderArbitraryAST(t, ref, deps) {
   const forOwn = deps.forOwn;
   const child = t.identifier("child");
   const type = t.identifier("type");
+  const forEach = t.memberExpression(
+    child,
+    t.identifier("forEach")
+  );
 
   /**
    * function _renderArbitrary(child) {
@@ -81,32 +86,20 @@ function renderArbitraryAST(t, ref, deps) {
       t.IfStatement(
         isTextual(t, type, child),
         t.blockStatement([
-          t.expressionStatement(t.callExpression(
-            t.identifier("text"),
-            [child]
-          ))
+          toFunctionCallStatement(t, "text", [child])
         ]),
         t.ifStatement(
           isDOMWrapper(t, type, child),
           t.blockStatement([
-            t.expressionStatement(t.callExpression(child, []))
+            toFunctionCallStatement(t, child, [])
           ]),
           t.ifStatement(
             isArray(t, child),
             t.blockStatement([
-              t.expressionStatement(t.callExpression(
-                t.memberExpression(
-                  child,
-                  t.identifier('forEach')
-                ),
-                [ref]
-              ))
+              toFunctionCallStatement(t, forEach, [ref])
             ]),
             t.blockStatement([
-              t.expressionStatement(t.callExpression(
-                forOwn,
-                [child, ref]
-              ))
+              toFunctionCallStatement(t, forOwn, [child, ref])
             ])
           )
         )
@@ -115,7 +108,7 @@ function renderArbitraryAST(t, ref, deps) {
   );
 }
 
-export default function injectRenderArbitrary(t, file, forcedRef) {
+export default function injectRenderArbitrary(t, file, forcedRef = null) {
   return injectHelper(t, file, forcedRef, "renderArbitrary", renderArbitraryAST, {
     forOwn: injectForOwn
   });

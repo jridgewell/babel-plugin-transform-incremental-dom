@@ -1,5 +1,6 @@
 import injectHelper from "../inject-helper";
 import injectHasOwn from "./has-own";
+import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Loops over all own properties, calling
 // the specified iterator function with
@@ -32,17 +33,17 @@ function forOwnAST(t, ref, deps) {
             hasOwn,
             t.identifier("call")
           ), [object, prop]),
-          t.expressionStatement(t.callExpression(iterator, [
+          toFunctionCallStatement(t, iterator, [
             t.memberExpression(object, prop, true),
             prop
-          ]))
+          ])
         )
       )
     ])
   );
 }
 
-export default function injectForOwn(t, file, forcedRef) {
+export default function injectForOwn(t, file, forcedRef = null) {
   return injectHelper(t, file, forcedRef, "forOwn", forOwnAST, {
     hasOwn: injectHasOwn
   });

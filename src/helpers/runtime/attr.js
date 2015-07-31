@@ -1,4 +1,5 @@
 import injectHelper from "../inject-helper";
+import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Flip flops the arguments when calling iDOM's
 // `attr`, so that this function may be used
@@ -16,14 +17,11 @@ function attrAST(t, ref) {
     ref,
     [value, name],
     t.blockStatement([
-      t.expressionStatement(t.callExpression(
-        t.identifier("attr"),
-        [name, value]
-      ))
+      toFunctionCallStatement(t, "attr", [name, value])
     ])
   );
 }
 
-export default function injectAttr(t, file, forcedRef) {
+export default function injectAttr(t, file, forcedRef = null) {
   return injectHelper(t, file, forcedRef, "attr", attrAST);
 }

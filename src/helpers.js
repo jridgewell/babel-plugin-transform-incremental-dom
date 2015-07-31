@@ -2,7 +2,6 @@ const nonWhitespace = /\S/;
 const newlines = /\r\n?|\n/;
 
 import injectAttr from "./helpers/attr";
-import injectHasOwn from "./helpers/has-own";
 import injectForOwn from "./helpers/for-own";
 import injectRenderArbitrary from "./helpers/render-arbitrary";
 
@@ -16,12 +15,12 @@ function lineFilter(lines, line, i, { length }) {
 }
 
 // Cleans the whitespace from a text node.
-function cleanText(node) {
-  if (!nonWhitespace.test(node.value)) {
+function cleanText(value) {
+  if (!nonWhitespace.test(value)) {
     return "";
   }
 
-  let lines = node.value.split(newlines);
+  let lines = value.split(newlines);
   lines = lines.reduce(lineFilter, []);
 
   return lines.join(" ");
@@ -130,11 +129,17 @@ export function buildChildren(t, file, children) {
 
     if (t.isJSXEmptyExpression(child)) { return children; }
 
-    if (t.isLiteral(child) && typeof child.value === "string") {
-      let text = cleanText(child);
-      if (!text) { return children; }
+    if (t.isLiteral(child)) {
+      let type = typeof child.value;
+      let value = child.value;
+      if (type === "string") {
+        value = cleanText(value);
+        if (!value) { return children; }
+      }
 
-      child = toFunctionCall(t, "text", [t.literal(text)]);
+      if (type === "string" || type === "number") {
+        child = toFunctionCall(t, "text", [t.literal(value)]);
+      }
     } else if (wasExpressionContainer && t.isExpression(child)) {
       let renderArbitraryRef = injectRenderArbitrary(t, file);
       let ref = toReference(t, child);

@@ -31,6 +31,8 @@ _renderArbitrary(message);
 
 _renderArbitrary(data.message);
 
+text("text");
+text(123);
 elementOpen("div");
 
 _renderArbitrary(a());

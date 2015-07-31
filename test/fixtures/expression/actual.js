@@ -7,6 +7,8 @@ return (<div>
   {a()}
   {message}
   {data.message}
+  {"text"}
+  {123}
   <div>{a()}</div>
   <div>{message}</div>
   <div>{data.message}</div>

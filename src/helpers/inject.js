@@ -1,61 +1,51 @@
-function nullObject() {
-  return Object.create(null);
+function get(file, hash, name) {
+  return file.get(hash)[name];
 }
 
-// A map to store helper variable references
-// for each file
-const helperReferences = nullObject();
-
-// A map of semaphores for each helper -> file,
-// so that a dependency is not injected multiple
-// times.
-// We use this instead of only helperReferences,
-// so that we may create dependency references
-// and later unshift the actual definition,
-// making dependency definitions before the
-// dependent.
-const helperDefines = nullObject();
-
-function getHelperRef(filename, name) {
-  return helperReferences[name] && helperReferences[name][filename];
+function set(file, hash, name, value) {
+  file.get(hash)[name] = value;
 }
 
-function helperIsDefined(filename, name) {
-  return helperDefines[name] && helperDefines[name][filename];
+function getHelperRef(file, helper) {
+  return get(file, 'incremental-dom-helpers', helper);
 }
 
-function set(hash, filename, name, value) {
-  if (!hash[name]) {
-     hash[name] = nullObject();
-  }
-  hash[name][filename] = value;
+function setHelperRef(file, helper, value) {
+  return set(file, 'incremental-dom-helpers', helper, value);
+}
+
+function helperIsDefined(file, helper) {
+  return get(file, 'incremental-dom-helpers-defs', helper);
+}
+
+function defineHelper(file, helper) {
+  return set(file, 'incremental-dom-helpers-defs', helper, true);
 }
 
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
 // Optionally takes a forced reference identifier, in case a dependent defined
 // the reference for the helper.
-export default function inject(t, file, forcedRef, name, helperAstFn, dependencyInjectors = {}) {
-  let filename = file.opts.filename;
-  if (helperIsDefined(filename, name)) {
-    return getHelperRef(filename, name);
+export default function inject(t, file, forcedRef, helper, helperAstFn, dependencyInjectors = {}) {
+  if (helperIsDefined(file, helper)) {
+    return getHelperRef(file, helper);
   }
 
-  let helperRef = forcedRef || file.scope.generateUidIdentifier(name);
-  set(helperReferences, filename, name, helperRef);
-  set(helperDefines, filename, name, true);
+  let helperRef = forcedRef || file.scope.generateUidIdentifier(helper);
+  setHelperRef(file, helper, helperRef);
+  defineHelper(file, helper);
 
   let dependencyRefs = {};
   let undefinedDeps = [];
   for (let dependency in dependencyInjectors) {
-    let dependencyRef = getHelperRef(filename, dependency);
+    let dependencyRef = getHelperRef(file, dependency);
     if (!dependencyRef) {
       dependencyRef = file.scope.generateUidIdentifier(dependency);
-      set(helperReferences, filename, dependency, dependencyRef);
+      setHelperRef(file, dependency, dependencyRef);
     }
     dependencyRefs[dependency] = dependencyRef;
 
-    if (!helperIsDefined(filename, dependency)) {
+    if (!helperIsDefined(file, dependency)) {
       undefinedDeps.push(dependency);
     }
   }

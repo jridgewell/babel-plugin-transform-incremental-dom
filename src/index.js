@@ -6,8 +6,27 @@ import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import flattenExpressions from "./helpers/flatten-expressions";
 
+function nullObject() {
+  return Object.create(null);
+}
+
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
+    Program: function(program, parent, scope, file) {
+      // A map to store helper variable references
+      // for each file
+      file.setDynamic('incremental-dom-helpers', nullObject);
+
+      // A map of semaphores for each helper, so that
+      // a dependency is not injected multiple times.
+      // We use this instead of only helperReferences,
+      // so that we may create dependency references
+      // and later unshift the actual definition,
+      // placing dependency definitions before the
+      // dependent.
+      file.setDynamic('incremental-dom-helpers-defs', nullObject);
+    },
+
     JSXOpeningElement: {
       exit(node, parent, scope, file) {
         let tag = toReference(t, node.name);

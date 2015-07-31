@@ -2,10 +2,11 @@ import {
   buildChildren,
   extractOpenArguments,
   flattenExpressions,
-  toReference,
-  toFunctionCall,
   attrsToAttrCalls
 } from "./helpers";
+
+import toReference from "./helpers/ast/to-reference";
+import toFunctionCall from "./helpers/ast/to-function-call";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {

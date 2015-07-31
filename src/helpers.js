@@ -1,65 +1,11 @@
-const nonWhitespace = /\S/;
-const newlines = /\r\n?|\n/;
-
 import injectAttr from "./helpers/runtime/attr";
 import injectForOwn from "./helpers/runtime/for-own";
 import injectRenderArbitrary from "./helpers/runtime/render-arbitrary";
 
-// Trims the whitespace off the lines.
-function lineFilter(lines, line, i, { length }) {
-  if (i > 0) { line = line.trimLeft(); }
-  if (i + 1 < length) { line = line.trimRight(); }
-  if (line) { lines.push(line); }
+import toStatement from "./helpers/ast/to-statement";
+import toFunctionCall from "./helpers/ast/to-function-call";
 
-  return lines;
-}
-
-// Cleans the whitespace from a text node.
-function cleanText(value) {
-  if (!nonWhitespace.test(value)) {
-    return "";
-  }
-
-  let lines = value.split(newlines);
-  lines = lines.reduce(lineFilter, []);
-
-  return lines.join(" ");
-}
-
-// Helper to transform an expression into an expression statement.
-function toStatement(t, expression) {
-  if (t.isConditionalExpression(expression)) {
-    expression = t.toIfStatement(expression);
-  } else if (!t.isStatement(expression)) {
-    return t.expressionStatement(expression);
-  }
-  return expression;
-}
-
-// Helper to create a function call statement in AST.
-function toFunctionCallStatement(t, functionName, args) {
-  return t.expressionStatement(toFunctionCall(t, functionName, args));
-}
-
-// Helper to create a function call in AST.
-export function toFunctionCall(t, functionName, args) {
-  return t.callExpression(t.identifier(functionName), args);
-}
-
-// Helper to transform a JSX identifier into a normal reference.
-export function toReference(t, node, identifier) {
-  if (t.isJSXIdentifier(node)) {
-    return identifier ? t.identifier(node.name) : t.literal(node.name);
-  }
-  if (t.isJSXMemberExpression(node)) {
-    return t.memberExpression(
-      toReference(t, node.object, true),
-      toReference(t, node.property, true)
-    );
-  }
-  return node;
-}
-
+import cleanText from "./helpers/clean-text";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
@@ -78,8 +24,8 @@ export function extractOpenArguments(t, attributes) {
       continue;
     }
 
-    let name = attribute.name.name;
-    let attr = t.literal(name);
+    const name = attribute.name.name;
+    const attr = t.literal(name);
     let value = attribute.value;
 
     if (!value) {
@@ -142,9 +88,7 @@ export function buildChildren(t, file, children) {
       }
     } else if (wasExpressionContainer && t.isExpression(child)) {
       let renderArbitraryRef = injectRenderArbitrary(t, file);
-      let ref = toReference(t, child);
-
-      child = t.callExpression(renderArbitraryRef, [ref]);
+      child = t.callExpression(renderArbitraryRef, [child]);
     }
 
     children.push(child);

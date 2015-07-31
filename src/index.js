@@ -1,12 +1,10 @@
-import {
-  buildChildren,
-  extractOpenArguments,
-  flattenExpressions,
-  attrsToAttrCalls
-} from "./helpers";
-
 import toReference from "./helpers/ast/to-reference";
 import toFunctionCall from "./helpers/ast/to-function-call";
+
+import extractOpenArguments from "./helpers/extract-open-arguments";
+import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
+import buildChildren from "./helpers/build-children";
+import flattenExpressions from "./helpers/flatten-expressions";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {

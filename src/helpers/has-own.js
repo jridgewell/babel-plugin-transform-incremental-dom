@@ -1,6 +1,10 @@
 import injectHelper from "../inject-helper";
 
+// Caches a reference to Object#hasOwnProperty.
 function hasOwnAST(t, ref) {
+  /**
+   * var _hasOwn = Object.hasOwnProperty;
+   */
   return t.variableDeclaration("var", [
     t.variableDeclarator(ref, t.memberExpression(
       t.identifier("Object"),

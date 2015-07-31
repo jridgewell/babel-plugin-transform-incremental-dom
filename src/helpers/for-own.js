@@ -1,12 +1,25 @@
 import injectHelper from "../inject-helper";
 import injectHasOwn from "./has-own";
 
+// Loops over all own properties, calling
+// the specified iterator function with
+// value and prop name.
+// Depends on the _hasOwn helper.
 function forOwnAST(t, ref, deps) {
   const hasOwn = deps.hasOwn;
   const object = t.identifier("object");
   const iterator = t.identifier("iterator");
   const prop = t.identifier("prop");
 
+  /**
+   * function _forOwn(object, iterator) {
+   *   for (var prop in object) {
+   *     if (hasOwn.call(object, prop)) {
+   *       iterator(object[prop], prop);
+   *     }
+   *   }
+   * }
+   */
   return t.functionDeclaration(
     ref,
     [object, iterator],

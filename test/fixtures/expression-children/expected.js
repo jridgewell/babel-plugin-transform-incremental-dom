@@ -18,14 +18,29 @@ function _renderArbitrary(child) {
   }
 }
 
-var children = [1, 2, 3, function () {
+var children = [1, 2, 3, (function _jsxWrapper() {
   elementOpen("span");
-  text("4");
+  text("will be wrapped");
   elementClose("span");
-}];
+}, _jsxWrapper.__jsxDOMWrapper = true, _jsxWrapper)];
+
+var declarator = (function () {
+  elementOpen("div");
+  text("will be wrapped");
+  elementClose("div");
+}, declarator.__jsxDOMWrapper = true, declarator);
+
+var assignment;
+assignment = (function () {
+  elementOpen("div");
+  text("will be wrapped");
+  elementClose("div");
+}, assignment.__jsxDOMWrapper = true, assignment);
 
 elementOpen("div");
 
 _renderArbitrary(children);
+
+_renderArbitrary((elementOpen("span"), text("won't be wrapped"), elementClose("span")));
 
 return elementClose("div");

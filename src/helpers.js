@@ -135,11 +135,10 @@ export function buildChildren(t, file, children) {
       if (!text) { return children; }
 
       child = toFunctionCall(t, "text", [t.literal(text)]);
-    } else if (t.isArrayExpression(child)) {
-      child = t.sequenceExpression(buildChildren(t, file, child.elements));
     } else if (wasExpressionContainer && t.isExpression(child)) {
       let renderArbitraryRef = injectRenderArbitrary(t, file);
       let ref = toReference(t, child);
+
       child = t.callExpression(renderArbitraryRef, [ref]);
     }
 

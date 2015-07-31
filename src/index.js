@@ -100,12 +100,32 @@ export default function ({ Plugin, types: t }) {
           return elements;
         }
 
-        if (this.inType('AssignmentExpression', 'VariableDeclaration')) {
-          return t.functionExpression(
-            null,
+        if (this.inType('AssignmentExpression', 'VariableDeclarator')) {
+          let ref, id;
+          if (t.isAssignmentExpression(parent)) {
+            ref = parent.left;
+          } else if (t.isVariableDeclarator(parent)) {
+            ref = parent.id;
+          } else {
+            id = ref = scope.generateUidIdentifier("jsxWrapper");
+          }
+          let closure = t.functionExpression(
+            id,
             [],
             t.blockStatement(flattenExpressions(t, elements))
           );
+          return t.sequenceExpression([
+            closure,
+            t.AssignmentExpression(
+              '=',
+              t.memberExpression(
+                ref,
+                t.identifier('__jsxDOMWrapper')
+              ),
+              t.literal(true)
+            ),
+            ref
+          ]);
         }
 
         // Values are useless if they aren't assigned.
@@ -113,9 +133,6 @@ export default function ({ Plugin, types: t }) {
         //   var a = 1;
         //   <div /> // Useless JSX node
         // ```
-        console.log('**************');
-        console.log('removing node!');
-        console.log('**************');
         this.parentPath.dangerouslyRemove();
       }
     }

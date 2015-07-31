@@ -18,32 +18,14 @@ function _renderArbitrary(child) {
   }
 }
 
-elementOpen("div");
-
-_renderArbitrary(queries.forEach(function (query) {
-  elementOpen("div", query.id, ["key", query.id]);
-  return elementClose("div");
-}));
-
-_renderArbitrary(a());
-
-_renderArbitrary(message);
-
-_renderArbitrary(data.message);
+var children = [1, 2, 3, function () {
+  elementOpen("span");
+  text("4");
+  elementClose("span");
+}];
 
 elementOpen("div");
 
-_renderArbitrary(a());
+_renderArbitrary(children);
 
-elementClose("div");
-elementOpen("div");
-
-_renderArbitrary(message);
-
-elementClose("div");
-elementOpen("div");
-
-_renderArbitrary(data.message);
-
-elementClose("div");
 return elementClose("div");

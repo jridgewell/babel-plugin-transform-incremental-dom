@@ -100,7 +100,7 @@ export default function ({ Plugin, types: t }) {
           return elements;
         }
 
-        if (t.isAssignmentExpression(this.parentPath)) {
+        if (this.inType('AssignmentExpression', 'VariableDeclaration')) {
           return t.functionExpression(
             null,
             [],

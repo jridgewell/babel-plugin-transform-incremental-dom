@@ -1,16 +1,26 @@
+function _attr(value, name) {
+  attr(name, value);
+}
+
+var _hasOwn = Object.hasOwnProperty;
+
+function _forOwn(object, iterator) {
+  for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+}
+
 elementOpenStart("div", "test", ["class", "test", "key", "test"]);
 attr("id", id);
 
-for (var _attr in props) attr(_attr, props[_attr]);
+_forOwn(props, _attr);
 
 attr("data-expanded", expanded);
 
-for (var _attr2 in props.attrs) attr(_attr2, props.attrs[_attr2]);
+_forOwn(props.attrs, _attr);
 
 elementOpenEnd("div");
 elementOpenStart("div");
 
-for (var _attr3 in props) attr(_attr3, props[_attr3]);
+_forOwn(props, _attr);
 
 elementOpenEnd("div");
 elementClose("div");

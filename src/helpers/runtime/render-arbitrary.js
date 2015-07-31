@@ -7,14 +7,14 @@ import toFunctionCallStatement from "../ast/to-function-call-statement";
 function isTextual(t, type, value) {
   return t.binaryExpression(
     "||",
-    t.binaryExpression("===", type, t.literal('number')),
+    t.binaryExpression("===", type, t.literal("number")),
     t.binaryExpression(
       "||",
-      t.binaryExpression("===", type, t.literal('string')),
+      t.binaryExpression("===", type, t.literal("string")),
       t.binaryExpression(
         "&&",
         value,
-        t.binaryExpression("instanceof", value, t.identifier('String'))
+        t.binaryExpression("instanceof", value, t.identifier("String"))
       )
     )
   );
@@ -37,8 +37,8 @@ function isDOMWrapper(t, type, value) {
 function isArray(t, value) {
   return t.callExpression(
     t.memberExpression(
-      t.identifier('Array'),
-      t.identifier('isArray')
+      t.identifier("Array"),
+      t.identifier("isArray")
     ),
     [value]
   );
@@ -62,7 +62,7 @@ function renderArbitraryAST(t, ref, deps) {
   /**
    * function _renderArbitrary(child) {
    *   var type = typeof child;
-   *   if (type === 'number' || (type === string || child && child instanceof String)) {
+   *   if (type === "number" || (type === string || child && child instanceof String)) {
    *     text(child);
    *   } else if (type === "function" && child.__jsxDOMWrapper) {
    *     child();

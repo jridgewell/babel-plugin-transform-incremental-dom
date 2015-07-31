@@ -10,18 +10,12 @@ function nullObject() {
   return Object.create(null);
 }
 
-function log(node) {
-  node = node.__clone();
-  node._paths = null;
-  console.log(node);
-}
-
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
     Program: function(program, parent, scope, file) {
       // A map to store helper variable references
       // for each file
-      file.setDynamic('incremental-dom-helpers', nullObject);
+      file.setDynamic("incremental-dom-helpers", nullObject);
 
       // A map of semaphores for each helper, so that
       // a dependency is not injected multiple times.
@@ -30,7 +24,7 @@ export default function ({ Plugin, types: t }) {
       // and later unshift the actual definition,
       // placing dependency definitions before the
       // dependent.
-      file.setDynamic('incremental-dom-helpers-defs', nullObject);
+      file.setDynamic("incremental-dom-helpers-defs", nullObject);
     },
 
     JSXOpeningElement: {
@@ -114,22 +108,27 @@ export default function ({ Plugin, types: t }) {
         if (t.isReturnStatement(parent)) {
           // Turn all sequence expressions into function statements.
 
-          var state = { highestJSX: true };
-          var visitor = {
-            JSXElement(node, parent, scope, state) {
-              state.highestJSX = false;
+          let highestJSX = true;
+          const visitor = {
+            JSXElement() {
+              highestJSX = false;
               this.stop();
             }
+          };
+
+          if (!this.inType("JSXExpressionContainer")) {
+            let path = this;
+            do {
+              path = path.getFunctionParent();
+              if (path.isFunction()) {
+                path.parentPath.traverse(visitor);
+              } else {
+                path = null;
+              }
+            } while (path && highestJSX);
           }
 
-          var parentFn = this.parentPath.findParent((path) => {
-            return path.isFunction() || path.isProgram()
-          });
-          if (parentFn.isFunction()) {
-            parentFn.parentPath.traverse(visitor, state);
-          }
-
-          if (this.inType('JSXExpressionContainer') || state.highestJSX) {
+          if (highestJSX) {
             elements = flattenExpressions(t, elements);
             let element = elements.pop();
             elements.push(t.returnStatement(element.expression));
@@ -138,11 +137,11 @@ export default function ({ Plugin, types: t }) {
           }
         }
 
-        if (this.inType('JSXExpressionContainer')) {
+        if (this.inType("JSXExpressionContainer")) {
           return elements;
         }
 
-        if (this.inType('AssignmentExpression', 'VariableDeclarator')) {
+        if (this.inType("AssignmentExpression", "VariableDeclarator")) {
           let ref, id;
           if (t.isAssignmentExpression(parent)) {
             ref = parent.left;
@@ -159,10 +158,10 @@ export default function ({ Plugin, types: t }) {
           return t.sequenceExpression([
             closure,
             t.AssignmentExpression(
-              '=',
+              "=",
               t.memberExpression(
                 ref,
-                t.identifier('__jsxDOMWrapper')
+                t.identifier("__jsxDOMWrapper")
               ),
               t.literal(true)
             ),

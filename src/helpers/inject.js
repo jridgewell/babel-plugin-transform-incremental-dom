@@ -7,19 +7,19 @@ function set(file, hash, name, value) {
 }
 
 function getHelperRef(file, helper) {
-  return get(file, 'incremental-dom-helpers', helper);
+  return get(file, "incremental-dom-helpers", helper);
 }
 
 function setHelperRef(file, helper, value) {
-  return set(file, 'incremental-dom-helpers', helper, value);
+  return set(file, "incremental-dom-helpers", helper, value);
 }
 
 function helperIsDefined(file, helper) {
-  return get(file, 'incremental-dom-helpers-defs', helper);
+  return get(file, "incremental-dom-helpers-defs", helper);
 }
 
 function defineHelper(file, helper) {
-  return set(file, 'incremental-dom-helpers-defs', helper, true);
+  return set(file, "incremental-dom-helpers-defs", helper, true);
 }
 
 // Injects a helper function defined by helperAstFn into the current file at

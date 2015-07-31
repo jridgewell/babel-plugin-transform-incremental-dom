@@ -4,6 +4,12 @@ var map = [1, 2, 3].map(function(i) {
   return <map>{i}</map>;
 });
 
+var map2 = function() {
+  [1, 2, 3].map(function(i) {
+    return <map>{i}</map>;
+  });
+}
+
 <div>Will Be Removed</div>
 
 var declarator = (<div>will be wrapped</div>);

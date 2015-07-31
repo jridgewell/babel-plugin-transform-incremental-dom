@@ -10,7 +10,7 @@ import {
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
     JSXOpeningElement: {
-      exit(node, parent, scope) {
+      exit(node, parent, scope, file) {
         let tag = toReference(t, node.name);
         let args = [tag];
         let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
@@ -34,7 +34,7 @@ export default function ({ Plugin, types: t }) {
         // This allows spreads to be transformed into
         // attr(name, value) calls.
         if (hasSpread) {
-          attrs = attrsToAttrCalls(t, scope, attrs);
+          attrs = attrsToAttrCalls(t, file, attrs);
 
           var expressions = [
             toFunctionCall(t, "elementOpenStart", args),
@@ -73,10 +73,10 @@ export default function ({ Plugin, types: t }) {
     },
 
     JSXElement: {
-      exit(node, parent, scope) {
+      exit(node, parent, scope, file) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        let children = buildChildren(t, scope, node.children);
+        let children = buildChildren(t, file, node.children);
 
         let elements = [node.openingElement, ...children];
         if (node.closingElement) { elements.push(node.closingElement); }

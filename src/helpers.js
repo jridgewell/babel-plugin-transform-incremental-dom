@@ -1,6 +1,11 @@
 const nonWhitespace = /\S/;
 const newlines = /\r\n?|\n/;
 
+import injectAttr from "./helpers/attr";
+import injectHasOwn from "./helpers/has-own";
+import injectForOwn from "./helpers/for-own";
+import injectRenderArbitrary from "./helpers/render-arbitrary";
+
 // Trims the whitespace off the lines.
 function lineFilter(lines, line, i, { length }) {
   if (i > 0) { line = line.trimLeft(); }
@@ -35,69 +40,6 @@ function toStatement(t, expression) {
 // Helper to create a function call statement in AST.
 function toFunctionCallStatement(t, functionName, args) {
   return t.expressionStatement(toFunctionCall(t, functionName, args));
-}
-
-// Helper to determine if a value is a string in AST.
-function isTextual(t, value) {
-  let type = t.unaryExpression('typeof', value);
-  return t.binaryExpression(
-    "||",
-    t.binaryExpression("===", type, t.literal('number')),
-    t.binaryExpression(
-      "||",
-      t.binaryExpression("===", type, t.literal('string')),
-      t.binaryExpression(
-        "&&",
-        value,
-        t.binaryExpression("instanceof", value, t.identifier('String'))
-      )
-    )
-  );
-}
-
-function isDOMWrapper(t, value) {
-  var type = t.unaryExpression("typeof", value);
-  return t.binaryExpression(
-    "&&",
-    t.binaryExpression("===", type, t.literal("function")),
-    t.memberExpression(
-      value,
-      t.identifier("__jsxDOMWrapper")
-    )
-  );
-}
-
-// Helper function to render an arbitrary identifier.
-// For now, limited to just strings, though this will
-// be expanded.
-function renderArbitrary(t, child, renderArbitraryRef) {
-  let ref = toReference(t, child);
-  return t.callExpression(renderArbitraryRef, [ref]);
-}
-
-function injectRenderArbitrary(t, scope) {
-  let id = scope.generateUidIdentifier("renderArbitrary");
-  let child = t.identifier('child');
-
-  scope.push({
-    id: id,
-    init: t.functionExpression(
-      null,
-      [child],
-      t.blockStatement([
-        t.IfStatement(
-          isTextual(t, child),
-          toFunctionCallStatement(t, "text", [child]),
-          t.ifStatement(
-            isDOMWrapper(t, child),
-            toStatement(t, t.callExpression(child, []))
-          )
-        )
-      ])
-    )
-  });
-
-  return id;
 }
 
 // Helper to create a function call in AST.
@@ -165,19 +107,12 @@ export function extractOpenArguments(t, attributes) {
 }
 
 // Transforms an attribute array into sequential attr calls.
-export function attrsToAttrCalls(t, scope, attrs) {
+export function attrsToAttrCalls(t, file, attrs) {
   return attrs.map((attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
-      let iterator = scope.generateUidIdentifier("attr");
-
-      return t.forInStatement(
-        t.variableDeclaration("var", [iterator]),
-        attr.argument,
-        toFunctionCallStatement(t, "attr", [
-          iterator,
-          t.memberExpression(attr.argument, iterator, true)
-        ])
-      );
+      const forOwn = injectForOwn(t, file);
+      const forOwnAttr = injectAttr(t, file);
+      return t.callExpression(forOwn, [attr.argument, forOwnAttr]);
     }
 
     return toFunctionCall(t, "attr", attr);
@@ -186,9 +121,7 @@ export function attrsToAttrCalls(t, scope, attrs) {
 
 // Filters out empty children, and transform JSX expressions
 // into normal expressions.
-export function buildChildren(t, scope, children) {
-  let renderArbitraryRef;
-
+export function buildChildren(t, file, children) {
   return children.reduce((children, child) => {
     const wasExpressionContainer = t.isJSXExpressionContainer(child);
     if (wasExpressionContainer) {
@@ -203,12 +136,11 @@ export function buildChildren(t, scope, children) {
 
       child = toFunctionCall(t, "text", [t.literal(text)]);
     } else if (t.isArrayExpression(child)) {
-      child = t.sequenceExpression(buildChildren(t, scope, child.elements));
+      child = t.sequenceExpression(buildChildren(t, file, child.elements));
     } else if (wasExpressionContainer && t.isExpression(child)) {
-      if (!renderArbitraryRef) {
-        renderArbitraryRef = injectRenderArbitrary(t, scope);
-      }
-      child = renderArbitrary(t, child, renderArbitraryRef);
+      let renderArbitraryRef = injectRenderArbitrary(t, file);
+      let ref = toReference(t, child);
+      child = t.callExpression(renderArbitraryRef, [ref]);
     }
 
     children.push(child);

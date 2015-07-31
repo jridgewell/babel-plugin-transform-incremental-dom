@@ -19,9 +19,9 @@ function _renderArbitrary(child) {
 }
 
 var children = [1, 2, 3, (function _jsxWrapper() {
-  elementOpen("span");
+  elementOpen("array");
   text("will be wrapped");
-  elementClose("span");
+  elementClose("array");
 }, _jsxWrapper.__jsxDOMWrapper = true, _jsxWrapper)];
 
 var declarator = (function () {
@@ -37,10 +37,10 @@ assignment = (function () {
   elementClose("div");
 }, assignment.__jsxDOMWrapper = true, assignment);
 
-elementOpen("div");
+elementOpen("fin");
 
 _renderArbitrary(children);
 
 _renderArbitrary((elementOpen("span"), text("won't be wrapped"), elementClose("span")));
 
-return elementClose("div");
+return elementClose("fin");

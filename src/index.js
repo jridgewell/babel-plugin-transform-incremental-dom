@@ -10,6 +10,12 @@ function nullObject() {
   return Object.create(null);
 }
 
+function log(node) {
+  node = node.__clone();
+  node._paths = null;
+  console.log(node);
+}
+
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
     Program: function(program, parent, scope, file) {
@@ -107,11 +113,29 @@ export default function ({ Plugin, types: t }) {
 
         if (t.isReturnStatement(parent)) {
           // Turn all sequence expressions into function statements.
-          elements = flattenExpressions(t, elements);
-          let element = elements.pop();
-          elements.push(t.returnStatement(element.expression));
-          this.parentPath.replaceWithMultiple(elements);
-          return;
+
+          var state = { highestJSX: true };
+          var visitor = {
+            JSXElement(node, parent, scope, state) {
+              state.highestJSX = false;
+              this.stop();
+            }
+          }
+
+          var parentFn = this.parentPath.findParent((path) => {
+            return path.isFunction() || path.isProgram()
+          });
+          if (parentFn.isFunction()) {
+            parentFn.parentPath.traverse(visitor, state);
+          }
+
+          if (this.inType('JSXExpressionContainer') || state.highestJSX) {
+            elements = flattenExpressions(t, elements);
+            let element = elements.pop();
+            elements.push(t.returnStatement(element.expression));
+            this.parentPath.replaceWithMultiple(elements);
+            return;
+          }
         }
 
         if (this.inType('JSXExpressionContainer')) {

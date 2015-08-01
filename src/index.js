@@ -10,6 +10,15 @@ function nullObject() {
   return Object.create(null);
 }
 
+const jsxVisitor = {
+  JSXElement(node, parent, scope, state) {
+    if (node !== state.current) {
+      state.highestJSX = false;
+      this.stop();
+    }
+  }
+};
+
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
     Program: function(program, parent, scope, file) {
@@ -99,49 +108,58 @@ export default function ({ Plugin, types: t }) {
         let elements = [node.openingElement, ...children];
         if (node.closingElement) { elements.push(node.closingElement); }
 
+        // If we're inside a JSX node, flattening expressions
+        // may force us into an unwanted function scope.
         if (t.isJSX(parent)) {
-          // If we're inside a JSX node, flattening expressions
-          // may force us into an unwanted function scope.
           return elements;
         }
 
-        if (t.isReturnStatement(parent)) {
-          // Turn all sequence expressions into function statements.
+        const inJSXExpressionContainer = this.inType("JSXExpressionContainer");
+        const inReturnStatement = t.isReturnStatement(parent);
 
-          let highestJSX = true;
-          const visitor = {
-            JSXElement() {
-              highestJSX = false;
-              this.stop();
+        if (inJSXExpressionContainer && !inReturnStatement) {
+          return elements;
+        }
+
+        elements = flattenExpressions(t, elements);
+
+        // Determine if there are JSXElement in higher scopes.
+        let state = { highestJSX: true, current: node };
+
+        // If we are somewhere inside a JSXExpressionContainer,
+        // no need to worry about wrapping the children, since JSXElement
+        // containing this container will be wrapped if needed.
+        if (!inJSXExpressionContainer) {
+          let path = this;
+          while (state.highestJSX && (path = path.getFunctionParent())) {
+            if (path.isFunction()) {
+              path.parentPath.traverse(jsxVisitor, state);
+            } else {
+              path.traverse(jsxVisitor, state);
             }
-          };
-
-          if (!this.inType("JSXExpressionContainer")) {
-            let path = this;
-            do {
-              path = path.getFunctionParent();
-              if (path.isFunction()) {
-                path.parentPath.traverse(visitor);
-              } else {
-                path = null;
-              }
-            } while (path && highestJSX);
-          }
-
-          if (highestJSX) {
-            elements = flattenExpressions(t, elements);
-            let element = elements.pop();
-            elements.push(t.returnStatement(element.expression));
-            this.parentPath.replaceWithMultiple(elements);
-            return;
           }
         }
 
-        if (this.inType("JSXExpressionContainer")) {
-          return elements;
+        // If we are in the highest scoped JSXElement, we can
+        // safely assume that DOM manipulations are intentional.
+        if (state.highestJSX) {
+          const element = elements.pop();
+          elements.push(t.returnStatement(element.expression));
+          this.parentPath.replaceWithMultiple(elements);
+          return;
         }
 
-        if (this.inType("AssignmentExpression", "VariableDeclarator")) {
+        let assigned = false;
+        this.findParent(function(path) {
+          if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
+            assigned = true;
+            return true;
+          } else if (path.isFunction() || path.isProgram()) {
+            return true;
+          }
+        });
+
+        if (inReturnStatement || assigned) {
           let ref, id;
           if (t.isAssignmentExpression(parent)) {
             ref = parent.left;
@@ -150,21 +168,12 @@ export default function ({ Plugin, types: t }) {
           } else {
             id = ref = scope.generateUidIdentifier("jsxWrapper");
           }
-          let closure = t.functionExpression(
-            id,
-            [],
-            t.blockStatement(flattenExpressions(t, elements))
-          );
+          let closure = t.functionExpression(id, [], t.blockStatement(elements));
+          let jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
+
           return t.sequenceExpression([
             closure,
-            t.AssignmentExpression(
-              "=",
-              t.memberExpression(
-                ref,
-                t.identifier("__jsxDOMWrapper")
-              ),
-              t.literal(true)
-            ),
+            t.AssignmentExpression("=", jsxProp, t.literal(true)),
             ref
           ]);
         }
@@ -174,7 +183,7 @@ export default function ({ Plugin, types: t }) {
         //   var a = 1;
         //   <div /> // Useless JSX node
         // ```
-        this.parentPath.dangerouslyRemove();
+        this.dangerouslyRemove();
       }
     }
   }});

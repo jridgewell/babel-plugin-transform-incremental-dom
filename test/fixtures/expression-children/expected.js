@@ -24,6 +24,30 @@ var children = [1, 2, 3, (function _jsxWrapper() {
   elementClose("array");
 }, _jsxWrapper.__jsxDOMWrapper = true, _jsxWrapper)];
 
+var map = [1, 2, 3].map(function (i) {
+  return (function _jsxWrapper2() {
+    elementOpen("map");
+
+    _renderArbitrary(i);
+
+    elementClose("map");
+  }, _jsxWrapper2.__jsxDOMWrapper = true, _jsxWrapper2);
+});
+
+var map2 = function map2() {
+  [1, 2, 3].map(function (i) {
+    return (function _jsxWrapper3() {
+      elementOpen("map2");
+
+      _renderArbitrary(i);
+
+      elementClose("map2");
+    }, _jsxWrapper3.__jsxDOMWrapper = true, _jsxWrapper3);
+  });
+};
+
+var each = [1, 2, 3].forEach(function (i) {});
+
 var declarator = (function () {
   elementOpen("div");
   text("will be wrapped");

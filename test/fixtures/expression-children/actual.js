@@ -6,9 +6,14 @@ var map = [1, 2, 3].map(function(i) {
 
 var map2 = function() {
   [1, 2, 3].map(function(i) {
-    return <map>{i}</map>;
+    return <map2>{i}</map2>;
   });
 }
+
+var each = [1, 2, 3].forEach(function(i) {
+  <each>{i}</each>;
+});
+
 
 <div>Will Be Removed</div>
 

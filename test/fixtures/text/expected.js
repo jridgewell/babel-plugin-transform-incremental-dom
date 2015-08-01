@@ -1,4 +1,4 @@
-var _hasOwn = Object.hasOwnProperty;
+var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
   for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);

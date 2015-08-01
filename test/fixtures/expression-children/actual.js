@@ -22,7 +22,12 @@ var declarator = (<div>will be wrapped</div>);
 var assignment;
 assignment = (<div>will be wrapped</div>);
 
+var i = 1;
+var one = <span>{i++}</span>;
+var two = <span>{i++}</span>;
+
 return <fin>
   {children}
   {<span>won't be wrapped</span>}
+  <div>{one}<br />{two}<br />{two}</div>
 </fin>;

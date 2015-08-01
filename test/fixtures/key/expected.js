@@ -1,8 +1,12 @@
+var _key, _props$key;
+
 elementOpen("div");
 elementOpen("div", "1", ["key", "1"]);
 elementClose("div");
-elementOpen("div", key, ["key", key]);
+_key = key;
+elementOpen("div", _key, ["key", _key]);
 elementClose("div");
-elementOpen("div", props.key, ["key", props.key]);
+_props$key = props.key;
+elementOpen("div", _props$key, ["key", _props$key]);
 elementClose("div");
 return elementClose("div");

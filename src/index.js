@@ -45,8 +45,9 @@ export default function ({ Plugin, types: t }) {
           key,
           statics,
           attrs,
+          attributeDeclarators,
           hasSpread
-        } = extractOpenArguments(t, node.attributes);
+        } = extractOpenArguments(t, scope, node.attributes);
 
         // Only push arguments if they're needed
         if (key || statics) {
@@ -63,7 +64,7 @@ export default function ({ Plugin, types: t }) {
         if (hasSpread) {
           attrs = attrsToAttrCalls(t, file, attrs);
 
-          var expressions = [
+          let expressions = [
             toFunctionCall(t, "elementOpenStart", args),
             ...attrs,
             toFunctionCall(t, "elementOpenEnd", [tag])
@@ -72,7 +73,9 @@ export default function ({ Plugin, types: t }) {
             expressions.push(toFunctionCall(t, "elementClose", [tag]));
           }
 
-          return t.sequenceExpression(expressions);
+          const open = t.sequenceExpression(expressions);
+          open._jsxAttributeDeclarators = attributeDeclarators;
+          return open;
         } else if (attrs) {
 
           // Only push key and statics if they have not
@@ -89,7 +92,9 @@ export default function ({ Plugin, types: t }) {
           }
         }
 
-        return toFunctionCall(t, elementFunction, args);
+        const open = toFunctionCall(t, elementFunction, args);
+        open._jsxAttributeDeclarators = attributeDeclarators;
+        return open;
       }
     },
 
@@ -103,10 +108,21 @@ export default function ({ Plugin, types: t }) {
       exit(node, parent, scope, file) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        let children = buildChildren(t, file, node.children);
+        let openingElement = node.openingElement;
+        let closingElement = node.closingElement;
+        let attributeDeclarators = openingElement._jsxAttributeDeclarators;
+        let {
+          children,
+          childrenDeclarations
+        } = buildChildren(t, scope, file, node.children);
 
-        let elements = [node.openingElement, ...children];
-        if (node.closingElement) { elements.push(node.closingElement); }
+        let elements = [
+          ...attributeDeclarators,
+          openingElement,
+          ...childrenDeclarations,
+          ...children
+        ];
+        if (closingElement) { elements.push(closingElement); }
 
         // If we're inside a JSX node, flattening expressions
         // may force us into an unwanted function scope.
@@ -160,15 +176,14 @@ export default function ({ Plugin, types: t }) {
         });
 
         if (inReturnStatement || assigned) {
-          let ref, id;
+          let ref;
           if (t.isAssignmentExpression(parent)) {
             ref = parent.left;
           } else if (t.isVariableDeclarator(parent)) {
             ref = parent.id;
-          } else {
-            id = ref = scope.generateUidIdentifier("jsxWrapper");
           }
-          let closure = t.functionExpression(id, [], t.blockStatement(elements));
+          ref = scope.generateUidIdentifierBasedOnNode(ref);
+          let closure = t.functionExpression(ref, [], t.blockStatement(elements));
           let jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
 
           return t.sequenceExpression([

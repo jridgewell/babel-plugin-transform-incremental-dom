@@ -1,3 +1,5 @@
+var _one2, _two2, _two3;
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
@@ -18,53 +20,93 @@ function _renderArbitrary(child) {
   }
 }
 
-var children = [1, 2, 3, (function _jsxWrapper() {
+var children = [1, 2, 3, (function _ref() {
   elementOpen("array");
   text("will be wrapped");
   elementClose("array");
-}, _jsxWrapper.__jsxDOMWrapper = true, _jsxWrapper)];
+}, _ref.__jsxDOMWrapper = true, _ref)];
 
 var map = [1, 2, 3].map(function (i) {
-  return (function _jsxWrapper2() {
+  return (function _ref2() {
     elementOpen("map");
+    var _i = i;
 
-    _renderArbitrary(i);
+    _renderArbitrary(_i);
 
     elementClose("map");
-  }, _jsxWrapper2.__jsxDOMWrapper = true, _jsxWrapper2);
+  }, _ref2.__jsxDOMWrapper = true, _ref2);
 });
 
 var map2 = function map2() {
   [1, 2, 3].map(function (i) {
-    return (function _jsxWrapper3() {
+    return (function _ref3() {
       elementOpen("map2");
+      var _i2 = i;
 
-      _renderArbitrary(i);
+      _renderArbitrary(_i2);
 
       elementClose("map2");
-    }, _jsxWrapper3.__jsxDOMWrapper = true, _jsxWrapper3);
+    }, _ref3.__jsxDOMWrapper = true, _ref3);
   });
 };
 
 var each = [1, 2, 3].forEach(function (i) {});
 
-var declarator = (function () {
+var declarator = (function _declarator() {
   elementOpen("div");
   text("will be wrapped");
   elementClose("div");
-}, declarator.__jsxDOMWrapper = true, declarator);
+}, _declarator.__jsxDOMWrapper = true, _declarator);
 
 var assignment;
-assignment = (function () {
+assignment = (function _assignment() {
   elementOpen("div");
   text("will be wrapped");
   elementClose("div");
-}, assignment.__jsxDOMWrapper = true, assignment);
+}, _assignment.__jsxDOMWrapper = true, _assignment);
+
+var i = 1;
+var _ref4 = i++;
+var one = (function _one() {
+  elementOpen("span");
+
+  _renderArbitrary(_ref4);
+
+  elementClose("span");
+}, _one.__jsxDOMWrapper = true, _one);
+
+var _ref5 = i++;
+var two = (function _two() {
+  elementOpen("span");
+
+  _renderArbitrary(_ref5);
+
+  elementClose("span");
+}, _two.__jsxDOMWrapper = true, _two);
 
 elementOpen("fin");
+var _children = children;
 
-_renderArbitrary(children);
+_renderArbitrary(_children);
 
-_renderArbitrary((elementOpen("span"), text("won't be wrapped"), elementClose("span")));
+var _ref6 = (elementOpen("span"), text("won't be wrapped"), elementClose("span"));
 
+_renderArbitrary(_ref6);
+
+elementOpen("div");
+_one = one;
+
+_renderArbitrary(_one);
+
+elementVoid("br");
+_two = two;
+
+_renderArbitrary(_two2);
+
+elementVoid("br");
+_two3 = two;
+
+_renderArbitrary(_two3);
+
+elementClose("div");
 return elementClose("fin");

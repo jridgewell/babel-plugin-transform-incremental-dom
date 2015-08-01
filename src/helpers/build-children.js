@@ -4,10 +4,11 @@ import injectRenderArbitrary from "./runtime/render-arbitrary";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, file, children) {
+export default function buildChildren(t, scope, file, children) {
   let renderArbitraryRef;
+  let childrenDeclarations = [];
 
-  return children.reduce((children, child) => {
+  children = children.reduce((children, child) => {
     const wasExpressionContainer = t.isJSXExpressionContainer(child);
     if (wasExpressionContainer) {
       child = child.expression;
@@ -28,10 +29,18 @@ export default function buildChildren(t, file, children) {
       }
     } else if (wasExpressionContainer && t.isExpression(child)) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
-      child = toFunctionCall(t, renderArbitraryRef, [child]);
+      const ref = scope.generateUidIdentifierBasedOnNode(child);
+      childrenDeclarations.push(t.variableDeclarator(ref, child));
+      child = toFunctionCall(t, renderArbitraryRef, [ref]);
     }
 
     children.push(child);
     return children;
   }, []);
+
+  if (childrenDeclarations.length) {
+    childrenDeclarations = [t.variableDeclaration("var", childrenDeclarations)];
+  }
+
+  return { children, childrenDeclarations };
 }

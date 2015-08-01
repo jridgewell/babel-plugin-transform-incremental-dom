@@ -4,10 +4,11 @@ import toReference from "./ast/to-reference";
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, attributes) {
+export default function extractOpenArguments(t, scope, attributes) {
   let key = null;
   let statics = [];
   let attrs = [];
+  let attributeDeclarators = [];
   let hasSpread = false;
 
   for (let attribute of attributes) {
@@ -21,10 +22,15 @@ export default function extractOpenArguments(t, attributes) {
     const name = attr.value;
     let value = attribute.value;
 
-    if (!value) {
-      value = t.literal(true);
-    } else if (t.isJSXExpressionContainer(value)) {
+    if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
+      if (!t.isLiteral(value)) {
+        const ref = scope.generateUidIdentifierBasedOnNode(value);
+        attributeDeclarators.push(t.variableDeclarator(ref, value));
+        value = ref;
+      }
+    } else if (!value) {
+      value = t.literal(true);
     }
 
     if (name === "key") {
@@ -40,7 +46,10 @@ export default function extractOpenArguments(t, attributes) {
 
   if (!statics.length) { statics = null; }
   if (!attrs.length) { attrs = null; }
+  if (attributeDeclarators.length) {
+    attributeDeclarators = [t.variableDeclaration("var", attributeDeclarators)];
+  }
 
-  return { key, statics, attrs, hasSpread };
+  return { key, statics, attrs, attributeDeclarators, hasSpread };
 }
 

@@ -48,6 +48,13 @@ var mapNested2 = [1, 2, 3].map(function(i) {
   return (<outer2>{<inner2>{i}</inner2>}</outer2>);
 });
 
+var mapNested3 = [1, 2, 3].map(function(i) {
+  return (<outer3><inner3 attr={i}></inner3></outer3>);
+});
+
+var mapNested4 = [1, 2, 3].map(function(i) {
+  return (<outer4>{<inner4 attr={<span attr={i}>{i}</span>}></inner4>}</outer4>);
+});
 
 return <fin>
   {children}

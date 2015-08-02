@@ -1,5 +1,3 @@
-var _ref3, _ref5;
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
@@ -20,6 +18,9 @@ function _renderArbitrary(child) {
   }
 }
 
+var _ref3 = i++,
+    _ref5 = i++;
+
 elementOpen("root");
 elementOpen("div", null, ["class", "my-class"]);
 elementClose("div");
@@ -35,11 +36,11 @@ elementOpen("div", null, null, "prop", x ? (function _ref() {
   return elementVoid("span");
 }, _ref2.__jsxDOMWrapper = true, _ref2));
 elementClose("div");
-elementOpen("div", null, null, "prop", (_ref3 = i++, function _ref4() {
+elementOpen("div", null, null, "prop", (function _ref4() {
   return elementVoid("span", null, null, "attr", _ref3);
 }, _ref4.__jsxDOMWrapper = true, _ref4));
 elementClose("div");
-elementOpen("div", null, null, "prop", (_ref5 = i++, function _ref6() {
+elementOpen("div", null, null, "prop", (function _ref6() {
   elementOpen("span");
 
   _renderArbitrary(_ref5);

@@ -128,12 +128,70 @@ var two = (function _two() {
   return elementClose("two");
 }, _two.__jsxDOMWrapper = true, _two);
 
+var mapNested = [1, 2, 3].map(function (i) {
+  var _i6 = i;
+
+  return (function _ref10() {
+    elementOpen("outer");
+    elementOpen("inner");
+
+    _renderArbitrary(_i6);
+
+    elementClose("inner");
+    return elementClose("outer");
+  }, _ref10.__jsxDOMWrapper = true, _ref10);
+});
+
+var mapNested2 = [1, 2, 3].map(function (i) {
+  var _i7 = i;
+
+  return (function _ref11() {
+    elementOpen("outer2");
+    elementOpen("inner2");
+
+    _renderArbitrary(_i7);
+
+    elementClose("inner2");
+    return elementClose("outer2");
+  }, _ref11.__jsxDOMWrapper = true, _ref11);
+});
+
+var mapNested3 = [1, 2, 3].map(function (i) {
+  var _i8 = i;
+
+  return (function _ref12() {
+    elementOpen("outer3");
+    elementOpen("inner3", null, null, "attr", _i8);
+    elementClose("inner3");
+    return elementClose("outer3");
+  }, _ref12.__jsxDOMWrapper = true, _ref12);
+});
+
+var mapNested4 = [1, 2, 3].map(function (i) {
+  var _i9 = i,
+      _i10 = i;
+
+  return (function _ref14() {
+    elementOpen("outer4");
+    elementOpen("inner4", null, null, "attr", (function _ref13() {
+      elementOpen("span", null, null, "attr", _i9);
+
+      _renderArbitrary(_i10);
+
+      return elementClose("span");
+    }, _ref13.__jsxDOMWrapper = true, _ref13));
+    elementClose("inner4");
+    return elementClose("outer4");
+  }, _ref14.__jsxDOMWrapper = true, _ref14);
+});
+
 elementOpen("fin");
 
 _renderArbitrary(children);
 
-_renderArbitrary((elementOpen("span"), text("won't be wrapped"), elementClose("span")));
-
+elementOpen("span");
+text("won't be wrapped");
+elementClose("span");
 elementOpen("div");
 
 _renderArbitrary(one);

@@ -39,74 +39,6 @@ export default function ({ Plugin, types: t }) {
       file.setDynamic("incremental-dom-helpers-defs", nullObject);
     },
 
-    JSXOpeningElement: {
-      exit(node, parent, scope, file) {
-        let tag = toReference(t, node.name);
-        let args = [tag];
-        let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
-        let parentPath = this.parentPath;
-        let eager = parentPath.getData("needsWrapper") || parentPath.getData("containerNeedsWrapper");
-        let {
-          key,
-          statics,
-          attrs,
-          attributeDeclarators,
-          hasSpread
-        } = extractOpenArguments(t, scope, node.attributes, eager);
-
-        // Only push arguments if they're needed
-        if (key || statics) {
-          args.push(key || t.literal(null));
-        }
-        if (statics) {
-          args.push(t.arrayExpression(statics));
-        }
-
-        parentPath.getData("eagerDeclarators").push(...attributeDeclarators);
-
-        // If there is a spread element, we need to use
-        // the elementOpenStart/elementOpenEnd syntax.
-        // This allows spreads to be transformed into
-        // attr(name, value) calls.
-        if (hasSpread) {
-          attrs = attrsToAttrCalls(t, file, attrs);
-
-          let expressions = [
-            toFunctionCall(t, "elementOpenStart", args),
-            ...attrs,
-            toFunctionCall(t, "elementOpenEnd", [tag])
-          ];
-          if (node.selfClosing) {
-            expressions.push(toFunctionCall(t, "elementClose", [tag]));
-          }
-
-          return t.sequenceExpression(expressions);
-        } else if (attrs) {
-
-          // Only push key and statics if they have not
-          // already been pushed.
-          if (!statics) {
-            if (!key) {
-              args.push(t.literal(null));
-            }
-            args.push(t.literal(null));
-          }
-
-          for (let [name, value] of attrs) {
-            args.push(name, value);
-          }
-        }
-
-        return toFunctionCall(t, elementFunction, args);
-      }
-    },
-
-    JSXClosingElement: {
-      exit(node) {
-        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
-      }
-    },
-
     JSXElement: {
       enter(node) {
         const inReturnStatement = this.parentPath.isReturnStatement();
@@ -268,6 +200,74 @@ export default function ({ Plugin, types: t }) {
           this.parentPath.replaceWithMultiple(elements);
           return;
         }
+      }
+    },
+
+    JSXOpeningElement: {
+      exit(node, parent, scope, file) {
+        let tag = toReference(t, node.name);
+        let args = [tag];
+        let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
+        let parentPath = this.parentPath;
+        let eager = parentPath.getData("needsWrapper") || parentPath.getData("containerNeedsWrapper");
+        let {
+          key,
+          statics,
+          attrs,
+          attributeDeclarators,
+          hasSpread
+        } = extractOpenArguments(t, scope, node.attributes, eager);
+
+        // Only push arguments if they're needed
+        if (key || statics) {
+          args.push(key || t.literal(null));
+        }
+        if (statics) {
+          args.push(t.arrayExpression(statics));
+        }
+
+        parentPath.getData("eagerDeclarators").push(...attributeDeclarators);
+
+        // If there is a spread element, we need to use
+        // the elementOpenStart/elementOpenEnd syntax.
+        // This allows spreads to be transformed into
+        // attr(name, value) calls.
+        if (hasSpread) {
+          attrs = attrsToAttrCalls(t, file, attrs);
+
+          let expressions = [
+            toFunctionCall(t, "elementOpenStart", args),
+            ...attrs,
+            toFunctionCall(t, "elementOpenEnd", [tag])
+          ];
+          if (node.selfClosing) {
+            expressions.push(toFunctionCall(t, "elementClose", [tag]));
+          }
+
+          return t.sequenceExpression(expressions);
+        } else if (attrs) {
+
+          // Only push key and statics if they have not
+          // already been pushed.
+          if (!statics) {
+            if (!key) {
+              args.push(t.literal(null));
+            }
+            args.push(t.literal(null));
+          }
+
+          for (let [name, value] of attrs) {
+            args.push(name, value);
+          }
+        }
+
+        return toFunctionCall(t, elementFunction, args);
+      }
+    },
+
+    JSXClosingElement: {
+      exit(node) {
+        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
       }
     }
   }});

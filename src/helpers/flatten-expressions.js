@@ -2,14 +2,13 @@ import toStatement from "./ast/to-statement";
 
 // Helper to flatten out sequence expressions into a top level
 // expression statements.
-export default function flattenExpressions(t, expressions) {
+export default function flattenExpressions(t, expressions, nodes = []) {
   return expressions.reduce((nodes, node) => {
     if (t.isSequenceExpression(node)) {
-      let expressions = flattenExpressions(t, node.expressions);
-      nodes.push(...expressions);
+      flattenExpressions(t, node.expressions, nodes);
     } else {
       nodes.push(toStatement(t, node));
     }
     return nodes;
-  }, []);
+  }, nodes);
 }

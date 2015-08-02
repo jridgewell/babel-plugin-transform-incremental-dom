@@ -27,13 +27,13 @@ var children = [1, 2, 3, (function _ref() {
 var items = [];
 for (var i = 0; i < 10; i++) {
   items.push((function (_i) {
-    (function _ref2() {
+    function _ref2() {
       elementOpen("div");
 
       _renderArbitrary(_i);
 
       return elementClose("div");
-    });
+    }
 
     _ref2.__jsxDOMWrapper = true;
     return _ref2;
@@ -42,13 +42,13 @@ for (var i = 0; i < 10; i++) {
 
 for (var i = 0; i < 10; i++) {
   items[i] = (function (_i2) {
-    (function _items$i() {
+    function _items$i() {
       elementOpen("div");
 
       _renderArbitrary(_i2);
 
       return elementClose("div");
-    });
+    }
 
     _items$i.__jsxDOMWrapper = true;
     return _items$i;

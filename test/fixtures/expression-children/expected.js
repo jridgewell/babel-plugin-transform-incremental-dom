@@ -26,37 +26,54 @@ var children = [1, 2, 3, (function _ref() {
 
 var items = [];
 for (var i = 0; i < 10; i++) {
-  // TODO all 9s
-  var _i = i;
+  items.push((function (_i) {
+    (function _ref2() {
+      elementOpen("div");
 
-  items.push((function _ref2() {
-    elementOpen("div");
+      _renderArbitrary(_i);
 
-    _renderArbitrary(_i);
+      return elementClose("div");
+    });
 
-    return elementClose("div");
-  }, _ref2.__jsxDOMWrapper = true, _ref2));
+    _ref2.__jsxDOMWrapper = true;
+    return _ref2;
+  })(i));
+}
+
+for (var i = 0; i < 10; i++) {
+  items[i] = (function (_i2) {
+    (function _items$i() {
+      elementOpen("div");
+
+      _renderArbitrary(_i2);
+
+      return elementClose("div");
+    });
+
+    _items$i.__jsxDOMWrapper = true;
+    return _items$i;
+  })(i);
 }
 
 var map = [1, 2, 3].map(function (i) {
-  var _i2 = i;
+  var _i3 = i;
 
   return (function _ref3() {
     elementOpen("map");
 
-    _renderArbitrary(_i2);
+    _renderArbitrary(_i3);
 
     return elementClose("map");
   }, _ref3.__jsxDOMWrapper = true, _ref3);
 });
 
 var map2 = [1, 2, 3].map(function (i) {
-  var _i3 = i;
+  var _i4 = i;
 
   var el = (function _el() {
     elementOpen("map2");
 
-    _renderArbitrary(_i3);
+    _renderArbitrary(_i4);
 
     return elementClose("map2");
   }, _el.__jsxDOMWrapper = true, _el);
@@ -65,12 +82,12 @@ var map2 = [1, 2, 3].map(function (i) {
 
 var map3 = function map3() {
   [1, 2, 3].map(function (i) {
-    var _i4 = i;
+    var _i5 = i;
 
     return (function _ref4() {
       elementOpen("map3");
 
-      _renderArbitrary(_i4);
+      _renderArbitrary(_i5);
 
       return elementClose("map3");
     }, _ref4.__jsxDOMWrapper = true, _ref4);
@@ -129,13 +146,13 @@ var two = (function _two() {
 }, _two.__jsxDOMWrapper = true, _two);
 
 var mapNested = [1, 2, 3].map(function (i) {
-  var _i6 = i;
+  var _i7 = i;
 
   return (function _ref10() {
     elementOpen("outer");
     elementOpen("inner");
 
-    _renderArbitrary(_i6);
+    _renderArbitrary(_i7);
 
     elementClose("inner");
     return elementClose("outer");
@@ -143,13 +160,13 @@ var mapNested = [1, 2, 3].map(function (i) {
 });
 
 var mapNested2 = [1, 2, 3].map(function (i) {
-  var _i7 = i;
+  var _i8 = i;
 
   return (function _ref11() {
     elementOpen("outer2");
     elementOpen("inner2");
 
-    _renderArbitrary(_i7);
+    _renderArbitrary(_i8);
 
     elementClose("inner2");
     return elementClose("outer2");
@@ -157,26 +174,26 @@ var mapNested2 = [1, 2, 3].map(function (i) {
 });
 
 var mapNested3 = [1, 2, 3].map(function (i) {
-  var _i8 = i;
+  var _i9 = i;
 
   return (function _ref12() {
     elementOpen("outer3");
-    elementOpen("inner3", null, null, "attr", _i8);
+    elementOpen("inner3", null, null, "attr", _i9);
     elementClose("inner3");
     return elementClose("outer3");
   }, _ref12.__jsxDOMWrapper = true, _ref12);
 });
 
 var mapNested4 = [1, 2, 3].map(function (i) {
-  var _i9 = i,
-      _i10 = i;
+  var _i10 = i,
+      _i11 = i;
 
   return (function _ref14() {
     elementOpen("outer4");
     elementOpen("inner4", null, null, "attr", (function _ref13() {
-      elementOpen("span", null, null, "attr", _i9);
+      elementOpen("span", null, null, "attr", _i10);
 
-      _renderArbitrary(_i10);
+      _renderArbitrary(_i11);
 
       return elementClose("span");
     }, _ref13.__jsxDOMWrapper = true, _ref13));

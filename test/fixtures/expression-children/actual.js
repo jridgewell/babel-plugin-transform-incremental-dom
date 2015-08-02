@@ -5,6 +5,10 @@ for (var i = 0; i < 10; i++) {
   items.push(<div>{i}</div>);
 }
 
+for (var i = 0; i < 10; i++) {
+  items[i] = <div>{i}</div>;
+}
+
 var map = [1, 2, 3].map(function(i) {
   return <map>{i}</map>;
 });

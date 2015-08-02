@@ -6,6 +6,8 @@ import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import flattenExpressions from "./helpers/flatten-expressions";
 import filterEagerDeclarators from "./helpers/filter-eager-declarators";
+import statementsWithReturnLast from "./helpers/statements-with-return-last";
+import partitionDeclarators from "./helpers/partition-declarators";
 
 function nullObject() {
   return Object.create(null);
@@ -43,6 +45,7 @@ export default function ({ Plugin, types: t }) {
       enter(node) {
         const inReturnStatement = this.parentPath.isReturnStatement();
         const inCallExpression = this.parentPath.isCallExpression();
+        let inLoop = false;
         let inAttribute = false;
         let inExpressionContainer = false;
         let inAssignment = false;
@@ -66,11 +69,14 @@ export default function ({ Plugin, types: t }) {
             inAssignment = true;
           } else if (path.isArrayExpression() || path.isObjectExpression()) {
             inCollection = true;
+          } else if (path.isLoop()) {
+            inLoop = true;
           }
         });
 
         let needsWrapper = inAttribute || inCollection;
 
+        this.setData("inLoop", inLoop);
         this.setData("inAttribute", inAttribute);
         this.setData("inAssignment", inAssignment);
         this.setData("inCallExpression", inCallExpression);
@@ -122,6 +128,7 @@ export default function ({ Plugin, types: t }) {
         const children = buildChildren(t, scope, file, node.children, eager);
         const containingJSXElement = this.getData("containingJSXElement");
         const needsWrapper = this.getData("needsWrapper");
+        const inLoop = this.getData("inLoop");
         const inAttribute = this.getData("inAttribute");
         const inAssignment = this.getData("inAssignment");
         const inCallExpression = this.getData("inCallExpression");
@@ -162,7 +169,7 @@ export default function ({ Plugin, types: t }) {
           elements = filterEagerDeclarators(t, elements, eagerDeclarators);
         }
 
-        if (eagerDeclarators.length && !inExpressionContainer) {
+        if (eagerDeclarators.length && !inExpressionContainer && !(needsWrapper && inLoop)) {
           let declaration = t.variableDeclaration("var", eagerDeclarators);
           if (inAssignment) {
             this.parentPath.parentPath.insertBefore(declaration);
@@ -171,11 +178,7 @@ export default function ({ Plugin, types: t }) {
           }
         }
 
-        const lastIndex = elements.length - 1;
-        const last = elements[lastIndex];
-        if (!t.isReturnStatement(last)) {
-          elements[lastIndex] = t.returnStatement(last.expression);
-        }
+        elements = statementsWithReturnLast(t, elements);
 
         if (needsWrapper) {
           let ref;
@@ -186,16 +189,32 @@ export default function ({ Plugin, types: t }) {
           }
           ref = scope.generateUidIdentifierBasedOnNode(ref);
 
-          const closure = t.functionExpression(ref, [], t.blockStatement(elements));
+          const wrapper = t.functionExpression(ref, [], t.blockStatement(elements));
           const jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
-
-          let sequence = t.sequenceExpression([
-            closure,
+          let element;
+          elements = [
+            wrapper,
             t.AssignmentExpression("=", jsxProp, t.literal(true)),
             ref
-          ]);
-          sequence._wasJSX = true;
-          return sequence;
+          ];
+
+          if (inLoop && eagerDeclarators.length) {
+            let paramsAndArgs = partitionDeclarators(eagerDeclarators);
+            element = toFunctionCall(t, t.functionExpression(
+              null,
+              paramsAndArgs.params,
+              t.blockStatement(statementsWithReturnLast(
+                t,
+                flattenExpressions(t, elements)
+              ))
+            ), paramsAndArgs.args);
+
+          } else {
+            element = t.sequenceExpression(elements);
+          }
+
+          element._wasJSX = true;
+          return element;
         } else {
           this.parentPath.replaceWithMultiple(elements);
           return;

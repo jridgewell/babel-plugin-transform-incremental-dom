@@ -8,14 +8,12 @@ function _forOwn(object, iterator) {
   for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
 }
 
-var _id = id,
-    _expanded = expanded;
 elementOpenStart("div", "test", ["class", "test", "key", "test"]);
-attr("id", _id);
+attr("id", id);
 
 _forOwn(props, _attr);
 
-attr("data-expanded", _expanded);
+attr("data-expanded", expanded);
 
 _forOwn(props.attrs, _attr);
 

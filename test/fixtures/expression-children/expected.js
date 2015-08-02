@@ -1,5 +1,3 @@
-var _ref7, _ref8, _one2, _two2, _two3;
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
@@ -23,45 +21,59 @@ function _renderArbitrary(child) {
 var children = [1, 2, 3, (function _ref() {
   elementOpen("array");
   text("will be wrapped");
-  elementClose("array");
+  return elementClose("array");
 }, _ref.__jsxDOMWrapper = true, _ref)];
 
-var map = [1, 2, 3].map(function (i) {
-  var _i;
+var items = [];
+for (var i = 0; i < 10; i++) {
+  // TODO all 9s
+  var _i = i;
 
-  return (_i = i, function _ref2() {
-    elementOpen("map");
+  items.push((function _ref2() {
+    elementOpen("div");
 
     _renderArbitrary(_i);
 
-    elementClose("map");
-  }, _ref2.__jsxDOMWrapper = true, _ref2);
-});
+    return elementClose("div");
+  }, _ref2.__jsxDOMWrapper = true, _ref2));
+}
 
-var map2 = [1, 2, 3].map(function (i) {
-  var _i2;
+var map = [1, 2, 3].map(function (i) {
+  var _i2 = i;
 
-  var el = (_i2 = i, function _el() {
-    elementOpen("map2");
+  return (function _ref3() {
+    elementOpen("map");
 
     _renderArbitrary(_i2);
 
-    elementClose("map2");
+    return elementClose("map");
+  }, _ref3.__jsxDOMWrapper = true, _ref3);
+});
+
+var map2 = [1, 2, 3].map(function (i) {
+  var _i3 = i;
+
+  var el = (function _el() {
+    elementOpen("map2");
+
+    _renderArbitrary(_i3);
+
+    return elementClose("map2");
   }, _el.__jsxDOMWrapper = true, _el);
   return el;
 });
 
 var map3 = function map3() {
   [1, 2, 3].map(function (i) {
-    var _i3;
+    var _i4 = i;
 
-    return (_i3 = i, function _ref3() {
+    return (function _ref4() {
       elementOpen("map3");
 
-      _renderArbitrary(_i3);
+      _renderArbitrary(_i4);
 
-      elementClose("map3");
-    }, _ref3.__jsxDOMWrapper = true, _ref3);
+      return elementClose("map3");
+    }, _ref4.__jsxDOMWrapper = true, _ref4);
   });
 };
 
@@ -69,69 +81,70 @@ var each = [1, 2, 3].forEach(function (i) {});
 
 var attr = 0;
 var attrs = [1, 2, 3].map(function () {
-  var _ref4, _ref5;
+  var _ref5 = attr++,
+      _ref6 = attr++;
 
-  return (_ref4 = attr++, _ref5 = attr++, function _ref6() {
-    elementOpen("each", null, null, "attr", _ref4);
+  return (function _ref7() {
+    elementOpen("attrs", null, null, "attr", _ref5);
 
-    _renderArbitrary(_ref5);
+    _renderArbitrary(_ref6);
 
-    elementClose("each");
-  }, _ref6.__jsxDOMWrapper = true, _ref6);
+    return elementClose("attrs");
+  }, _ref7.__jsxDOMWrapper = true, _ref7);
 });
 
 var declarator = (function _declarator() {
   elementOpen("div");
   text("will be wrapped");
-  elementClose("div");
+  return elementClose("div");
 }, _declarator.__jsxDOMWrapper = true, _declarator);
 
 var assignment;
 assignment = (function _assignment() {
   elementOpen("div");
   text("will be wrapped");
-  elementClose("div");
+  return elementClose("div");
 }, _assignment.__jsxDOMWrapper = true, _assignment);
 
 var i = 1;
-var one = (_ref7 = i++, function _one() {
-  elementOpen("span");
 
-  _renderArbitrary(_ref7);
+var _ref8 = i++;
 
-  elementClose("span");
-}, _one.__jsxDOMWrapper = true, _one);
-var two = (_ref8 = i++, function _two() {
-  elementOpen("span");
+var one = (function _one() {
+  elementOpen("one");
 
   _renderArbitrary(_ref8);
 
-  elementClose("span");
+  return elementClose("one");
+}, _one.__jsxDOMWrapper = true, _one);
+
+var _ref9 = i++;
+
+var two = (function _two() {
+  elementOpen("two");
+
+  _renderArbitrary(_ref9);
+
+  return elementClose("two");
 }, _two.__jsxDOMWrapper = true, _two);
 
 elementOpen("fin");
-var _children = children;
 
-_renderArbitrary(_children);
+_renderArbitrary(children);
 
-var _ref9 = (elementOpen("span"), text("won't be wrapped"), elementClose("span"));
-
-_renderArbitrary(_ref9);
+_renderArbitrary((elementOpen("span"), text("won't be wrapped"), elementClose("span")));
 
 elementOpen("div");
-_one2 = one;
 
-_renderArbitrary(_one2);
-
-elementVoid("br");
-_two2 = two;
-
-_renderArbitrary(_two2);
+_renderArbitrary(one);
 
 elementVoid("br");
-_two3 = two;
 
-_renderArbitrary(_two3);
+_renderArbitrary(two);
+
+elementVoid("br");
+
+_renderArbitrary(two);
 
 elementClose("div");
 return elementClose("fin");

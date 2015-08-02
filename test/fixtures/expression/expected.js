@@ -1,5 +1,3 @@
-var _a, _message, _data$message;
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
@@ -22,47 +20,32 @@ function _renderArbitrary(child) {
 
 elementOpen("div");
 
-var _queries$forEach = queries.forEach(function (query) {
-  var _query$id;
+_renderArbitrary(queries.forEach(function (query) {
+  elementOpen("div", query.id, ["key", query.id]);
+  return elementClose("div");
+}));
 
-  return (_query$id = query.id, function _ref() {
-    elementOpen("div", _query$id, ["key", _query$id]);
-    elementClose("div");
-  }, _ref.__jsxDOMWrapper = true, _ref);
-});
+_renderArbitrary(a());
 
-_renderArbitrary(_queries$forEach);
+_renderArbitrary(message);
 
-var _a2 = a();
-
-_renderArbitrary(_a2);
-
-var _message2 = message;
-
-_renderArbitrary(_message2);
-
-var _data$message2 = data.message;
-
-_renderArbitrary(_data$message2);
+_renderArbitrary(data.message);
 
 text("text");
 text(123);
 elementOpen("div");
-_a = a();
 
-_renderArbitrary(_a);
-
-elementClose("div");
-elementOpen("div");
-_message = message;
-
-_renderArbitrary(_message);
+_renderArbitrary(a());
 
 elementClose("div");
 elementOpen("div");
-_data$message = data.message;
 
-_renderArbitrary(_data$message);
+_renderArbitrary(message);
+
+elementClose("div");
+elementOpen("div");
+
+_renderArbitrary(data.message);
 
 elementClose("div");
 return elementClose("div");

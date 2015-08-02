@@ -11,11 +11,16 @@ function nullObject() {
 }
 
 const jsxVisitor = {
+  shouldSkip(path) {
+    return path.node === path.state.node;
+  },
+
   JSXElement(node, parent, scope, state) {
-    if (node !== state.current) {
-      state.highestJSX = false;
-      this.stop();
+    if (state.debug) {
+      debugger;
     }
+    state.otherJSX = true;
+    this.stop();
   }
 };
 
@@ -41,13 +46,14 @@ export default function ({ Plugin, types: t }) {
         let tag = toReference(t, node.name);
         let args = [tag];
         let elementFunction = node.selfClosing ? "elementVoid" : "elementOpen";
+        let eager = this.parentPath.getData("needsWrapper");
         let {
           key,
           statics,
           attrs,
           attributeDeclarators,
           hasSpread
-        } = extractOpenArguments(t, scope, node.attributes);
+        } = extractOpenArguments(t, scope, node.attributes, eager);
 
         // Only push arguments if they're needed
         if (key || statics) {
@@ -56,6 +62,8 @@ export default function ({ Plugin, types: t }) {
         if (statics) {
           args.push(t.arrayExpression(statics));
         }
+
+        this.parentPath.setData("jsxAttributeDeclarators", attributeDeclarators);
 
         // If there is a spread element, we need to use
         // the elementOpenStart/elementOpenEnd syntax.
@@ -73,9 +81,7 @@ export default function ({ Plugin, types: t }) {
             expressions.push(toFunctionCall(t, "elementClose", [tag]));
           }
 
-          const open = t.sequenceExpression(expressions);
-          open._jsxAttributeDeclarators = attributeDeclarators;
-          return open;
+          return t.sequenceExpression(expressions);
         } else if (attrs) {
 
           // Only push key and statics if they have not
@@ -92,9 +98,7 @@ export default function ({ Plugin, types: t }) {
           }
         }
 
-        const open = toFunctionCall(t, elementFunction, args);
-        open._jsxAttributeDeclarators = attributeDeclarators;
-        return open;
+        return toFunctionCall(t, elementFunction, args);
       }
     },
 
@@ -105,16 +109,83 @@ export default function ({ Plugin, types: t }) {
     },
 
     JSXElement: {
+      enter(node) {
+        const inReturnStatement = this.parentPath.isReturnStatement();
+        const inCallExpression = this.parentPath.isCallExpression();
+        let inAttribute = false;
+        let inExpressionContainer = false;
+        let inAssignment = false;
+        let inCollection = false;
+
+        this.findParent((path) => {
+          if (path.isJSXElement() || path.isFunction() || path.isProgram()) {
+            return true;
+          }
+          if (path.isJSXAttribute()) {
+            inAttribute = true;
+          } else if (path.isJSXExpressionContainer()) {
+            inExpressionContainer = true;
+          } else if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
+            inAssignment = true;
+          } else if (path.isArrayExpression() || path.isObjectExpression()) {
+            inCollection = true;
+          }
+        });
+
+        this.setData("inAttribute", inAttribute);
+        this.setData("inAssignment", inAssignment);
+        this.setData("inCallExpression", inCallExpression);
+        this.setData("inReturnStatement", inReturnStatement);
+        this.setData("inExpressionContainer", inExpressionContainer);
+
+        let needsWrapper = inAttribute || inCollection;
+
+
+        // If we are somewhere inside a JSXExpressionContainer,
+        // no need to worry about wrapping the children, since JSXElement
+        // containing this container will be wrapped if needed.
+
+        let debug;
+        // if (node.openingElement.name.name === "two") {
+          // debugger;
+          // debug = true;
+        // }
+
+        let state = { otherJSX: needsWrapper, node: node, debug: debug };
+
+        if (!needsWrapper) {
+          // Determine if there are JSXElement in higher scopes.
+          this.findParent((path) => {
+            if (debug) {
+               console.log(path.node.type);
+               debugger;
+            }
+            if (path.isJSXElement()) {
+              state.node = path.node;
+            } else if (path.isFunction()) {
+              path.parentPath.traverse(jsxVisitor, state);
+            } else if (path.isProgram()) {
+              path.traverse(jsxVisitor, state);
+            }
+
+            return state.otherJSX;
+          });
+          needsWrapper = state.otherJSX;
+        }
+
+        this.setData("needsWrapper", needsWrapper);
+      },
+
       exit(node, parent, scope, file) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
         let openingElement = node.openingElement;
         let closingElement = node.closingElement;
-        let attributeDeclarators = openingElement._jsxAttributeDeclarators;
-        let children = buildChildren(t, scope, file, node.children);
+        let eagerDeclarators = this.getData("jsxAttributeDeclarators");
+        let eager = this.getData("needsWrapper");
+        let children = buildChildren(t, scope, file, node.children, eager);
 
         let elements = [
-          ...attributeDeclarators,
           openingElement,
           ...children
         ];
@@ -126,64 +197,36 @@ export default function ({ Plugin, types: t }) {
           return elements;
         }
 
-        let inAttribute = false, inExpressionContainer = false;
-        this.findParent((path) => {
-          if (path.isJSXElement() || path.isFunction() || path.isProgram()) {
-            return true;
-          }
-          if (path.isJSXAttribute()) {
-            inAttribute = true;
-          }
-          if (path.isJSXExpressionContainer()) {
-            inExpressionContainer = true;
-          }
-        });
+        const needsWrapper = this.getData("needsWrapper");
+        const inAttribute = this.getData("inAttribute");
+        const inAssignment = this.getData("inAssignment");
+        const inCallExpression = this.getData("inCallExpression");
+        const inReturnStatement = this.getData("inReturnStatement");
+        const inExpressionContainer = this.getData("inExpressionContainer");
 
-        const inReturnStatement = t.isReturnStatement(parent);
-
-        if (inExpressionContainer && !inReturnStatement && !inAttribute) {
+        var debug = false;
+        // if (name === 'two') debug = true;
+        if (debug) console.log(`node: ${name}`, `needsWrapper: ${needsWrapper}`);
+        if (inExpressionContainer && !needsWrapper) {
+          if (debug) console.log("Returning undecorated elements");
           return elements;
         }
 
         elements = flattenExpressions(t, elements);
 
-        // Determine if there are JSXElement in higher scopes.
-        let state = { highestJSX: true, current: node };
-
-        // If we are somewhere inside a JSXExpressionContainer,
-        // no need to worry about wrapping the children, since JSXElement
-        // containing this container will be wrapped if needed.
-        if (!inExpressionContainer) {
-          let path = this;
-          while (state.highestJSX && (path = path.getFunctionParent())) {
-            if (path.isFunction()) {
-              path.parentPath.traverse(jsxVisitor, state);
-            } else {
-              path.traverse(jsxVisitor, state);
-            }
-          }
-        }
-
-        // If we are in the highest scoped JSXElement, we can
-        // safely assume that DOM manipulations are intentional.
-        if (state.highestJSX && !inAttribute) {
-          const element = elements.pop();
-          elements.push(t.returnStatement(element.expression));
-          this.parentPath.replaceWithMultiple(elements);
+        // Values are useless if they aren't assigned.
+        // ```
+        //   var a = 1;
+        //   <div /> // Useless JSX node
+        // ```
+        if (!(inReturnStatement || inAssignment || inCallExpression || inExpressionContainer)) {
+          let args = openingElement.arguments;
+          if (debug) console.log("Removing element");
+          this.dangerouslyRemove();
           return;
         }
 
-        let assigned = false;
-        this.findParent(function(path) {
-          if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
-            assigned = true;
-            return true;
-          } else if (path.isFunction() || path.isProgram()) {
-            return true;
-          }
-        });
-
-        if (inReturnStatement || assigned || inAttribute) {
+        if (needsWrapper) {
           let ref;
           if (t.isAssignmentExpression(parent)) {
             ref = parent.left;
@@ -192,17 +235,16 @@ export default function ({ Plugin, types: t }) {
           }
           ref = scope.generateUidIdentifierBasedOnNode(ref);
 
-          let declarations = [];
           elements = elements.filter((element) => {
             if (t.isVariableDeclaration(element)) {
-              declarations.push(element);
+              eagerDeclarators.push(...element.declarations);
               return false;
             } else {
               return true;
             }
           });
 
-          if (inAttribute) {
+          if (!t.isReturnStatement(elements[elements.length - 1])) {
             const element = elements.pop();
             elements.push(t.returnStatement(element.expression));
           }
@@ -210,20 +252,30 @@ export default function ({ Plugin, types: t }) {
           let closure = t.functionExpression(ref, [], t.blockStatement(elements));
           let jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
 
-          return [
-            ...declarations,
+          elements = [
             closure,
             t.AssignmentExpression("=", jsxProp, t.literal(true)),
             ref
           ];
-        }
 
-        // Values are useless if they aren't assigned.
-        // ```
-        //   var a = 1;
-        //   <div /> // Useless JSX node
-        // ```
-        this.dangerouslyRemove();
+          if (eagerDeclarators.length) {
+            let declaration = t.variableDeclaration("var", eagerDeclarators);
+            if (inAssignment) {
+              this.parentPath.parentPath.insertBefore(declaration);
+            } else {
+              this.parentPath.insertBefore(declaration);
+            }
+          }
+
+          if (debug) console.log("Returning wrapped");
+          return elements;
+        } else {
+          const element = elements.pop();
+          elements.push(t.returnStatement(element.expression));
+          this.parentPath.replaceWithMultiple(elements);
+          if (debug) console.log("Returning replaced parent");
+          return;
+        }
       }
     }
   }});

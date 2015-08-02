@@ -1,5 +1,10 @@
 var children = [1, 2, 3, <array>will be wrapped</array>];
 
+var items = [];
+for (var i = 0; i < 10; i++) {
+  items.push(<div>{i}</div>);
+}
+
 var map = [1, 2, 3].map(function(i) {
   return <map>{i}</map>;
 });
@@ -21,7 +26,7 @@ var each = [1, 2, 3].forEach(function(i) {
 
 var attr = 0;
 var attrs = [1, 2, 3].map(function() {
-  return <each attr={attr++}>{attr++}</each>;
+  return <attrs attr={attr++}>{attr++}</attrs>;
 });
 
 <div>Will Be Removed</div>
@@ -32,8 +37,17 @@ var assignment;
 assignment = (<div>will be wrapped</div>);
 
 var i = 1;
-var one = <span>{i++}</span>;
-var two = <span>{i++}</span>;
+var one = <one>{i++}</one>;
+var two = <two>{i++}</two>;
+
+var mapNested = [1, 2, 3].map(function(i) {
+  return (<outer><inner>{i}</inner></outer>);
+});
+
+var mapNested2 = [1, 2, 3].map(function(i) {
+  return (<outer2>{<inner2>{i}</inner2>}</outer2>);
+});
+
 
 return <fin>
   {children}

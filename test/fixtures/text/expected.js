@@ -1,5 +1,3 @@
-var _ref;
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _forOwn(object, iterator) {
@@ -29,9 +27,12 @@ elementOpen("div");
 text("First · Second");
 elementClose("div");
 elementOpen("div");
-_ref = ["First ", (elementOpen("span"), text("·"), elementClose("span")), " Second"];
 
-_renderArbitrary(_ref);
+_renderArbitrary(["First ", (function _ref() {
+  elementOpen("span");
+  text("·");
+  return elementClose("span");
+}, _ref.__jsxDOMWrapper = true, _ref), " Second"]);
 
 elementClose("div");
 return elementClose("div");

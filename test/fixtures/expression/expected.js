@@ -23,19 +23,25 @@ function _renderArbitrary(child) {
 elementOpen("div");
 
 var _queries$forEach = queries.forEach(function (query) {
-  var _query$id = query.id;
-  elementOpen("div", _query$id, ["key", _query$id]);
-  return elementClose("div");
-}),
-    _a2 = a(),
-    _message2 = message,
-    _data$message2 = data.message;
+  var _query$id;
+
+  return (_query$id = query.id, function _ref() {
+    elementOpen("div", _query$id, ["key", _query$id]);
+    elementClose("div");
+  }, _ref.__jsxDOMWrapper = true, _ref);
+});
 
 _renderArbitrary(_queries$forEach);
 
+var _a2 = a();
+
 _renderArbitrary(_a2);
 
+var _message2 = message;
+
 _renderArbitrary(_message2);
+
+var _data$message2 = data.message;
 
 _renderArbitrary(_data$message2);
 

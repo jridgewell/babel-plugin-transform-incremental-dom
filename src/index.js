@@ -111,29 +111,37 @@ export default function ({ Plugin, types: t }) {
         let openingElement = node.openingElement;
         let closingElement = node.closingElement;
         let attributeDeclarators = openingElement._jsxAttributeDeclarators;
-        let {
-          children,
-          childrenDeclarations
-        } = buildChildren(t, scope, file, node.children);
+        let children = buildChildren(t, scope, file, node.children);
 
         let elements = [
           ...attributeDeclarators,
           openingElement,
-          ...childrenDeclarations,
           ...children
         ];
         if (closingElement) { elements.push(closingElement); }
 
         // If we're inside a JSX node, flattening expressions
         // may force us into an unwanted function scope.
-        if (t.isJSX(parent)) {
+        if (t.isJSXElement(parent)) {
           return elements;
         }
 
-        const inJSXExpressionContainer = this.inType("JSXExpressionContainer");
+        let inAttribute = false, inExpressionContainer = false;
+        this.findParent((path) => {
+          if (path.isJSXElement() || path.isFunction() || path.isProgram()) {
+            return true;
+          }
+          if (path.isJSXAttribute()) {
+            inAttribute = true;
+          }
+          if (path.isJSXExpressionContainer()) {
+            inExpressionContainer = true;
+          }
+        });
+
         const inReturnStatement = t.isReturnStatement(parent);
 
-        if (inJSXExpressionContainer && !inReturnStatement) {
+        if (inExpressionContainer && !inReturnStatement && !inAttribute) {
           return elements;
         }
 
@@ -145,7 +153,7 @@ export default function ({ Plugin, types: t }) {
         // If we are somewhere inside a JSXExpressionContainer,
         // no need to worry about wrapping the children, since JSXElement
         // containing this container will be wrapped if needed.
-        if (!inJSXExpressionContainer) {
+        if (!inExpressionContainer) {
           let path = this;
           while (state.highestJSX && (path = path.getFunctionParent())) {
             if (path.isFunction()) {
@@ -158,7 +166,7 @@ export default function ({ Plugin, types: t }) {
 
         // If we are in the highest scoped JSXElement, we can
         // safely assume that DOM manipulations are intentional.
-        if (state.highestJSX) {
+        if (state.highestJSX && !inAttribute) {
           const element = elements.pop();
           elements.push(t.returnStatement(element.expression));
           this.parentPath.replaceWithMultiple(elements);
@@ -175,7 +183,7 @@ export default function ({ Plugin, types: t }) {
           }
         });
 
-        if (inReturnStatement || assigned) {
+        if (inReturnStatement || assigned || inAttribute) {
           let ref;
           if (t.isAssignmentExpression(parent)) {
             ref = parent.left;
@@ -183,14 +191,31 @@ export default function ({ Plugin, types: t }) {
             ref = parent.id;
           }
           ref = scope.generateUidIdentifierBasedOnNode(ref);
+
+          let declarations = [];
+          elements = elements.filter((element) => {
+            if (t.isVariableDeclaration(element)) {
+              declarations.push(element);
+              return false;
+            } else {
+              return true;
+            }
+          });
+
+          if (inAttribute) {
+            const element = elements.pop();
+            elements.push(t.returnStatement(element.expression));
+          }
+
           let closure = t.functionExpression(ref, [], t.blockStatement(elements));
           let jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
 
-          return t.sequenceExpression([
+          return [
+            ...declarations,
             closure,
             t.AssignmentExpression("=", jsxProp, t.literal(true)),
             ref
-          ]);
+          ];
         }
 
         // Values are useless if they aren't assigned.

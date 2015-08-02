@@ -6,9 +6,8 @@ import injectRenderArbitrary from "./runtime/render-arbitrary";
 // into function calls.
 export default function buildChildren(t, scope, file, children) {
   let renderArbitraryRef;
-  let childrenDeclarations = [];
 
-  children = children.reduce((children, child) => {
+  return children.reduce((children, child) => {
     const wasExpressionContainer = t.isJSXExpressionContainer(child);
     if (wasExpressionContainer) {
       child = child.expression;
@@ -30,17 +29,13 @@ export default function buildChildren(t, scope, file, children) {
     } else if (wasExpressionContainer && t.isExpression(child)) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
       const ref = scope.generateUidIdentifierBasedOnNode(child);
-      childrenDeclarations.push(t.variableDeclarator(ref, child));
+      children.push(t.variableDeclaration("var", [
+        t.variableDeclarator(ref, child)
+      ]));
       child = toFunctionCall(t, renderArbitraryRef, [ref]);
     }
 
     children.push(child);
     return children;
   }, []);
-
-  if (childrenDeclarations.length) {
-    childrenDeclarations = [t.variableDeclaration("var", childrenDeclarations)];
-  }
-
-  return { children, childrenDeclarations };
 }

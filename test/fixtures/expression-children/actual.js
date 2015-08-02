@@ -4,9 +4,14 @@ var map = [1, 2, 3].map(function(i) {
   return <map>{i}</map>;
 });
 
-var map2 = function() {
+var map2 = [1, 2, 3].map(function(i) {
+  var el = <map2>{i}</map2>;
+  return el;
+});
+
+var map3 = function() {
   [1, 2, 3].map(function(i) {
-    return <map2>{i}</map2>;
+    return <map3>{i}</map3>;
   });
 }
 
@@ -14,6 +19,10 @@ var each = [1, 2, 3].forEach(function(i) {
   <each>{i}</each>;
 });
 
+var attr = 0;
+var attrs = [1, 2, 3].map(function() {
+  return <each attr={attr++}>{attr++}</each>;
+});
 
 <div>Will Be Removed</div>
 

@@ -60,7 +60,7 @@ export default function ({ Plugin, types: t }) {
           containingJSXElement.getData("containerNeedsWrapper") || containingJSXElement.getData("needsWrapper") :
           false;
 
-        if (!needsWrapper && !containerNeedsWrapper) {
+        if (!needsWrapper && !containingJSXElement) {
           // Determine if there are JSXElements in a higher scope.
           needsWrapper = findOtherJSX(this);
         }

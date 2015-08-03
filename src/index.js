@@ -169,8 +169,8 @@ export default function ({ Plugin, types: t }) {
           elements = filterEagerDeclarators(t, elements, eagerDeclarators);
         }
 
-        if (eagerDeclarators.length && !inExpressionContainer && !(needsWrapper && inLoop)) {
-          let declaration = t.variableDeclaration("var", eagerDeclarators);
+        if (eagerDeclarators.length && !inExpressionContainer) {
+          let declaration = t.variableDeclaration("let", eagerDeclarators);
           if (inAssignment) {
             this.parentPath.parentPath.insertBefore(declaration);
           } else {
@@ -191,30 +191,15 @@ export default function ({ Plugin, types: t }) {
 
           const wrapper = t.functionExpression(ref, [], t.blockStatement(elements));
           const jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
-          let element;
-          elements = [
+
+          let sequence = t.sequenceExpression([
             wrapper,
             t.AssignmentExpression("=", jsxProp, t.literal(true)),
             ref
-          ];
+          ]);
 
-          if (inLoop && eagerDeclarators.length) {
-            let paramsAndArgs = partitionDeclarators(eagerDeclarators);
-            element = toFunctionCall(t, t.functionExpression(
-              null,
-              paramsAndArgs.params,
-              t.blockStatement(statementsWithReturnLast(
-                t,
-                flattenExpressions(t, elements)
-              ))
-            ), paramsAndArgs.args);
-
-          } else {
-            element = t.sequenceExpression(elements);
-          }
-
-          element._wasJSX = true;
-          return element;
+          sequence._wasJSX = true;
+          return sequence;
         } else {
           this.parentPath.replaceWithMultiple(elements);
           return;

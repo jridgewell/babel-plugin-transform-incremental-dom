@@ -30,7 +30,7 @@ export default function buildChildren(t, scope, file, children, eager) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
       if (eager) {
         const ref = scope.generateUidIdentifierBasedOnNode(child);
-        children.push(t.variableDeclaration("var", [
+        children.push(t.variableDeclaration("let", [
           t.variableDeclarator(ref, child)
         ]));
         child = ref;

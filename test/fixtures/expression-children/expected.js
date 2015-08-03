@@ -25,35 +25,6 @@ var children = [1, 2, 3, (function _ref() {
 }, _ref.__jsxDOMWrapper = true, _ref)];
 
 var items = [];
-for (var i = 0; i < 10; i++) {
-  items.push((function (_i) {
-    function _ref2() {
-      elementOpen("div");
-
-      _renderArbitrary(_i);
-
-      return elementClose("div");
-    }
-
-    _ref2.__jsxDOMWrapper = true;
-    return _ref2;
-  })(i));
-}
-
-for (var i = 0; i < 10; i++) {
-  items[i] = (function (_i2) {
-    function _items$i() {
-      elementOpen("div");
-
-      _renderArbitrary(_i2);
-
-      return elementClose("div");
-    }
-
-    _items$i.__jsxDOMWrapper = true;
-    return _items$i;
-  })(i);
-}
 
 var map = [1, 2, 3].map(function (i) {
   var _i3 = i;

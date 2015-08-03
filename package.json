@@ -7,21 +7,11 @@
   "main": "lib/index.js",
   "devDependencies": {
     "babel": "^5.6.0",
-    "babel-eslint": "^4.0.0",
-    "eslint": "^0.24.1",
-    "mocha": "^2.2.5"
+    "babel-eslint": "^4.0.0"
   },
   "scripts": {
-    "build": "babel-plugin build",
-    "push": "babel-plugin publish",
-    "test": "mocha --compilers js:babel/register",
-    "lint": "eslint src"
+    "test": "babel test.js --plugins ./lib"
   },
-  "keywords": [
-    "babel-plugin",
-    "incremental-dom",
-    "jsx"
-  ],
   "babel": {
     "loose": true
   }

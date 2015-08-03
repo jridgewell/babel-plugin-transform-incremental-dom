@@ -1,1 +1,0 @@
-return (<input type="text" />);

@@ -1,14 +1,14 @@
-import toReference from "./helpers/ast/to-reference";
 import toFunctionCall from "./helpers/ast/to-function-call";
+import toReference from "./helpers/ast/to-reference";
 
-import extractOpenArguments from "./helpers/extract-open-arguments";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
-import flattenExpressions from "./helpers/flatten-expressions";
+import extractOpenArguments from "./helpers/extract-open-arguments";
 import filterEagerDeclarators from "./helpers/filter-eager-declarators";
-import statementsWithReturnLast from "./helpers/statements-with-return-last";
-import partitionDeclarators from "./helpers/partition-declarators";
 import findOtherJSX from "./helpers/find-other-jsx";
+import flattenExpressions from "./helpers/flatten-expressions";
+import partitionDeclarators from "./helpers/partition-declarators";
+import statementsWithReturnLast from "./helpers/statements-with-return-last";
 
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
@@ -21,12 +21,11 @@ export default function ({ Plugin, types: t }) {
       enter(node, parent) {
         const inReturnStatement = t.isReturnStatement(parent);
         const inCallExpression = t.isCallExpression(parent);
-        let inAttribute = false;
-        let inExpressionContainer = false;
         let inAssignment = false;
+        let inAttribute = false;
         let inCollection = false;
+        let inExpressionContainer = false;
         let containingJSXElement;
-        let eagerDeclarators = [];
 
         this.findParent((path) => {
           if (path.isJSXElement()) {
@@ -47,12 +46,12 @@ export default function ({ Plugin, types: t }) {
           }
         });
 
-        this.setData("inAttribute", inAttribute);
-        this.setData("inAssignment", inAssignment);
-        this.setData("inCallExpression", inCallExpression);
-        this.setData("inReturnStatement", inReturnStatement);
         this.setData("containingJSXElement", containingJSXElement);
+        this.setData("inAssignment", inAssignment);
+        this.setData("inAttribute", inAttribute);
+        this.setData("inCallExpression", inCallExpression);
         this.setData("inExpressionContainer", inExpressionContainer);
+        this.setData("inReturnStatement", inReturnStatement);
 
 
         let needsWrapper = inAttribute || inCollection;
@@ -65,14 +64,14 @@ export default function ({ Plugin, types: t }) {
           needsWrapper = findOtherJSX(this);
         }
 
-        this.setData("needsWrapper", needsWrapper);
         this.setData("containerNeedsWrapper", containerNeedsWrapper);
+        this.setData("needsWrapper", needsWrapper);
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        if (containingJSXElement) {
-          eagerDeclarators = containingJSXElement.getData("eagerDeclarators");
-        }
+        const eagerDeclarators = (containingJSXElement) ?
+          containingJSXElement.getData("eagerDeclarators") :
+          [];
         this.setData("eagerDeclarators", eagerDeclarators);
       },
 

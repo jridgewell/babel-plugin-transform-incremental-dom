@@ -24,7 +24,6 @@ export default function ({ Plugin, types: t }) {
         let inAssignment = false;
         let inAttribute = false;
         let inCollection = false;
-        let inExpressionContainer = false;
         let containingJSXElement;
 
         this.findParent((path) => {
@@ -37,8 +36,6 @@ export default function ({ Plugin, types: t }) {
           }
           if (path.isJSXAttribute()) {
             inAttribute = true;
-          } else if (path.isJSXExpressionContainer()) {
-            inExpressionContainer = true;
           } else if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
             inAssignment = true;
           } else if (path.isArrayExpression() || path.isObjectExpression()) {
@@ -50,11 +47,10 @@ export default function ({ Plugin, types: t }) {
         this.setData("inAssignment", inAssignment);
         this.setData("inAttribute", inAttribute);
         this.setData("inCallExpression", inCallExpression);
-        this.setData("inExpressionContainer", inExpressionContainer);
         this.setData("inReturnStatement", inReturnStatement);
 
 
-        let needsWrapper = inAttribute || inCollection;
+        let needsWrapper = inAttribute || inAssignment || inCollection;
         let containerNeedsWrapper = containingJSXElement ?
           containingJSXElement.getData("containerNeedsWrapper") || containingJSXElement.getData("needsWrapper") :
           false;
@@ -83,7 +79,6 @@ export default function ({ Plugin, types: t }) {
           inAssignment,
           inAttribute,
           inCallExpression,
-          inExpressionContainer,
           inReturnStatement,
           needsWrapper
         } = this.data;
@@ -112,7 +107,7 @@ export default function ({ Plugin, types: t }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (inExpressionContainer && !needsWrapper) {
+        if (containingJSXElement && !needsWrapper) {
           let sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
@@ -125,7 +120,7 @@ export default function ({ Plugin, types: t }) {
         //   var a = 1;
         //   <div /> // Useless JSX node
         // ```
-        if (!(inReturnStatement || inAssignment || inCallExpression || inExpressionContainer)) {
+        if (!(inReturnStatement || inAssignment || inCallExpression || containingJSXElement)) {
           this.dangerouslyRemove();
           return;
         }
@@ -141,7 +136,7 @@ export default function ({ Plugin, types: t }) {
         }
 
 
-        if (eagerDeclarators.length && !inExpressionContainer) {
+        if (eagerDeclarators.length && !containingJSXElement) {
           // Find the closest statement, and insert our eager declarations
           // before it.
           let parentStatement = this.findParent((path) => {
@@ -220,7 +215,9 @@ export default function ({ Plugin, types: t }) {
           }
 
           return t.sequenceExpression(expressions);
-        } else if (attrs) {
+        }
+
+        if (attrs) {
 
           // Only push key and statics if they have not
           // already been pushed.

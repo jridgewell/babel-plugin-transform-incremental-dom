@@ -47,7 +47,6 @@ export default function ({ Plugin, types: t }) {
       enter(node) {
         const inReturnStatement = this.parentPath.isReturnStatement();
         const inCallExpression = this.parentPath.isCallExpression();
-        let inLoop = false;
         let inAttribute = false;
         let inExpressionContainer = false;
         let inAssignment = false;
@@ -71,14 +70,11 @@ export default function ({ Plugin, types: t }) {
             inAssignment = true;
           } else if (path.isArrayExpression() || path.isObjectExpression()) {
             inCollection = true;
-          } else if (path.isLoop()) {
-            inLoop = true;
           }
         });
 
         let needsWrapper = inAttribute || inCollection;
 
-        this.setData("inLoop", inLoop);
         this.setData("inAttribute", inAttribute);
         this.setData("inAssignment", inAssignment);
         this.setData("inCallExpression", inCallExpression);
@@ -130,7 +126,6 @@ export default function ({ Plugin, types: t }) {
         const children = buildChildren(t, scope, file, node.children, eager);
         const containingJSXElement = this.getData("containingJSXElement");
         const needsWrapper = this.getData("needsWrapper");
-        const inLoop = this.getData("inLoop");
         const inAttribute = this.getData("inAttribute");
         const inAssignment = this.getData("inAssignment");
         const inCallExpression = this.getData("inCallExpression");

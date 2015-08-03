@@ -9,6 +9,8 @@ import filterEagerDeclarators from "./helpers/filter-eager-declarators";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
 import partitionDeclarators from "./helpers/partition-declarators";
 
+import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
+
 function nullObject() {
   return Object.create(null);
 }
@@ -169,52 +171,24 @@ export default function ({ Plugin, types: t }) {
           elements = filterEagerDeclarators(t, elements, eagerDeclarators);
         }
 
-        if (eagerDeclarators.length && !inExpressionContainer && !(needsWrapper && inLoop)) {
-          let declaration = t.variableDeclaration("var", eagerDeclarators);
-          if (inAssignment) {
-            this.parentPath.parentPath.insertBefore(declaration);
-          } else {
-            this.parentPath.insertBefore(declaration);
-          }
+        let parentStatement = this.findParent((path) => {
+          return path.isStatement();
+        });
+
+        if (eagerDeclarators.length && !inExpressionContainer) {
+          let declaration = t.variableDeclaration("let", eagerDeclarators);
+          parentStatement.insertBefore(declaration);
         }
 
         elements = statementsWithReturnLast(t, elements);
 
         if (needsWrapper) {
-          let ref;
-          if (t.isAssignmentExpression(parent)) {
-            ref = parent.left;
-          } else if (t.isVariableDeclarator(parent)) {
-            ref = parent.id;
-          }
-          ref = scope.generateUidIdentifierBasedOnNode(ref);
-
-          const wrapper = t.functionExpression(ref, [], t.blockStatement(elements));
-          const jsxProp = t.memberExpression(ref, t.identifier("__jsxDOMWrapper"));
-          let element;
-          elements = [
-            wrapper,
-            t.AssignmentExpression("=", jsxProp, t.literal(true)),
-            ref
-          ];
-
-          if (inLoop && eagerDeclarators.length) {
-            let paramsAndArgs = partitionDeclarators(eagerDeclarators);
-            element = toFunctionCall(t, t.functionExpression(
-              null,
-              paramsAndArgs.params,
-              t.blockStatement(statementsWithReturnLast(
-                t,
-                flattenExpressions(t, elements)
-              ))
-            ), paramsAndArgs.args);
-
-          } else {
-            element = t.sequenceExpression(elements);
-          }
-
-          element._wasJSX = true;
-          return element;
+          const jsxWrapperRef = injectJSXWrapper(t, file);
+          const wrapper = toFunctionCall(t, jsxWrapperRef, [
+            t.functionExpression(null, [], t.blockStatement(elements))
+          ])
+          wrapper._wasJSX = true;
+          return wrapper;
         } else {
           this.parentPath.replaceWithMultiple(elements);
           return;

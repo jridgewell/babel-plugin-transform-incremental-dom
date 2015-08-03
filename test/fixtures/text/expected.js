@@ -18,6 +18,13 @@ function _renderArbitrary(child) {
   }
 }
 
+var _ref = function _ref() {
+  elementOpen("span");
+  text("·");
+  return elementClose("span");
+};
+
+_ref.__jsxDOMWrapper = true;
 elementOpen("div");
 text("Hello World!");
 elementOpen("div");
@@ -28,11 +35,7 @@ text("First · Second");
 elementClose("div");
 elementOpen("div");
 
-_renderArbitrary(["First ", (function _ref() {
-  elementOpen("span");
-  text("·");
-  return elementClose("span");
-}, _ref.__jsxDOMWrapper = true, _ref), " Second"]);
+_renderArbitrary(["First ", _ref, " Second"]);
 
 elementClose("div");
 return elementClose("div");

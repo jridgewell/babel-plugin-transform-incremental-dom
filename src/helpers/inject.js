@@ -22,6 +22,28 @@ function defineHelper(file, helper) {
   return set(file, "incremental-dom-helpers-defs", helper, true);
 }
 
+function nullObject() {
+  return Object.create(null);
+}
+
+
+// Sets up the needed data maps for injecting runtime helpers.
+export function setupInjector(program, parent, scope, file) {
+  // A map to store helper variable references
+  // for each file
+  file.setDynamic("incremental-dom-helpers", nullObject);
+
+  // A map of semaphores for each helper, so that
+  // a dependency is not injected multiple times.
+  // We use this instead of only helperReferences,
+  // so that we may create dependency references
+  // and later unshift the actual definition,
+  // placing dependency definitions before the
+  // dependent.
+  file.setDynamic("incremental-dom-helpers-defs", nullObject);
+}
+
+
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
 // Optionally takes a forced reference identifier, in case a dependent defined

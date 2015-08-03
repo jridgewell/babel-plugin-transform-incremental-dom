@@ -18,36 +18,13 @@ function _renderArbitrary(child) {
   }
 }
 
-var _ref = function _ref() {
-  return elementVoid("span");
-};
+function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
+}
 
-_ref.__jsxDOMWrapper = true;
-
-var _ref2 = function _ref2() {
-  return elementVoid("span");
-};
-
-_ref2.__jsxDOMWrapper = true;
-
-var _ref4 = function _ref4() {
-  return elementVoid("span", null, null, "attr", _ref3);
-};
-
-_ref4.__jsxDOMWrapper = true;
-
-var _ref6 = function _ref6() {
-  elementOpen("span");
-
-  _renderArbitrary(_ref5);
-
-  return elementClose("span");
-};
-
-_ref6.__jsxDOMWrapper = true;
-
-var _ref3 = i++,
-    _ref5 = i++;
+var _ref = i++,
+    _ref2 = i++;
 
 elementOpen("root");
 elementOpen("div", null, ["class", "my-class"]);
@@ -58,10 +35,22 @@ elementOpen("div", null, null, "class", myClass);
 elementClose("div");
 elementOpen("div", null, null, "class", props.myClass);
 elementClose("div");
-elementOpen("div", null, null, "prop", x ? _ref : _ref2);
+elementOpen("div", null, null, "prop", x ? _jsxWrapper(function () {
+  return elementVoid("span");
+}) : _jsxWrapper(function () {
+  return elementVoid("span");
+}));
 elementClose("div");
-elementOpen("div", null, null, "prop", _ref4);
+elementOpen("div", null, null, "prop", _jsxWrapper(function () {
+  return elementVoid("span", null, null, "attr", _ref);
+}));
 elementClose("div");
-elementOpen("div", null, null, "prop", _ref6);
+elementOpen("div", null, null, "prop", _jsxWrapper(function () {
+  elementOpen("span");
+
+  _renderArbitrary(_ref2);
+
+  return elementClose("span");
+}));
 elementClose("div");
 return elementClose("root");

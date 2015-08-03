@@ -19,11 +19,11 @@ export default function ({ Plugin, types: t }) {
 
     JSXElement: {
       enter(node, parent) {
-        const inReturnStatement = t.isReturnStatement(parent);
-        const inCallExpression = t.isCallExpression(parent);
         let inAssignment = false;
         let inAttribute = false;
+        let inCallExpression = false;
         let inCollection = false;
+        let inReturnStatement = false;
         let containingJSXElement;
 
         this.findParent((path) => {
@@ -40,17 +40,24 @@ export default function ({ Plugin, types: t }) {
             inAssignment = true;
           } else if (path.isArrayExpression() || path.isObjectExpression()) {
             inCollection = true;
+          } else if (path.isReturnStatement()) {
+            inReturnStatement = true;
+          } else if (path.isCallExpression()) {
+            inCallExpression = true;
           }
         });
 
-        this.setData("containingJSXElement", containingJSXElement);
-        this.setData("inAssignment", inAssignment);
-        this.setData("inAttribute", inAttribute);
-        this.setData("inCallExpression", inCallExpression);
-        this.setData("inReturnStatement", inReturnStatement);
+        // Values are useless if they aren't assigned.
+        // ```
+        //   var a = 1;
+        //   <div /> // Useless JSX node
+        // ```
+        if (!(inReturnStatement || inAssignment || inCallExpression || containingJSXElement)) {
+          this.dangerouslyRemove();
+          return;
+        }
 
-
-        let needsWrapper = inAttribute || inAssignment || inCollection;
+        let needsWrapper = inAttribute || inAssignment || inCollection || inCallExpression;
         let containerNeedsWrapper = containingJSXElement ?
           containingJSXElement.getData("containerNeedsWrapper") || containingJSXElement.getData("needsWrapper") :
           false;
@@ -60,15 +67,16 @@ export default function ({ Plugin, types: t }) {
           needsWrapper = findOtherJSX(this);
         }
 
-        this.setData("containerNeedsWrapper", containerNeedsWrapper);
-        this.setData("needsWrapper", needsWrapper);
-
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        const eagerDeclarators = (containingJSXElement) ?
+        let eagerDeclarators = (containingJSXElement) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
+
+        this.setData("containerNeedsWrapper", containerNeedsWrapper);
+        this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
+        this.setData("needsWrapper", needsWrapper);
       },
 
       exit(node, parent, scope, file) {
@@ -76,10 +84,6 @@ export default function ({ Plugin, types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          inAssignment,
-          inAttribute,
-          inCallExpression,
-          inReturnStatement,
           needsWrapper
         } = this.data;
 
@@ -113,16 +117,6 @@ export default function ({ Plugin, types: t }) {
           // renderArbitrary call.
           sequence._wasJSX = true;
           return sequence;
-        }
-
-        // Values are useless if they aren't assigned.
-        // ```
-        //   var a = 1;
-        //   <div /> // Useless JSX node
-        // ```
-        if (!(inReturnStatement || inAssignment || inCallExpression || containingJSXElement)) {
-          this.dangerouslyRemove();
-          return;
         }
 
         // Transform (recursively) any sequence expressions into a series of

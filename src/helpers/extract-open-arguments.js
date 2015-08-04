@@ -5,11 +5,11 @@ import toReference from "./ast/to-reference";
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
 export default function extractOpenArguments(t, scope, attributes, eager) {
+  const attributeDeclarators = [];
+  let attrs = [];
+  let hasSpread = false;
   let key = null;
   let statics = [];
-  let attrs = [];
-  let attributeDeclarators = [];
-  let hasSpread = false;
 
   for (let attribute of attributes) {
     if (t.isJSXSpreadAttribute(attribute)) {
@@ -24,6 +24,7 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
 
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
+
       if (eager && !t.isLiteral(value) && !value._wasJSX) {
         const ref = scope.generateUidIdentifierBasedOnNode(value);
         attributeDeclarators.push(t.variableDeclarator(ref, value));

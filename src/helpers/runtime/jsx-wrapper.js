@@ -1,5 +1,4 @@
 import inject from "../inject";
-import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Loops over all own properties, calling
 // the specified iterator function with

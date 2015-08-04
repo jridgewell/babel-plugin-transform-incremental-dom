@@ -7,7 +7,6 @@ import extractOpenArguments from "./helpers/extract-open-arguments";
 import filterEagerDeclarators from "./helpers/filter-eager-declarators";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
-import partitionDeclarators from "./helpers/partition-declarators";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
 
 import { setupInjector } from "./helpers/inject";
@@ -18,7 +17,7 @@ export default function ({ Plugin, types: t }) {
     Program: setupInjector,
 
     JSXElement: {
-      enter(node, parent) {
+      enter() {
         let inAssignment = false;
         let inAttribute = false;
         let inCallExpression = false;
@@ -57,19 +56,18 @@ export default function ({ Plugin, types: t }) {
           return;
         }
 
-        let needsWrapper = inAttribute || inAssignment || inCollection || inCallExpression;
-        let containerNeedsWrapper = containingJSXElement ?
+        const containerNeedsWrapper = (containingJSXElement) ?
           containingJSXElement.getData("containerNeedsWrapper") || containingJSXElement.getData("needsWrapper") :
           false;
-
-        if (!needsWrapper && !containingJSXElement) {
+        let needsWrapper = inAttribute || inAssignment || inCollection || inCallExpression;
+        if (!containingJSXElement && !needsWrapper) {
           // Determine if there are JSXElements in a higher scope.
           needsWrapper = findOtherJSX(this);
         }
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        let eagerDeclarators = (containingJSXElement) ?
+        const eagerDeclarators = (containingJSXElement) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
 
@@ -112,7 +110,7 @@ export default function ({ Plugin, types: t }) {
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
         if (containingJSXElement && !needsWrapper) {
-          let sequence = t.sequenceExpression(elements);
+          const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
           sequence._wasJSX = true;
@@ -133,11 +131,11 @@ export default function ({ Plugin, types: t }) {
         if (eagerDeclarators.length && !containingJSXElement) {
           // Find the closest statement, and insert our eager declarations
           // before it.
-          let parentStatement = this.findParent((path) => {
+          const parentStatement = this.findParent((path) => {
             return path.isStatement();
           });
-          let declaration = t.variableDeclaration("let", eagerDeclarators);
-          let [path] = parentStatement.insertBefore(declaration);
+          const declaration = t.variableDeclaration("let", eagerDeclarators);
+          const [path] = parentStatement.insertBefore(declaration);
           // Add our eager declarations to the scopes tracked bindings.
           scope.registerBinding("let", path);
         }
@@ -151,7 +149,7 @@ export default function ({ Plugin, types: t }) {
           const jsxWrapperRef = injectJSXWrapper(t, file);
           const wrapper = toFunctionCall(t, jsxWrapperRef, [
             t.functionExpression(null, [], t.blockStatement(elements))
-          ])
+          ]);
           wrapper._wasJSX = true;
           return wrapper;
         }
@@ -165,14 +163,13 @@ export default function ({ Plugin, types: t }) {
     JSXOpeningElement: {
       exit(node, parent, scope, file) {
         const tag = toReference(t, node.name);
-        const args = [tag];
         const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
 
         // Only eagerly evaluate our attributes if we will be wrapping the element.
         const JSXElement = this.parentPath;
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
 
-        let {
+        const {
           key,
           statics,
           attrs,
@@ -185,6 +182,7 @@ export default function ({ Plugin, types: t }) {
         JSXElement.getData("eagerDeclarators").push(...attributeDeclarators);
 
         // Only push arguments if they're needed
+        const args = [tag];
         if (key || statics) {
           args.push(key || t.literal(null));
         }
@@ -197,11 +195,11 @@ export default function ({ Plugin, types: t }) {
         // This allows spreads to be transformed into
         // attr(name, value) calls.
         if (hasSpread) {
-          attrs = attrsToAttrCalls(t, file, attrs);
+          const attrCalls = attrsToAttrCalls(t, file, attrs);
 
-          let expressions = [
+          const expressions = [
             toFunctionCall(t, "elementOpenStart", args),
-            ...attrs,
+            ...attrCalls,
             toFunctionCall(t, "elementOpenEnd", [tag])
           ];
           if (node.selfClosing) {
@@ -212,7 +210,6 @@ export default function ({ Plugin, types: t }) {
         }
 
         if (attrs) {
-
           // Only push key and statics if they have not
           // already been pushed.
           if (!statics) {

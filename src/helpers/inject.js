@@ -53,23 +53,23 @@ export default function inject(t, file, forcedRef, helper, helperAstFn, dependen
     return getHelperRef(file, helper);
   }
 
-  let helperRef = forcedRef || file.scope.generateUidIdentifier(helper);
+  const helperRef = forcedRef || file.scope.generateUidIdentifier(helper);
+  const dependencyRefs = {};
+  const undefinedDeps = [];
+
   setHelperRef(file, helper, helperRef);
   defineHelper(file, helper);
 
-  let dependencyRefs = {};
-  let undefinedDeps = [];
   for (let dependency in dependencyInjectors) {
     let dependencyRef = getHelperRef(file, dependency);
+
     if (!dependencyRef) {
       dependencyRef = file.scope.generateUidIdentifier(dependency);
       setHelperRef(file, dependency, dependencyRef);
-    }
-    dependencyRefs[dependency] = dependencyRef;
-
-    if (!helperIsDefined(file, dependency)) {
       undefinedDeps.push(dependency);
     }
+
+    dependencyRefs[dependency] = dependencyRef;
   }
 
   file.path.unshiftContainer("body", helperAstFn(t, helperRef, dependencyRefs));

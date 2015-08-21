@@ -4,18 +4,22 @@ import toFunctionCall from "./ast/to-function-call";
 
 // Transforms an attribute array into sequential attr calls.
 export default function attrsToAttrCalls(t, file, attrs) {
-  let forOwn, forOwnAttr;
+  const forOwn = injectForOwn(t, file);
+  const forOwnAttr = injectAttr(t, file);
+  let current = [];
 
-  return attrs.map((attr) => {
+  return attrs.reduce((calls, attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
-      if (!forOwn) {
-        forOwn = injectForOwn(t, file);
-        forOwnAttr = injectAttr(t, file);
+      calls.push(toFunctionCall(t, forOwn, [attr.argument, forOwnAttr]));
+    } else {
+      current.push(attr);
+      if (current.length === 2) {
+        calls.push(toFunctionCall(t, "attr", current));
+        current = [];
       }
-      return toFunctionCall(t, forOwn, [attr.argument, forOwnAttr]);
     }
 
-    return toFunctionCall(t, "attr", attr);
-  });
+    return calls;
+  }, []);
 }
 

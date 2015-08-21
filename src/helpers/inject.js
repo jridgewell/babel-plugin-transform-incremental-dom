@@ -74,9 +74,9 @@ export default function inject(t, file, forcedRef, helper, helperAstFn, dependen
 
   file.path.unshiftContainer("body", helperAstFn(t, helperRef, dependencyRefs));
 
-  for (let dependency of undefinedDeps) {
+  undefinedDeps.forEach((dependency) => {
     dependencyInjectors[dependency](t, file, dependencyRefs[dependency]);
-  }
+  });
 
   return helperRef;
 }

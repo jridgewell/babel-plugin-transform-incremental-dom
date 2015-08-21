@@ -11,11 +11,11 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
   let key = null;
   let statics = [];
 
-  for (let attribute of attributes) {
+  attributes.forEach((attribute) => {
     if (t.isJSXSpreadAttribute(attribute)) {
       hasSpread = true;
       attrs.push(attribute);
-      continue;
+      return;
     }
 
     const attr = toReference(t, attribute.name);
@@ -41,9 +41,9 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
     if (name === "key" || t.isLiteral(value)) {
       statics.push(attr, value);
     } else {
-      attrs.push([ attr, value ]);
+      attrs.push(attr, value);
     }
-  }
+  });
 
   if (!statics.length) { statics = null; }
   if (!attrs.length) { attrs = null; }

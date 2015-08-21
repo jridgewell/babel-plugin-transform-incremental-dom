@@ -219,9 +219,7 @@ export default function ({ Plugin, types: t }) {
             args.push(t.literal(null));
           }
 
-          for (let [name, value] of attrs) {
-            args.push(name, value);
-          }
+          args.push(...attrs);
         }
 
         return toFunctionCall(t, elementFunction, args);

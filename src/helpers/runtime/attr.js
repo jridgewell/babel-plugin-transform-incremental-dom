@@ -22,6 +22,6 @@ function attrAST(t, ref) {
   );
 }
 
-export default function injectAttr(t, file, forcedRef = null) {
-  return inject(t, file, forcedRef, "attr", attrAST);
+export default function injectAttr(t, file) {
+  return inject(t, file, "attr", attrAST);
 }

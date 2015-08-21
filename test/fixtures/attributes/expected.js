@@ -1,9 +1,3 @@
-var _hasOwn = Object.prototype.hasOwnProperty;
-
-function _forOwn(object, iterator) {
-  for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-}
-
 function _renderArbitrary(child) {
   var type = typeof child;
 
@@ -17,6 +11,12 @@ function _renderArbitrary(child) {
     _forOwn(child, _renderArbitrary);
   }
 }
+
+function _forOwn(object, iterator) {
+  for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+}
+
+var _hasOwn = Object.prototype.hasOwnProperty;
 
 function _jsxWrapper(func) {
   func.__jsxDOMWrapper = true;

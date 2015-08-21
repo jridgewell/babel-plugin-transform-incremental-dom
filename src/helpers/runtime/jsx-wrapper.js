@@ -27,6 +27,6 @@ function jsxWrapperAST(t, ref) {
   );
 }
 
-export default function injectJSXWrapper(t, file, forcedRef = null) {
-  return inject(t, file, forcedRef, "jsxWrapper", jsxWrapperAST);
+export default function injectJSXWrapper(t, file) {
+  return inject(t, file, "jsxWrapper", jsxWrapperAST);
 }

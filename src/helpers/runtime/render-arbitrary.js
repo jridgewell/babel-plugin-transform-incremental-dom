@@ -108,8 +108,8 @@ function renderArbitraryAST(t, ref, deps) {
   );
 }
 
-export default function injectRenderArbitrary(t, file, forcedRef = null) {
-  return inject(t, file, forcedRef, "renderArbitrary", renderArbitraryAST, {
+export default function injectRenderArbitrary(t, file) {
+  return inject(t, file, "renderArbitrary", renderArbitraryAST, {
     forOwn: injectForOwn
   });
 }

@@ -43,8 +43,8 @@ function forOwnAST(t, ref, deps) {
   );
 }
 
-export default function injectForOwn(t, file, forcedRef = null) {
-  return inject(t, file, forcedRef, "forOwn", forOwnAST, {
+export default function injectForOwn(t, file) {
+  return inject(t, file, "forOwn", forOwnAST, {
     hasOwn: injectHasOwn
   });
 }

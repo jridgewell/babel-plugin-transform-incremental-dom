@@ -27,7 +27,7 @@ export default function buildChildren(t, scope, file, children, eager) {
       if (type === "string" || type === "number") {
         child = toFunctionCall(t, "text", [t.literal(value)]);
       }
-    } else if (wasInExpressionContainer && !child._wasJSX) {
+    } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
 
       if (eager) {

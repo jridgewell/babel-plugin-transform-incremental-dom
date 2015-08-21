@@ -25,7 +25,7 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
 
-      if (eager && !t.isLiteral(value) && !value._wasJSX) {
+      if (eager && !t.isLiteral(value) && !value._iDOMwasJSX) {
         const ref = scope.generateUidIdentifierBasedOnNode(value);
         attributeDeclarators.push(t.variableDeclarator(ref, value));
         value = ref;

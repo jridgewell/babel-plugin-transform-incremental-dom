@@ -113,7 +113,7 @@ export default function ({ Plugin, types: t }) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
-          sequence._wasJSX = true;
+          sequence._iDOMwasJSX = true;
           return sequence;
         }
 
@@ -150,7 +150,7 @@ export default function ({ Plugin, types: t }) {
           const wrapper = toFunctionCall(t, jsxWrapperRef, [
             t.functionExpression(null, [], t.blockStatement(elements))
           ]);
-          wrapper._wasJSX = true;
+          wrapper._iDOMwasJSX = true;
           return wrapper;
         }
 

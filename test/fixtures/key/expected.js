@@ -5,4 +5,4 @@ elementOpen("div", key, ["key", key]);
 elementClose("div");
 elementOpen("div", props.key, ["key", props.key]);
 elementClose("div");
-elementClose("div");
+return elementClose("div");

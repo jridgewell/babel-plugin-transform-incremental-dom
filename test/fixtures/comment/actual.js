@@ -1,5 +1,5 @@
-<div /* inline */ >
+return (<div /* inline */ >
 {/*
   child
 */}
-</div>
+</div>);

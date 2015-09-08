@@ -17,4 +17,4 @@ elementClose("div");
 elementClose("div");
 elementClose("div");
 elementClose("div");
-elementClose("div");
+return elementClose("div");

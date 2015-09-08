@@ -1,2 +1,2 @@
 elementOpen(a.b.div);
-elementClose(a.b.div);
+return elementClose(a.b.div);

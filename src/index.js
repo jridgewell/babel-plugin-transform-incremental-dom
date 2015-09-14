@@ -230,6 +230,10 @@ export default function ({ Plugin, types: t }) {
       exit(node) {
         return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
       }
+    },
+
+    JSXNamespacedName: function() {
+      throw this.errorWithNode("JSX Namespaces aren't supported.");
     }
   }});
 }

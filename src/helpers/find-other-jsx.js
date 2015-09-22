@@ -1,7 +1,14 @@
 const jsxVisitor = {
   shouldSkip(path) {
     // Don't descend into the current JSXElement.
-    return path.node === path.state.node;
+    if (path.node === path.state.node) {
+      return true;
+    }
+
+    // Don't descend into sibling functions.
+    if (path.isFunction()) {
+      return true;
+    }
   },
 
   JSXElement(node, parent, scope, state) {

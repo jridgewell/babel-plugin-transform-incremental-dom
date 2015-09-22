@@ -2,6 +2,18 @@ function fn() {
   return <root />;
 }
 
-function fn2() {
-  return <root2></root2>
+function render() {
+  function fn1() {
+    return <div />;
+  }
+
+  function fn2() {
+    return <div></div>
+  }
+
+  return <root></root>;
+}
+
+function fn3() {
+  return <root />;
 }

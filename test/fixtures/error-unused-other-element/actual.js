@@ -1,0 +1,3 @@
+<div />;
+
+return <div />

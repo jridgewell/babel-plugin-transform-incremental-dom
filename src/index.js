@@ -52,8 +52,7 @@ export default function ({ Plugin, types: t }) {
         //   <div /> // Useless JSX node
         // ```
         if (!(inReturnStatement || inAssignment || inCallExpression || containingJSXElement)) {
-          this.dangerouslyRemove();
-          return;
+          throw this.errorWithNode("Unused JSX Elements aren't supported.");
         }
 
         const containerNeedsWrapper = (containingJSXElement) ?

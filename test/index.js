@@ -14,15 +14,26 @@ describe("turn jsx into incremental-dom", () => {
   fs.readdirSync(fixturesDir).map((caseName) => {
     it(`should ${caseName.split("-").join(" ")}`, () => {
       const fixtureDir = path.join(fixturesDir, caseName);
-      const actual     = babel.transformFileSync(
-        path.join(fixtureDir, "actual.js"), {
-          blacklist: ['strict', 'react'],
-          plugins: [plugin]
-        }
-      ).code;
-      const expected = fs.readFileSync(path.join(fixtureDir, "expected.js")).toString();
+      const expected = trim(fs.readFileSync(path.join(fixtureDir, "expected.js")).toString());
+      let actual;
+      let error;
 
-      assert.equal(trim(actual), trim(expected));
+      try {
+        actual = babel.transformFileSync(
+          path.join(fixtureDir, "actual.js"), {
+            blacklist: ['strict', 'react'],
+            plugins: [plugin]
+          }
+        ).code;
+      } catch (e) {
+        error = e;
+      }
+
+      if (error) {
+        assert(RegExp(`${expected}$`).test(error.message), `Error "${error.message}" did not contain expected text "${expected}"`);
+      } else {
+        assert.equal(trim(actual), expected);
+      }
     });
   });
 });

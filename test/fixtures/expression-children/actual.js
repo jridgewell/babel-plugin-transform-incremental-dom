@@ -24,16 +24,10 @@ var map3 = function() {
   });
 }
 
-var each = [1, 2, 3].forEach(function(i) {
-  <each>{i}</each>;
-});
-
 var attr = 0;
 var attrs = [1, 2, 3].map(function() {
   return <attrs attr={attr++}>{attr++}</attrs>;
 });
-
-<div>Will Be Removed</div>
 
 var declarator = (<div>will be wrapped</div>);
 

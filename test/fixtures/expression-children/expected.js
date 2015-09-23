@@ -102,8 +102,6 @@ var map3 = function map3() {
   });
 };
 
-var each = [1, 2, 3].forEach(function (i) {});
-
 var attr = 0;
 var attrs = [1, 2, 3].map(function () {
   var _ref = attr++,

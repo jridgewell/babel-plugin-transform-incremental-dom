@@ -13,11 +13,16 @@ import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 export default function ({ Plugin, types: t }) {
-  return new Plugin("incremental-dom", { visitor : {
+  function closeElement(node) {
+    const isComponent = this.parentPath.getData("isComponent");
+    return toFunctionCall(t, "elementClose", [toReference(t, node.name, isComponent)]);
+  }
+
+  return new Plugin("incremental-dom", { visitor: {
     Program: setupInjector,
 
     JSXElement: {
-      enter() {
+      enter(node) {
         let inAssignment = false;
         let inAttribute = false;
         let inCallExpression = false;
@@ -55,6 +60,9 @@ export default function ({ Plugin, types: t }) {
           throw this.errorWithNode("Unused JSX Elements aren't supported.");
         }
 
+        const openingElement = node.openingElement;
+        const isComponent = /^[A-Z]/.test(openingElement.name.name);
+
         const containerNeedsWrapper = (containingJSXElement) ?
           containingJSXElement.getData("containerNeedsWrapper") || containingJSXElement.getData("needsWrapper") :
           false;
@@ -70,6 +78,7 @@ export default function ({ Plugin, types: t }) {
           containingJSXElement.getData("eagerDeclarators") :
           [];
 
+        this.setData("isComponent", isComponent);
         this.setData("containerNeedsWrapper", containerNeedsWrapper);
         this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
@@ -161,12 +170,13 @@ export default function ({ Plugin, types: t }) {
 
     JSXOpeningElement: {
       exit(node, parent, scope, file) {
-        const tag = toReference(t, node.name);
-        const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
-
-        // Only eagerly evaluate our attributes if we will be wrapping the element.
         const JSXElement = this.parentPath;
+        const isComponent = JSXElement.getData("isComponent");
+        // Only eagerly evaluate our attributes if we will be wrapping the element.
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
+
+        const tag = toReference(t, node.name, isComponent);
+        const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
 
         const {
           key,
@@ -202,7 +212,7 @@ export default function ({ Plugin, types: t }) {
             toFunctionCall(t, "elementOpenEnd", [tag])
           ];
           if (node.selfClosing) {
-            expressions.push(toFunctionCall(t, "elementClose", [tag]));
+            expressions.push(closeElement.call(this, node));
           }
 
           return t.sequenceExpression(expressions);
@@ -226,9 +236,7 @@ export default function ({ Plugin, types: t }) {
     },
 
     JSXClosingElement: {
-      exit(node) {
-        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
-      }
+      exit: closeElement
     },
 
     JSXNamespacedName: function() {

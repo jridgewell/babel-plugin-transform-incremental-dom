@@ -1,9 +1,6 @@
-let prefix;
+import get from "./get";
 
-export function setPrefix(options) {
-  prefix = (options && 'prefix' in options) ? options.prefix : '';
-};
-
-export default function iDOMMethod(method) {
+export default function iDOMMethod(file, method) {
+  const prefix = get(file, ["opts", "extra", "incremental-dom", "prefix"]) || "";
   return prefix ? `${prefix}.${method}` : method;
-};
+}

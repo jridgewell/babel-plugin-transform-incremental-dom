@@ -1,11 +1,7 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
 import toReference from "./helpers/ast/to-reference";
-import {
-  setPrefix,
-  default as iDOMMethod
-}from "./helpers/idom-method";
+import iDOMMethod from "./helpers/idom-method";
 
-import get from "./helpers/get";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import extractOpenArguments from "./helpers/extract-open-arguments";
@@ -19,11 +15,7 @@ import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
-    Program: function(program, parent, scope, file) {
-      const options = get(file, ['opts', 'extra', 'incremental-dom']);
-      setPrefix(options);
-      setupInjector(program, parent, scope, file);
-    },
+    Program: setupInjector,
 
     JSXElement: {
       enter() {
@@ -206,12 +198,12 @@ export default function ({ Plugin, types: t }) {
           const attrCalls = attrsToAttrCalls(t, file, attrs);
 
           const expressions = [
-            toFunctionCall(t, iDOMMethod("elementOpenStart"), args),
+            toFunctionCall(t, iDOMMethod(file, "elementOpenStart"), args),
             ...attrCalls,
-            toFunctionCall(t, iDOMMethod("elementOpenEnd"), [tag])
+            toFunctionCall(t, iDOMMethod(file, "elementOpenEnd"), [tag])
           ];
           if (node.selfClosing) {
-            expressions.push(toFunctionCall(t, iDOMMethod("elementClose"), [tag]));
+            expressions.push(toFunctionCall(t, iDOMMethod(file, "elementClose"), [tag]));
           }
 
           return t.sequenceExpression(expressions);
@@ -230,13 +222,13 @@ export default function ({ Plugin, types: t }) {
           args.push(...attrs);
         }
 
-        return toFunctionCall(t, iDOMMethod(elementFunction), args);
+        return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
       }
     },
 
     JSXClosingElement: {
-      exit(node) {
-        return toFunctionCall(t, iDOMMethod("elementClose"), [toReference(t, node.name)]);
+      exit(node, parent, scope, file) {
+        return toFunctionCall(t, iDOMMethod(file, "elementClose"), [toReference(t, node.name)]);
       }
     },
 

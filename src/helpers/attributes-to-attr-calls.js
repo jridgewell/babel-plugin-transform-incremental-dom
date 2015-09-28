@@ -15,7 +15,7 @@ export default function attrsToAttrCalls(t, file, attrs) {
     } else {
       current.push(attr);
       if (current.length === 2) {
-        calls.push(toFunctionCall(t, iDOMMethod("attr"), current));
+        calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), current));
         current = [];
       }
     }

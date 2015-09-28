@@ -51,7 +51,7 @@ function isArray(t, value) {
 // It may also be an Array or Object, which will be iterated
 // recursively.
 // Depends on the _forOwn helper.
-function renderArbitraryAST(t, ref, deps) {
+function renderArbitraryAST(t, file, ref, deps) {
   const forOwn = deps.forOwn;
   const child = t.identifier("child");
   const type = t.identifier("type");
@@ -87,7 +87,7 @@ function renderArbitraryAST(t, ref, deps) {
       t.IfStatement(
         isTextual(t, type, child),
         t.blockStatement([
-          toFunctionCallStatement(t, iDOMMethod("text"), [child])
+          toFunctionCallStatement(t, iDOMMethod(file, "text"), [child])
         ]),
         t.ifStatement(
           isDOMWrapper(t, type, child),

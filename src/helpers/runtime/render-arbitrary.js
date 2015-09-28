@@ -1,6 +1,7 @@
 import inject from "../inject";
 import injectForOwn from "./for-own";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
+import iDOMMethod from "../idom-method";
 
 // Isolated AST code to determine if a value is textual
 // (strings and numbers).
@@ -86,7 +87,7 @@ function renderArbitraryAST(t, ref, deps) {
       t.IfStatement(
         isTextual(t, type, child),
         t.blockStatement([
-          toFunctionCallStatement(t, "text", [child])
+          toFunctionCallStatement(t, iDOMMethod("text"), [child])
         ]),
         t.ifStatement(
           isDOMWrapper(t, type, child),

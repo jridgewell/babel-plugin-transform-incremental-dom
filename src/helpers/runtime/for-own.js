@@ -6,7 +6,7 @@ import toFunctionCallStatement from "../ast/to-function-call-statement";
 // the specified iterator function with
 // value and prop name.
 // Depends on the _hasOwn helper.
-function forOwnAST(t, ref, deps) {
+function forOwnAST(t, file, ref, deps) {
   const hasOwn = deps.hasOwn;
   const object = t.identifier("object");
   const iterator = t.identifier("iterator");

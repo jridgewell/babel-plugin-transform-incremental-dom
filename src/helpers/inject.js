@@ -44,7 +44,7 @@ export default function inject(t, file, helper, helperAstFn, dependencyInjectors
     dependencyRefs[dependency] = dependencyRef;
   }
 
-  file.path.unshiftContainer("body", helperAstFn(t, helperRef, dependencyRefs));
+  file.path.unshiftContainer("body", helperAstFn(t, file, helperRef, dependencyRefs));
 
   return helperRef;
 }

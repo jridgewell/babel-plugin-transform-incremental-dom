@@ -1,7 +1,11 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
 import toReference from "./helpers/ast/to-reference";
-import iDOMMethod from "./helpers/idom-method";
+import {
+  setPrefix,
+  default as iDOMMethod
+}from "./helpers/idom-method";
 
+import get from "./helpers/get";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import extractOpenArguments from "./helpers/extract-open-arguments";
@@ -15,7 +19,11 @@ import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
-    Program: setupInjector,
+    Program: function(program, parent, scope, file) {
+      const options = get(file, ['opts', 'extra', 'incremental-dom']);
+      setPrefix(options);
+      setupInjector(program, parent, scope, file);
+    },
 
     JSXElement: {
       enter() {

@@ -3,7 +3,6 @@ const fs     = require("fs");
 const assert = require("assert");
 const babel  = require("babel");
 const plugin = require("../src/index");
-const setPrefix = require("../src/helpers/idom-method").setPrefix;
 
 function resolve(path) {
   let expected = '';
@@ -17,10 +16,11 @@ function resolve(path) {
   return expected;
 }
 
-function transform(path) {
+function transform(path, extra) {
   return babel.transformFileSync(path, {
     blacklist: ['strict', 'react'],
-    plugins: [plugin]
+    plugins: [plugin],
+    extra: extra
   }).code;
 }
 
@@ -42,15 +42,11 @@ describe("turn jsx into incremental-dom", () => {
       const expected = resolve(path.join(fixtureDir, "expected.js"));
       const opts = parse(resolve(path.join(fixtureDir, "options.json")));
       const throwMsg = opts.throws;
-      const prefix = opts.prefix;
+      const extra = opts.extra;
       let actual;
 
       try {
-        if (prefix) { setPrefix({ prefix }); }
-
-        actual = transform(path.join(fixtureDir, "actual.js"));
-
-        if (prefix) { setPrefix({ prefix: '' }); }
+        actual = transform(path.join(fixtureDir, "actual.js"), extra);
       } catch (err) {
         if (throwMsg) {
           if (err.message.indexOf(throwMsg) >= 0) {

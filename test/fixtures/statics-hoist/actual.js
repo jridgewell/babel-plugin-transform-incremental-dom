@@ -47,4 +47,23 @@ function fn7(items) {
   return <root />;
 }
 
+function fn7(items) {
+  var els = [];
+  for (var i = 0; i < items.length; i++) {
+    els.push(<div id="id" />);
+  }
+  return els;
+}
 
+function fn7(items) {
+  return items.map((el, i) => {
+    return <div id="id" />;
+  });
+}
+
+function fn7(items) {
+  items = items.map((el, i) => {
+    return <div id="id" />;
+  });
+  return <root />;
+}

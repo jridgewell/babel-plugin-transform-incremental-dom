@@ -106,10 +106,10 @@ $ npm install babel-plugin-incremental-dom
 ```json
 {
   "blacklist": ["react"],
-  "plugins": ["incremental-dom"]
+  "plugins": ["incremental-dom"],
   "extra": {
     "incremental-dom": {
-        "prefix": "IncrementalDOM" // Optional function prefix
+        "prefix": "IncrementalDOM"
     }
   }
 }
@@ -128,9 +128,9 @@ $ babel --blacklist react --plugins incremental-dom script.js
 ```javascript
 require("babel-core").transform("code", {
   blacklist: ["react"],
-  plugins: ["incremental-dom"]
+  plugins: ["incremental-dom"],
   extra: {
-    incremental-dom: {
+    "incremental-dom": {
         prefix: "IncrementalDOM" // Optional function prefix
     }
   }
@@ -162,7 +162,7 @@ plugin:
 
 ```json
 {
-  "plugins": ["incremental-dom"]
+  "plugins": ["incremental-dom"],
   "extra": {
     "incremental-dom": {
         "prefix": "IncrementalDOM"

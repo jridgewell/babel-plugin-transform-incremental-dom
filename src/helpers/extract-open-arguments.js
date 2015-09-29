@@ -38,14 +38,14 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
 
     if (name === "key") {
       statics.push(t.literal("key"));
-      if (hoist) {
-        if (key) { statics[keyIndex] = key; }
+      if (hoist && !eager) {
         statics.push(t.identifier("undefined"));
+        keyIndex = ((i + 1) << 1) - 1;
       } else {
         statics.push(value);
       }
+
       key = value;
-      keyIndex = ((i + 1) << 1) - 1;
       return;
     }
 

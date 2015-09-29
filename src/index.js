@@ -226,7 +226,7 @@ export default function ({ Plugin, types: t }) {
         const JSXElement = this.parentPath;
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
         const eagerDeclarators = JSXElement.getData("eagerDeclarators");
-        const hoist = !eager && getOption(file, "hoist");
+        const hoist = getOption(file, "hoist");
 
         const {
           key,
@@ -250,7 +250,7 @@ export default function ({ Plugin, types: t }) {
         }
         if (statics) {
           let staticsArg = t.arrayExpression(statics);
-          if (hoist) {
+          if (hoist && !(eager && key)) {
             const ref = scope.generateUidIdentifier("statics");
             JSXElement.setData("staticDeclarator", t.variableDeclarator(ref, staticsArg));
             staticsArg = ref;

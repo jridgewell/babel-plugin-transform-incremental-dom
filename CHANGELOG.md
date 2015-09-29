@@ -8,6 +8,11 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 2.1.0
+
+- **New Feature**
+  - Add an optional function prefix to Incremental DOM functions
+
 ## 2.0.1
 
 - **New Feature**
@@ -19,7 +24,7 @@ Changelog
     - Before, any JSX Element that appeared laster in the same file
       would be "root". Now, only elements that appear later in the
       current function or it's contianing functions are roots.
-- [Internal]
+- **Internal**
   - Test that compile-errors are thrown.
 
 ## 2.0.0

@@ -1,77 +1,94 @@
 # babel-plugin-incremental-dom [![Build Status](https://travis-ci.org/babel-plugins/babel-plugin-incremental-dom.svg?branch=master)](https://travis-ci.org/babel-plugins/babel-plugin-incremental-dom)
 
-Turn jsx into [incremental-dom](http://google.github.io/incremental-dom/).
+Turn JSX into [Incremental DOM](http://google.github.io/incremental-dom/).
 
 ## Example
 
 **In**
 
 ```javascript
-<div>
-  <h1>Hello World</h1>
+function render(data) {
+    var header = data.conditional ? <div /> : null;
+    var collection = data.items.map((item) => {
+        return <li key={item.id} class={item.className}>{item.name}</li>;
+    });
 
-  <div key="1">
-    <div key={key}></div>
-  </div>
-
-  <div class="my-class">
-    <div class={myClass}></div>
-  </div>
-
-  <input type="text" disabled />
-
-  {
-    queries.forEach(function(query) {
-      return (<div key={query.id}></div>);
-    })
-  }
-
-  <div class="myClass" id={id} {...props} key="test" data-expanded={expanded} {...props.attrs}>
-  </div>
-</div>
+    return <div id="container">
+        {header}
+        <ul>{collection}</ul>
+        <p {...data.props}>Some features</p>
+    </div>;
+}
 ```
 
 **Out**
 
 ```javascript
-"use strict";
+function _attr(value, name) {
+    attr(name, value);
+}
 
-elementOpen("div");
-  elementOpen("h1");
-    text("Hello World");
-  elementClose("h1");
+function _renderArbitrary(child) {
+    var type = typeof child;
 
-  elementOpen("div", "1", ["key", "1"]);
-    elementOpen("div", key, ["key", key]);
-    elementClose("div");
-  elementClose("div");
+    if (type === "number" || (type === "string" || child && child instanceof String)) {
+        text(child);
+    } else if (type === "function" && child.__jsxDOMWrapper) {
+        child();
+    } else if (Array.isArray(child)) {
+        child.forEach(_renderArbitrary);
+    } else {
+        _forOwn(child, _renderArbitrary);
+    }
+}
 
-  elementOpen("div", null, ["class", "my-class"]);
-    elementOpen("div", null, null, "class", myClass);
-    elementClose("div");
-  elementClose("div");
+function _forOwn(object, iterator) {
+    for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+}
 
-  elementVoid("input", null, ["type", "text", "disabled", true]);
+var _hasOwn = Object.prototype.hasOwnProperty;
 
-  queries.forEach(function (query) {
-    return (elementOpen("div", query.id, ["key", query.id]), elementClose("div"));
-  });
+function _jsxWrapper(func) {
+    func.__jsxDOMWrapper = true;
+    return func;
+}
 
-  (function () {
-    elementOpenStart("div", "test", ["class", "myClass", "key", "test"]);
-    attr("id", id);
+function render(data) {
+    var header = data.conditional ? _jsxWrapper(function () {
+        return elementVoid("div");
+    }) : null;
+    var collection = data.items.map(function (item) {
+        var _item$id = item.id,
+            _item$className = item.className,
+            _item$name = item.name;
 
-    for (var _attr in props) attr(_attr, props[_attr]);
+        return _jsxWrapper(function () {
+            elementOpen("li", _item$id, ["key", _item$id], "class", _item$className);
 
-    attr("data-expanded", expanded);
+            _renderArbitrary(_item$name);
 
-    for (var _attr2 in props.attrs) attr(_attr2, props.attrs[_attr2]);
+            return elementClose("li");
+        });
+    });
 
-    elementOpenEnd("div");
+    elementOpen("div", null, ["id", "container"]);
+
+    _renderArbitrary(header);
+
+    elementOpen("ul");
+
+    _renderArbitrary(collection);
+
+    elementClose("ul");
+    elementOpenStart("p");
+
+    _forOwn(data.props, _attr);
+
+    elementOpenEnd("p");
+    text("Some features");
+    elementClose("p");
     return elementClose("div");
-  })();
-
-elementClose("div");
+}
 ```
 
 ## Installation
@@ -90,8 +107,15 @@ $ npm install babel-plugin-incremental-dom
 {
   "blacklist": ["react"],
   "plugins": ["incremental-dom"]
+  "extra": {
+    "incremental-dom": {
+        "prefix": "IncrementalDOM" // Optional function prefix
+    }
+  }
 }
 ```
+
+An optional [function prefix](#function-prefix) may be passed.
 
 ### Via CLI
 
@@ -105,5 +129,44 @@ $ babel --blacklist react --plugins incremental-dom script.js
 require("babel-core").transform("code", {
   blacklist: ["react"],
   plugins: ["incremental-dom"]
+  extra: {
+    incremental-dom: {
+        prefix: "IncrementalDOM" // Optional function prefix
+    }
+  }
 });
+```
+
+An optional [function prefix](#function-prefix) may be passed.
+
+### Function Prefix
+
+By deafult, `babel-plugin-incremental-dom` directly calls Incremental
+DOM functions:
+
+```js
+elementOpen("div");
+elementClose("div");
+```
+
+If you are instead including Incremental DOM via a browser script, it
+may be easier to reference the functions from the `IncrementalDOM` object:
+
+```js
+IncrementalDOM.elementOpen("div");
+IncrementalDOM.elementClose("div");
+```
+
+To do this, simply add the `prefix` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": ["incremental-dom"]
+  "extra": {
+    "incremental-dom": {
+        "prefix": "IncrementalDOM"
+    }
+  }
+}
 ```

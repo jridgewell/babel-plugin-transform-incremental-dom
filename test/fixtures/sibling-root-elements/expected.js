@@ -28,3 +28,12 @@ function render() {
 function fn3() {
   return elementVoid("root");
 }
+
+function fn4() {
+  var items = items.map(function (item) {
+    return _jsxWrapper(function () {
+      return elementVoid("div");
+    });
+  });
+  return elementVoid("root");
+}

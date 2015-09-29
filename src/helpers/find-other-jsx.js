@@ -24,9 +24,7 @@ export default function findOtherJSX(path) {
   path.findParent((path) => {
     if (path.isJSXElement()) {
       state.node = path.node;
-    } else if (path.isFunction()) {
-      path.parentPath.traverse(jsxVisitor, state);
-    } else if (path.isProgram()) {
+    } else if (path.isFunction() || path.isProgram()) {
       path.traverse(jsxVisitor, state);
     }
 

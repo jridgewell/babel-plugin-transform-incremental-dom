@@ -31,6 +31,10 @@ export default function ({ Plugin, types: t }) {
             containingJSXElement = path;
             return true;
           }
+          if (path.isArrowFunctionExpression()) {
+            inReturnStatement = !t.isBlockStatement(path.node.body);
+            return true;
+          }
           if (path.isFunction() || path.isProgram()) {
             return true;
           }
@@ -155,8 +159,12 @@ export default function ({ Plugin, types: t }) {
         }
 
         // This is the main JSX element. Replace the return statement
-        // will all the nested calls, returning the main JSX element.
-        this.parentPath.replaceWithMultiple(elements);
+        // with all the nested calls, returning the main JSX element.
+        if (t.isArrowFunctionExpression(parent)) {
+          parent.body = t.blockStatement(elements);
+        } else {
+          this.parentPath.replaceWithMultiple(elements);
+        }
       }
     },
 

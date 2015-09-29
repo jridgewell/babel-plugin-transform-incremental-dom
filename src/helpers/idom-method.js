@@ -1,6 +1,6 @@
-import get from "./get";
+import getOption from "./get-option";
 
 export default function iDOMMethod(file, method) {
-  const prefix = get(file, ["opts", "extra", "incremental-dom", "prefix"]) || "";
+  const prefix = getOption(file, "prefix") || "";
   return prefix ? `${prefix}.${method}` : method;
 }

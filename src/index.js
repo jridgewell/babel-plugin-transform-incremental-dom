@@ -1,5 +1,6 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
 import toReference from "./helpers/ast/to-reference";
+import iDOMMethod from "./helpers/idom-method";
 
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
@@ -197,12 +198,12 @@ export default function ({ Plugin, types: t }) {
           const attrCalls = attrsToAttrCalls(t, file, attrs);
 
           const expressions = [
-            toFunctionCall(t, "elementOpenStart", args),
+            toFunctionCall(t, iDOMMethod(file, "elementOpenStart"), args),
             ...attrCalls,
-            toFunctionCall(t, "elementOpenEnd", [tag])
+            toFunctionCall(t, iDOMMethod(file, "elementOpenEnd"), [tag])
           ];
           if (node.selfClosing) {
-            expressions.push(toFunctionCall(t, "elementClose", [tag]));
+            expressions.push(toFunctionCall(t, iDOMMethod(file, "elementClose"), [tag]));
           }
 
           return t.sequenceExpression(expressions);
@@ -221,13 +222,13 @@ export default function ({ Plugin, types: t }) {
           args.push(...attrs);
         }
 
-        return toFunctionCall(t, elementFunction, args);
+        return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
       }
     },
 
     JSXClosingElement: {
-      exit(node) {
-        return toFunctionCall(t, "elementClose", [toReference(t, node.name)]);
+      exit(node, parent, scope, file) {
+        return toFunctionCall(t, iDOMMethod(file, "elementClose"), [toReference(t, node.name)]);
       }
     },
 

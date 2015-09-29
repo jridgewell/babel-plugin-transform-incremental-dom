@@ -1,6 +1,7 @@
 import inject from "../inject";
 import injectForOwn from "./for-own";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
+import iDOMMethod from "../idom-method";
 
 // Isolated AST code to determine if a value is textual
 // (strings and numbers).
@@ -50,7 +51,7 @@ function isArray(t, value) {
 // It may also be an Array or Object, which will be iterated
 // recursively.
 // Depends on the _forOwn helper.
-function renderArbitraryAST(t, ref, deps) {
+function renderArbitraryAST(t, file, ref, deps) {
   const forOwn = deps.forOwn;
   const child = t.identifier("child");
   const type = t.identifier("type");
@@ -86,7 +87,7 @@ function renderArbitraryAST(t, ref, deps) {
       t.IfStatement(
         isTextual(t, type, child),
         t.blockStatement([
-          toFunctionCallStatement(t, "text", [child])
+          toFunctionCallStatement(t, iDOMMethod(file, "text"), [child])
         ]),
         t.ifStatement(
           isDOMWrapper(t, type, child),

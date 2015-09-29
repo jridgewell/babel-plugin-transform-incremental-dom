@@ -16,10 +16,11 @@ function resolve(path) {
   return expected;
 }
 
-function transform(path) {
+function transform(path, extra) {
   return babel.transformFileSync(path, {
     blacklist: ['strict', 'react'],
-    plugins: [plugin]
+    plugins: [plugin],
+    extra: extra
   }).code;
 }
 
@@ -41,10 +42,11 @@ describe("turn jsx into incremental-dom", () => {
       const expected = resolve(path.join(fixtureDir, "expected.js"));
       const opts = parse(resolve(path.join(fixtureDir, "options.json")));
       const throwMsg = opts.throws;
+      const extra = opts.extra;
       let actual;
 
       try {
-        actual = transform(path.join(fixtureDir, "actual.js"));
+        actual = transform(path.join(fixtureDir, "actual.js"), extra);
       } catch (err) {
         if (throwMsg) {
           if (err.message.indexOf(throwMsg) >= 0) {
@@ -59,8 +61,10 @@ describe("turn jsx into incremental-dom", () => {
 
       if (throwMsg) {
         throw new Error("Expected error message: " + throwMsg + ". But parsing succeeded.");
-      } else {
+      } else if (expected) {
         assert.equal(trim(actual), trim(expected));
+      } else {
+        require("fs").writeFileSync(path.join(fixtureDir, "expected.js"), trim(actual));
       }
     });
   });

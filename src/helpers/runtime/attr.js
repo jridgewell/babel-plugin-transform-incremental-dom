@@ -1,10 +1,11 @@
 import inject from "../inject";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
+import iDOMMethod from "../idom-method";
 
 // Flip flops the arguments when calling iDOM's
 // `attr`, so that this function may be used
 // as an iterator like an Object#forEach.
-function attrAST(t, ref) {
+function attrAST(t, file, ref) {
   const name = t.identifier("name");
   const value = t.identifier("value");
 
@@ -17,7 +18,7 @@ function attrAST(t, ref) {
     ref,
     [value, name],
     t.blockStatement([
-      toFunctionCallStatement(t, "attr", [name, value])
+      toFunctionCallStatement(t, iDOMMethod(file, "attr"), [name, value])
     ])
   );
 }

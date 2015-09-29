@@ -1,6 +1,7 @@
 import cleanText from "./clean-text";
 import toFunctionCall from "./ast/to-function-call";
 import injectRenderArbitrary from "./runtime/render-arbitrary";
+import iDOMMethod from "./idom-method";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
@@ -25,7 +26,7 @@ export default function buildChildren(t, scope, file, children, eager) {
       }
 
       if (type === "string" || type === "number") {
-        child = toFunctionCall(t, "text", [t.literal(value)]);
+        child = toFunctionCall(t, iDOMMethod(file, "text"), [t.literal(value)]);
       }
     } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);

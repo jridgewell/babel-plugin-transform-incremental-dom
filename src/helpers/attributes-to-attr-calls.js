@@ -1,6 +1,7 @@
 import injectAttr from "./runtime/attr";
 import injectForOwn from "./runtime/for-own";
 import toFunctionCall from "./ast/to-function-call";
+import iDOMMethod from "./idom-method";
 
 // Transforms an attribute array into sequential attr calls.
 export default function attrsToAttrCalls(t, file, attrs) {
@@ -14,7 +15,7 @@ export default function attrsToAttrCalls(t, file, attrs) {
     } else {
       current.push(attr);
       if (current.length === 2) {
-        calls.push(toFunctionCall(t, "attr", current));
+        calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), current));
         current = [];
       }
     }

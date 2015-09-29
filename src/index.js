@@ -1,7 +1,8 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
 import toReference from "./helpers/ast/to-reference";
-import iDOMMethod from "./helpers/idom-method";
 
+import getOption from "./helpers/get-option";
+import iDOMMethod from "./helpers/idom-method";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import extractOpenArguments from "./helpers/extract-open-arguments";
@@ -87,6 +88,7 @@ export default function ({ Plugin, types: t }) {
         this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
         this.setData("needsWrapper", needsWrapper);
+        this.setData("staticDeclarator", null);
       },
 
       exit(node, parent, scope, file) {
@@ -94,7 +96,9 @@ export default function ({ Plugin, types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          needsWrapper
+          staticDeclarator,
+          needsWrapper,
+          key
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
@@ -131,16 +135,46 @@ export default function ({ Plugin, types: t }) {
         // statements.
         elements = flattenExpressions(t, elements);
 
-        if (eagerDeclarators.length && !containingJSXElement) {
-          // Find the closest statement, and insert our eager declarations
-          // before it.
-          const parentStatement = this.findParent((path) => {
-            return path.isStatement();
-          });
-          const declaration = t.variableDeclaration("let", eagerDeclarators);
-          const [path] = parentStatement.insertBefore(declaration);
-          // Add our eager declarations to the scopes tracked bindings.
-          scope.registerBinding("let", path);
+        if (!containingJSXElement) {
+          if (eagerDeclarators.length) {
+            // Find the closest statement, and insert our eager declarations
+            // before it.
+            const parentStatement = this.findParent((path) => path.isStatement());
+            const [path] = parentStatement.insertBefore(t.variableDeclaration(
+              "let",
+              eagerDeclarators
+            ));
+            // Add our eager declarations to the scopes tracked bindings.
+            scope.registerBinding("let", path);
+          }
+
+          if (staticDeclarator) {
+            const declaration = t.variableDeclaration("let", [staticDeclarator]);
+            const binding = t.isIdentifier(key.value) && scope.getBinding(key.value.name);
+
+            if (binding) {
+              const parent = binding.path.parentPath;
+              const assignment = t.expressionStatement(t.assignmentExpression(
+                "=",
+                t.memberExpression(
+                  staticDeclarator.id,
+                  t.literal(key.index),
+                  true
+                ),
+                key.value
+              ));
+
+              if (t.isFunction(parent)) {
+                parent.get("body").unshiftContainer("body", assignment);
+              } else {
+                const statement = binding.path.findParent((path) => path.isStatement());
+                statement.insertAfter(assignment);
+              }
+            }
+
+            const programScope = scope.getProgramParent();
+            programScope.path.unshiftContainer("body", declaration);
+          }
         }
 
         // Ensure the last statement returns the DOM element.
@@ -178,18 +212,23 @@ export default function ({ Plugin, types: t }) {
         const JSXElement = this.parentPath;
         // Only eagerly evaluate our attributes if we will be wrapping the element.
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
+        const eagerDeclarators = JSXElement.getData("eagerDeclarators");
+        const hoist = !eager && getOption(file, "hoist");
 
         const {
           key,
+          keyIndex,
           statics,
           attrs,
           attributeDeclarators,
           hasSpread
-        } = extractOpenArguments(t, scope, node.attributes, eager);
+        } = extractOpenArguments(t, scope, node.attributes, { eager, hoist });
+
+        JSXElement.setData("key", { value: key, index: keyIndex });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
-        JSXElement.getData("eagerDeclarators").push(...attributeDeclarators);
+        eagerDeclarators.push(...attributeDeclarators);
 
         // Only push arguments if they're needed
         const args = [tag];
@@ -197,7 +236,14 @@ export default function ({ Plugin, types: t }) {
           args.push(key || t.literal(null));
         }
         if (statics) {
-          args.push(t.arrayExpression(statics));
+          let staticsArg = t.arrayExpression(statics);
+          if (hoist) {
+            const ref = scope.generateUidIdentifier("statics");
+            JSXElement.setData("staticDeclarator", t.variableDeclarator(ref, staticsArg));
+            staticsArg = ref;
+          }
+
+          args.push(staticsArg);
         }
 
         // If there is a spread element, we need to use

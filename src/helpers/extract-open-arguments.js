@@ -1,17 +1,19 @@
 import toReference from "./ast/to-reference";
+import getOption from "./get-option";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, attributes, eager) {
+export default function extractOpenArguments(t, scope, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
   let attrs = [];
   let hasSpread = false;
   let key = null;
   let statics = [];
+  let keyIndex = -1;
 
-  attributes.forEach((attribute) => {
+  attributes.forEach((attribute, i) => {
     if (t.isJSXSpreadAttribute(attribute)) {
       hasSpread = true;
       attrs.push(attribute);
@@ -35,10 +37,19 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
     }
 
     if (name === "key") {
+      statics.push(t.literal("key"));
+      if (hoist) {
+        if (key) { statics[keyIndex] = key; }
+        statics.push(t.identifier("undefined"));
+      } else {
+        statics.push(value);
+      }
       key = value;
+      keyIndex = ((i + 1) << 1) - 1;
+      return;
     }
 
-    if (name === "key" || t.isLiteral(value)) {
+    if (t.isLiteral(value)) {
       statics.push(attr, value);
     } else {
       attrs.push(attr, value);
@@ -48,6 +59,6 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
   if (!statics.length) { statics = null; }
   if (!attrs.length) { attrs = null; }
 
-  return { key, statics, attrs, attributeDeclarators, hasSpread };
+  return { key, keyIndex, statics, attrs, attributeDeclarators, hasSpread };
 }
 

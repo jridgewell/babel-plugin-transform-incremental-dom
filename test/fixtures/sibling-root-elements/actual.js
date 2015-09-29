@@ -17,3 +17,10 @@ function render() {
 function fn3() {
   return <root />;
 }
+
+function fn4() {
+  var items = items.map((item) => {
+    return <div />;
+  });
+  return <root />;
+}

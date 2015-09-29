@@ -32,7 +32,7 @@ export default function ({ Plugin, types: t }) {
             return true;
           }
           if (path.isArrowFunctionExpression()) {
-            inReturnStatement = !t.isBlockStatement(path.node.body);
+            inReturnStatement = inReturnStatement || !t.isBlockStatement(path.node.body);
             return true;
           }
           if (path.isFunction() || path.isProgram()) {

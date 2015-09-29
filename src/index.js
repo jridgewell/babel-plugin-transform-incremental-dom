@@ -18,13 +18,14 @@ export default function ({ Plugin, types: t }) {
     Program: setupInjector,
 
     JSXElement: {
-      enter() {
+      enter(node) {
         let inAssignment = false;
         let inAttribute = false;
         let inCallExpression = false;
         let inCollection = false;
         let inReturnStatement = false;
         let containingJSXElement;
+        let last = node;
 
         this.findParent((path) => {
           if (path.isJSXElement()) {
@@ -38,6 +39,13 @@ export default function ({ Plugin, types: t }) {
           if (path.isFunction() || path.isProgram()) {
             return true;
           }
+          if (path.isSequenceExpression()) {
+            const expressions = path.node.expressions;
+            const index = expressions.indexOf(last);
+            if (index !== expressions.length - 1) {
+              return true;
+            }
+          }
           if (path.isJSXAttribute()) {
             inAttribute = true;
           } else if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
@@ -49,6 +57,7 @@ export default function ({ Plugin, types: t }) {
           } else if (path.isCallExpression()) {
             inCallExpression = true;
           }
+          last = path.node;
         });
 
         // Values are useless if they aren't assigned.
@@ -90,6 +99,9 @@ export default function ({ Plugin, types: t }) {
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
+
+        const explicitReturn = t.isReturnStatement(parent);
+        const implicitReturn = t.isArrowFunctionExpression(parent);
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
@@ -145,7 +157,9 @@ export default function ({ Plugin, types: t }) {
         }
 
         // Ensure the last statement returns the DOM element.
-        elements = statementsWithReturnLast(t, elements);
+        if (explicitReturn || implicitReturn || needsWrapper) {
+          elements = statementsWithReturnLast(t, elements);
+        }
 
         if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
@@ -160,10 +174,12 @@ export default function ({ Plugin, types: t }) {
 
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
-        if (t.isArrowFunctionExpression(parent)) {
+        if (implicitReturn) {
           parent.body = t.blockStatement(elements);
-        } else {
+        } else if (explicitReturn) {
           this.parentPath.replaceWithMultiple(elements);
+        } else {
+          return elements;
         }
       }
     },

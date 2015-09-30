@@ -148,7 +148,7 @@ export default function ({ Plugin, types: t }) {
           if (eagerDeclarators.length) {
             // Find the closest statement, and insert our eager declarations
             // before it.
-            const parentStatement = this.findParent((path) => path.isStatement());
+            const parentStatement = this.getStatementParent();
             const [path] = parentStatement.insertBefore(t.variableDeclaration(
               "let",
               eagerDeclarators
@@ -181,13 +181,13 @@ export default function ({ Plugin, types: t }) {
                 ));
               }
 
-              const parent = (binding) ? binding.path.parentPath : this;
+              const parent = (binding) ? binding.path.parentPath : this.parentPath;
               if (parent.isArrowFunctionExpression() && this.parentPath === parent) {
                 elements.unshift(hoisted);
               } else if (parent.isFunction()) {
                 parent.get("body").unshiftContainer("body", hoisted);
               } else if (binding) {
-                const statement = binding.path.findParent((path) => path.isStatement());
+                const statement = binding.path.getStatementParent();
                 statement.insertAfter(hoisted);
               } else {
                 elements.unshift(hoisted);

@@ -104,7 +104,7 @@ export default function ({ Plugin, types: t }) {
         const eager = needsWrapper || containerNeedsWrapper;
 
         const explicitReturn = t.isReturnStatement(parent);
-        const implicitReturn = t.isArrowFunctionExpression(parent);
+        let implicitReturn = t.isArrowFunctionExpression(parent);
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
@@ -135,6 +135,11 @@ export default function ({ Plugin, types: t }) {
         // statements.
         elements = flattenExpressions(t, elements);
 
+        // Ensure the last statement returns the DOM element.
+        if (explicitReturn || implicitReturn || needsWrapper) {
+          elements = statementsWithReturnLast(t, elements);
+        }
+
         if (!containingJSXElement) {
           if (eagerDeclarators.length) {
             // Find the closest statement, and insert our eager declarations
@@ -154,7 +159,7 @@ export default function ({ Plugin, types: t }) {
 
             if (binding) {
               const parent = binding.path.parentPath;
-              const assignment = t.expressionStatement(t.assignmentExpression(
+              const assignment = t.assignmentExpression(
                 "=",
                 t.memberExpression(
                   staticDeclarator.id,
@@ -162,24 +167,27 @@ export default function ({ Plugin, types: t }) {
                   true
                 ),
                 key.value
-              ));
+              );
+              const assignmentStatement = t.expressionStatement(assignment);
 
-              if (t.isFunction(parent)) {
-                parent.get("body").unshiftContainer("body", assignment);
+              if (parent.isArrowFunctionExpression()) {
+                const parentScope = scope.getFunctionParent();
+                if (scope.path === parent) {
+                  elements.unshift(assignmentStatement);
+                } else {
+                  parent.unshiftContainer("body", assignment);
+                }
+              } else if (parent.isFunction()) {
+                parent.get("body").unshiftContainer("body", assignmentStatement);
               } else {
                 const statement = binding.path.findParent((path) => path.isStatement());
-                statement.insertAfter(assignment);
+                statement.insertAfter(assignmentStatement);
               }
             }
 
             const programScope = scope.getProgramParent();
             programScope.path.unshiftContainer("body", declaration);
           }
-        }
-
-        // Ensure the last statement returns the DOM element.
-        if (explicitReturn || implicitReturn || needsWrapper) {
-          elements = statementsWithReturnLast(t, elements);
         }
 
         if (needsWrapper) {
@@ -196,7 +204,11 @@ export default function ({ Plugin, types: t }) {
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {
-          parent.body = t.blockStatement(elements);
+          this.parentPath.replaceWith(t.arrowFunctionExpression(
+            parent.params,
+            t.blockStatement(elements),
+            parent.async
+          ));
         } else if (explicitReturn) {
           this.parentPath.replaceWithMultiple(elements);
         } else {

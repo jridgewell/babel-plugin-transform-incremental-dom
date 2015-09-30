@@ -1,3 +1,6 @@
+var _statics11 = ["id", "id"];
+var _statics10 = ["id", "id"];
+var _statics9 = ["id", "id"];
 var _statics8 = ["id", "id", "key", undefined];
 
 function _jsxWrapper(func) {
@@ -76,6 +79,31 @@ function fn7(items) {
 
     return _jsxWrapper(function () {
       return elementVoid("div", _i2, ["id", "id", "key", _i2]);
+    });
+  });
+  return elementVoid("root");
+}
+
+function fn7(items) {
+  var els = [];
+  for (var i = 0; i < items.length; i++) {
+    els.push(_jsxWrapper(function () {
+      return elementVoid("div", null, _statics9);
+    }));
+  }
+  return els;
+}
+
+function fn7(items) {
+  return items.map(function (el, i) {
+    return elementVoid("div", null, _statics10);
+  });
+}
+
+function fn7(items) {
+  items = items.map(function (el, i) {
+    return _jsxWrapper(function () {
+      return elementVoid("div", null, _statics11);
     });
   });
   return elementVoid("root");

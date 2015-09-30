@@ -241,16 +241,19 @@ export default function ({ Plugin, types: t }) {
 
         const {
           key,
-          keyIndex,
           statics,
           attrs,
           attributeDeclarators,
+          staticAttr,
           hasSpread
         } = extractOpenArguments(t, scope, node.attributes, { eager, hoist });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
         eagerDeclarators.push(...attributeDeclarators);
+        if (staticAttr) {
+          staticAttrs.push(staticAttr);
+        }
 
         // Only push arguments if they're needed
         const args = [tag];
@@ -258,20 +261,7 @@ export default function ({ Plugin, types: t }) {
           args.push(key || t.literal(null));
         }
         if (statics) {
-          let staticsArray = t.arrayExpression(statics);
-          if (hoist) {
-            const ref = scope.generateUidIdentifier("statics");
-            staticAttrs.push({
-              declarator: t.variableDeclarator(ref, staticsArray),
-              key: {
-                index: keyIndex,
-                value: key
-              }
-            });
-            staticsArray = ref;
-          }
-
-          args.push(staticsArray);
+          args.push(statics);
         }
 
         // If there is a spread element, we need to use

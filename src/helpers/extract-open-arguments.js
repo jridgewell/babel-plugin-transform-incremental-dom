@@ -12,6 +12,7 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
   let key = null;
   let statics = [];
   let keyIndex = -1;
+  let staticAttr = null;
 
   attributes.forEach((attribute, i) => {
     if (t.isJSXSpreadAttribute(attribute)) {
@@ -56,9 +57,24 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
     }
   });
 
-  if (!statics.length) { statics = null; }
   if (!attrs.length) { attrs = null; }
+  if (statics.length) {
+    statics = t.arrayExpression(statics);
+    if (hoist) {
+      const ref = scope.generateUidIdentifier("statics");
+      staticAttr = {
+        declarator: t.variableDeclarator(ref, statics),
+        key: {
+          index: keyIndex,
+          value: key
+        }
+      };
+      statics = ref;
+    }
+  } else {
+    statics = null;
+  }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, hasSpread };
+  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAttr, hasSpread };
 }
 

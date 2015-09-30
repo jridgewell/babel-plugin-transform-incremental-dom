@@ -13,10 +13,24 @@ import statementsWithReturnLast from "./helpers/statements-with-return-last";
 
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
+import Statics from "./helpers/statics";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
-    Program: setupInjector,
+    Program: {
+      enter(program, parent, scope, file) {
+        setupInjector(program, parent, scope, file);
+        file.setDynamic("incremental-dom-statics", () => new Statics());
+      },
+
+      exit(program, parent, scope, file) {
+        let staticsDeclaration = file.data["incremental-dom-statics"];
+        staticsDeclaration = staticsDeclaration && staticsDeclaration.declaration(t);
+        if (!staticsDeclaration) { return; }
+
+        this.unshiftContainer("body", staticsDeclaration);
+      }
+    },
 
     JSXElement: {
       enter(node) {
@@ -166,7 +180,6 @@ export default function ({ Plugin, types: t }) {
           }
 
           if (staticDeclarator) {
-            const declaration = t.variableDeclaration("let", [staticDeclarator]);
             const binding = t.isIdentifier(key.value) && scope.getBinding(key.value.name);
 
             if (binding) {
@@ -196,9 +209,6 @@ export default function ({ Plugin, types: t }) {
                 statement.insertAfter(assignmentStatement);
               }
             }
-
-            const programScope = scope.getProgramParent();
-            programScope.path.unshiftContainer("body", declaration);
           }
         }
 
@@ -263,9 +273,10 @@ export default function ({ Plugin, types: t }) {
         if (statics) {
           let staticsArg = t.arrayExpression(statics);
           if (hoist && !(eager && key)) {
-            const ref = scope.generateUidIdentifier("statics");
-            JSXElement.setData("staticDeclarator", t.variableDeclarator(ref, staticsArg));
-            staticsArg = ref;
+            const staticsManager = file.get("incremental-dom-statics");
+            const declarator = staticsManager.addStatic(t, scope, staticsArg);
+            JSXElement.setData("staticDeclarator", declarator);
+            staticsArg = declarator.id;
           }
 
           args.push(staticsArg);

@@ -199,7 +199,7 @@ export default function ({ Plugin, types: t }) {
           attrs,
           attributeDeclarators,
           hasSpread
-        } = extractOpenArguments(t, scope, node.attributes, eager);
+        } = extractOpenArguments(t, scope, file, node.attributes, eager);
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.

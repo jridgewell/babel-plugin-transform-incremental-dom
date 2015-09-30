@@ -40,7 +40,7 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
       statics.push(attr);
       if (hoist && !eager && t.isIdentifier(value)) {
         statics.push(t.identifier("undefined"));
-        keyIndex = ((i + 1) << 1) - 1;
+        keyIndex = (i << 1) + 1;
       } else {
         statics.push(value);
       }

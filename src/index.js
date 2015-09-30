@@ -83,12 +83,15 @@ export default function ({ Plugin, types: t }) {
         const eagerDeclarators = (containingJSXElement) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
+        const staticAttrs = (containingJSXElement) ?
+          containingJSXElement.getData("staticAttrs") :
+          [];
 
         this.setData("containerNeedsWrapper", containerNeedsWrapper);
         this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
         this.setData("needsWrapper", needsWrapper);
-        this.setData("staticDeclarator", null);
+        this.setData("staticAttrs", staticAttrs);
       },
 
       exit(node, parent, scope, file) {
@@ -96,15 +99,16 @@ export default function ({ Plugin, types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          staticDeclarator,
+          staticAttrs,
           needsWrapper,
           key
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
+        const hoist = getOption(file, "hoist");
 
         const explicitReturn = t.isReturnStatement(parent);
-        let implicitReturn = t.isArrowFunctionExpression(parent);
+        const implicitReturn = t.isArrowFunctionExpression(parent);
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
@@ -152,42 +156,49 @@ export default function ({ Plugin, types: t }) {
             // Add our eager declarations to the scopes tracked bindings.
             scope.registerBinding("let", path);
           }
+        }
 
-          if (staticDeclarator) {
-            const declaration = t.variableDeclaration("let", [staticDeclarator]);
-            const binding = t.isIdentifier(key.value) && scope.getBinding(key.value.name);
+        if (hoist && staticAttrs.length) {
+          staticAttrs.forEach((attrs) => {
+            const declaration = t.variableDeclaration("let", [attrs.declarator]);
+            const key = attrs.key;
+            const identifierKey = t.isIdentifier(key.value);
+            const binding = identifierKey && scope.getBinding(key.value.name);
 
-            if (binding) {
-              const parent = binding.path.parentPath;
-              const assignment = t.assignmentExpression(
-                "=",
-                t.memberExpression(
-                  staticDeclarator.id,
-                  t.literal(key.index),
-                  true
-                ),
-                key.value
-              );
-              const assignmentStatement = t.expressionStatement(assignment);
-
-              if (parent.isArrowFunctionExpression()) {
-                const parentScope = scope.getFunctionParent();
-                if (scope.path === parent) {
-                  elements.unshift(assignmentStatement);
-                } else {
-                  parent.unshiftContainer("body", assignment);
-                }
-              } else if (parent.isFunction()) {
-                parent.get("body").unshiftContainer("body", assignmentStatement);
+            if (identifierKey) {
+              let hoisted;
+              if (eager) {
+                hoisted = declaration;
               } else {
+                hoisted = t.expressionStatement(t.assignmentExpression(
+                  "=",
+                  t.memberExpression(
+                    attrs.declarator.id,
+                    t.literal(key.index),
+                    true
+                  ),
+                  key.value
+                ));
+              }
+
+              const parent = (binding) ? binding.path.parentPath : this;
+              if (parent.isArrowFunctionExpression() && this.parentPath === parent) {
+                elements.unshift(hoisted);
+              } else if (parent.isFunction()) {
+                parent.get("body").unshiftContainer("body", hoisted);
+              } else if (binding) {
                 const statement = binding.path.findParent((path) => path.isStatement());
-                statement.insertAfter(assignmentStatement);
+                statement.insertAfter(hoisted);
+              } else {
+                elements.unshift(hoisted);
               }
             }
 
-            const programScope = scope.getProgramParent();
-            programScope.path.unshiftContainer("body", declaration);
-          }
+            if (!(binding && eager)) {
+              const programScope = scope.getProgramParent();
+              programScope.path.unshiftContainer("body", declaration);
+            }
+          });
         }
 
         if (needsWrapper) {
@@ -226,6 +237,7 @@ export default function ({ Plugin, types: t }) {
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
         const eagerDeclarators = JSXElement.getData("eagerDeclarators");
         const hoist = getOption(file, "hoist");
+        const staticAttrs = JSXElement.getData("staticAttrs");
 
         const {
           key,
@@ -235,8 +247,6 @@ export default function ({ Plugin, types: t }) {
           attributeDeclarators,
           hasSpread
         } = extractOpenArguments(t, scope, node.attributes, { eager, hoist });
-
-        JSXElement.setData("key", { value: key, index: keyIndex });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
@@ -248,14 +258,20 @@ export default function ({ Plugin, types: t }) {
           args.push(key || t.literal(null));
         }
         if (statics) {
-          let staticsArg = t.arrayExpression(statics);
-          if (hoist && !(eager && key)) {
+          let staticsArray = t.arrayExpression(statics);
+          if (hoist) {
             const ref = scope.generateUidIdentifier("statics");
-            JSXElement.setData("staticDeclarator", t.variableDeclarator(ref, staticsArg));
-            staticsArg = ref;
+            staticAttrs.push({
+              declarator: t.variableDeclarator(ref, staticsArray),
+              key: {
+                index: keyIndex,
+                value: key
+              }
+            });
+            staticsArray = ref;
           }
 
-          args.push(staticsArg);
+          args.push(staticsArray);
         }
 
         // If there is a spread element, we need to use

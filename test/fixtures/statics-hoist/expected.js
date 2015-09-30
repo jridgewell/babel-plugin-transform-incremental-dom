@@ -1,3 +1,4 @@
+var _statics26 = ["key", "test"];
 var _statics24 = ["id", "id"];
 var _statics23 = ["id", "id2", "key", undefined];
 var _statics22 = ["id", "id"];
@@ -177,4 +178,8 @@ function fn8(key4) {
     return elementClose("div");
   });
   return elementVoid("root");
+}
+
+function test() {
+  return elementVoid("div", "test", _statics26);
 }

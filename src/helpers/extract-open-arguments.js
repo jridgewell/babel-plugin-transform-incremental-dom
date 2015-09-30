@@ -37,8 +37,8 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
     }
 
     if (name === "key") {
-      statics.push(t.literal("key"));
-      if (hoist && !eager) {
+      statics.push(attr);
+      if (hoist && !eager && t.isIdentifier(value)) {
         statics.push(t.identifier("undefined"));
         keyIndex = ((i + 1) << 1) - 1;
       } else {

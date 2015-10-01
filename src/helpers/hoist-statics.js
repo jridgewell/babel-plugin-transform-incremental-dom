@@ -8,7 +8,6 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements, { ea
     const binding = identifierKey && scope.getBinding(key.value.name);
 
     if (identifierKey) {
-      const parent = (binding) ? binding.path.parentPath : path.parentPath;
       let hoisted;
 
       if (eager) {
@@ -26,6 +25,7 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements, { ea
         ));
       }
 
+      const parent = (binding) ? binding.path.parentPath : path.parentPath;
       if (parent.isArrowFunctionExpression()) {
         // The key variable is a formal parameter
         const body = parent.get("body");
@@ -48,7 +48,7 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements, { ea
       } else if (parent.isFunction()) {
         // The key variable is a formal parameter
         parent.get("body").unshiftContainer("body", hoisted);
-      } else if (binding) {
+      } else if (binding && binding.constant) {
         // With a key variable, we should update they key's value
         // in the statics array whenever the variable is updated.
         const statement = binding.path.getStatementParent();
@@ -56,11 +56,6 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements, { ea
       } else {
         // Some rouge global key variable
         elements.unshift(hoisted);
-      }
-
-      // TODO constantViolations
-      if (binding) {
-        console.log(binding.constantViolations);
       }
     }
 

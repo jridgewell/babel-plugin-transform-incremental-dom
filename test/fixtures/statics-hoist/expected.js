@@ -193,17 +193,13 @@ var test = function test(key) {
 
 var key;
 
-_statics28[3] = key;
 var test = function test(k) {
-  var _tmp = key = k;
-  _statics28[3] = key;
-  return _tmp;
+  return key = k;
 };
 
 key = 2;
 
-_statics28[3] = key;
-
 function test() {
+  _statics28[3] = key;
   return elementVoid("div", key, _statics28);
 }

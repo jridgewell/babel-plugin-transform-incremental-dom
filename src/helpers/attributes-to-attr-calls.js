@@ -7,16 +7,17 @@ import iDOMMethod from "./idom-method";
 export default function attrsToAttrCalls(t, file, attrs) {
   const forOwn = injectForOwn(t, file);
   const forOwnAttr = injectAttr(t, file);
-  let current = [];
+  let name = null;
 
   return attrs.reduce((calls, attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
       calls.push(toFunctionCall(t, forOwn, [attr.argument, forOwnAttr]));
     } else {
-      current.push(attr);
-      if (current.length === 2) {
-        calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), current));
-        current = [];
+      if (name) {
+        calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), [name, attr]));
+        name = null;
+      } else {
+        name = attr;
       }
     }
 

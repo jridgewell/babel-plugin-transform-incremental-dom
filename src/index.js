@@ -151,7 +151,7 @@ export default function ({ Plugin, types: t }) {
         }
 
         if (!containingJSXElement && staticAttrs.length) {
-          hoistStatics(t, scope, this, staticAttrs, elements, { eager });
+          hoistStatics(t, scope, this, staticAttrs, elements);
         }
 
         if (needsWrapper) {

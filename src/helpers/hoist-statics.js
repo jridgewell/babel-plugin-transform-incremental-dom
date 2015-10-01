@@ -1,4 +1,5 @@
 import replaceArrow from "./replace-arrow";
+import getIdentifier from "./ast/get-identifier";
 
 function hoist(t, path, binding, hoisted, elements) {
   const parent = (binding) ? binding.path.parentPath : path.parentPath;
@@ -35,37 +36,39 @@ function hoist(t, path, binding, hoisted, elements) {
   }
 }
 
-export default function hoistStatics(t, scope, path, staticAttrs, elements, { eager }) {
+export default function hoistStatics(t, scope, path, staticAttrs, elements) {
   staticAttrs.forEach((attrs) => {
-    const declaration = t.variableDeclaration("let", [attrs.declarator]);
-    const key = attrs.key;
-    const identifierKey = t.isIdentifier(key.value);
-    const binding = identifierKey && scope.getBinding(key.value.name);
+    const declarator = attrs.declarator;
+    const { value, index } = attrs.key;
+    const declaration = t.variableDeclaration("let", [declarator]);
+    const keyVariable = getIdentifier(t, value);
+    const binding = keyVariable && scope.getBinding(keyVariable.name);
 
-    if (identifierKey) {
+    if (keyVariable) {
       let hoisted;
 
-      if (eager) {
-        // If we wrap the JSX Element, that means we'll need to eagerly
-        // evaluate the key variable. So, we can't lift and assign the key
-        // value like normal.
+      if (index === -1) {
+        // If there's no key index, that means we're eagerly evaluating
+        // the key variable. If that's true, we need to eagerly evaluate
+        // the declaration, too.
         hoisted = declaration;
       } else {
-        // If we're note wrapping, we can assign the key value and hoist
-        // the statics array to the top level program.
+        // We need to assign the key variable's value to the statics array
+        // at `index`.
         hoisted = t.expressionStatement(t.assignmentExpression(
           "=",
-          t.memberExpression(attrs.declarator.id, t.literal(key.index), true),
-          key.value
+          t.memberExpression(declarator.id, t.literal(index), true),
+          value
         ));
       }
 
       hoist(t, path, binding, hoisted, elements);
     }
 
-    // If we're not wrapping the JSX Element, put the statics array into
-    // the top level Program scope.
-    if (!(binding && eager)) {
+    // If the statics array does not have a key variable (or we're assigning
+    // it's value to index), then we know that we can hoist the statics array
+    // to the Program scope.
+    if (!keyVariable || index > -1) {
       const programScope = scope.getProgramParent();
       programScope.path.unshiftContainer("body", declaration);
     }

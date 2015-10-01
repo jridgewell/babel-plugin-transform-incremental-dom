@@ -118,3 +118,11 @@ key = 2;
 function test() {
   return <div id="id" key={key} />;
 }
+
+function test() {
+  return <div id="id" key={props.key} />;
+}
+
+function test(props) {
+  return <div id="id" key={props.key} />;
+}

@@ -1,3 +1,5 @@
+var _statics30 = ["id", "id", "key", undefined];
+var _statics29 = ["id", "id", "key", undefined];
 var _statics28 = ["id", "id", "key", undefined];
 var _statics27 = ["id", "id", "key", undefined];
 var _statics26 = ["key", "test"];
@@ -202,4 +204,14 @@ key = 2;
 function test() {
   _statics28[3] = key;
   return elementVoid("div", key, _statics28);
+}
+
+function test() {
+  _statics29[3] = props.key;
+  return elementVoid("div", props.key, _statics29);
+}
+
+function test(props) {
+  _statics30[3] = props.key;
+  return elementVoid("div", props.key, _statics30);
 }

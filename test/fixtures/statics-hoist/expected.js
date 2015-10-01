@@ -1,3 +1,4 @@
+var _statics27 = ["id", "id", "key", undefined];
 var _statics26 = ["key", "test"];
 var _statics24 = ["id", "id"];
 var _statics23 = ["id", "id2", "key", undefined];
@@ -183,3 +184,8 @@ function fn8(key4) {
 function test() {
   return elementVoid("div", "test", _statics26);
 }
+
+var test = function test(key) {
+  _statics27[3] = key;
+  return (1, elementVoid("div", key, _statics27));
+};

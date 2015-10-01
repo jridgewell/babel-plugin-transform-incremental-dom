@@ -106,3 +106,6 @@ function fn8(key4) {
 function test() {
   return <div key="test" />;
 }
+
+var test = (key) =>  (1, <div id="id" key={key} />);
+

@@ -182,8 +182,22 @@ export default function ({ Plugin, types: t }) {
               }
 
               const parent = (binding) ? binding.path.parentPath : this.parentPath;
-              if (parent.isArrowFunctionExpression() && this.parentPath === parent) {
-                elements.unshift(hoisted);
+              if (parent.isArrowFunctionExpression()) {
+                const body = parent.get("body");
+                if (this.parentPath === parent) {
+                  elements.unshift(hoisted);
+                } else if (body.isBlockStatement()) {
+                  body.unshiftContainer("body", hoisted);
+                } else {
+                  parent.replaceWith(t.arrowFunctionExpression(
+                    parent.node.params,
+                    t.blockStatement([
+                      hoisted,
+                      t.returnStatement(body.node)
+                    ]),
+                    parent.node.async
+                  ));
+                }
               } else if (parent.isFunction()) {
                 parent.get("body").unshiftContainer("body", hoisted);
               } else if (binding) {

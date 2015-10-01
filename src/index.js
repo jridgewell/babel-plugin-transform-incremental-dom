@@ -5,7 +5,6 @@ import iDOMMethod from "./helpers/idom-method";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import extractOpenArguments from "./helpers/extract-open-arguments";
-import filterEagerDeclarators from "./helpers/filter-eager-declarators";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
@@ -107,7 +106,7 @@ export default function ({ Plugin, types: t }) {
         // into normal expressions.
         const openingElement = node.openingElement;
         const closingElement = node.closingElement;
-        const children = buildChildren(t, scope, file, node.children, eager);
+        const children = buildChildren(t, scope, file, node.children, eagerDeclarators, { eager });
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }
@@ -115,11 +114,6 @@ export default function ({ Plugin, types: t }) {
         // If we're inside a JSX node, flattening expressions
         // may force us into an unwanted function scope.
         if (t.isJSXElement(parent)) {
-          // If the parent needs to be wrapped, we need to place our eager
-          // child expressions outside the wrapper.
-          if (containerNeedsWrapper) {
-            elements = filterEagerDeclarators(t, elements, eagerDeclarators);
-          }
           return elements;
         }
 
@@ -136,13 +130,6 @@ export default function ({ Plugin, types: t }) {
         // Transform (recursively) any sequence expressions into a series of
         // statements.
         elements = flattenExpressions(t, elements);
-
-        // If we need to wrap this JSX element in a wrapper, we must place
-        // any eagerly evaluated child expressions outside the wrapper.
-        if (needsWrapper) {
-          elements = filterEagerDeclarators(t, elements, eagerDeclarators);
-        }
-
 
         if (eagerDeclarators.length && !containingJSXElement) {
           // Find the closest statement, and insert our eager declarations

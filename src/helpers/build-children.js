@@ -5,7 +5,7 @@ import iDOMMethod from "./idom-method";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, scope, file, children, eager) {
+export default function buildChildren(t, scope, file, children, eagerDeclarators, { eager }) {
   let renderArbitraryRef;
 
   return children.reduce((children, child) => {
@@ -33,9 +33,7 @@ export default function buildChildren(t, scope, file, children, eager) {
 
       if (eager) {
         const ref = scope.generateUidIdentifierBasedOnNode(child);
-        children.push(t.variableDeclaration("let", [
-          t.variableDeclarator(ref, child)
-        ]));
+        eagerDeclarators.push(t.variableDeclarator(ref, child));
         child = ref;
       }
 

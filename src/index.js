@@ -9,6 +9,8 @@ import extractOpenArguments from "./helpers/extract-open-arguments";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
+import replaceArrow from "./helpers/replace-arrow";
+import hoistStatics from "./helpers/hoist-statics";
 
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
@@ -106,7 +108,6 @@ export default function ({ Plugin, types: t }) {
 
         const eager = needsWrapper || containerNeedsWrapper;
         const hoist = getOption(file, "hoist");
-
         const explicitReturn = t.isReturnStatement(parent);
         const implicitReturn = t.isArrowFunctionExpression(parent);
 
@@ -135,84 +136,29 @@ export default function ({ Plugin, types: t }) {
           return sequence;
         }
 
-        // Transform (recursively) any sequence expressions into a series of
-        // statements.
-        elements = flattenExpressions(t, elements);
-
-        // Ensure the last statement returns the DOM element.
         if (explicitReturn || implicitReturn || needsWrapper) {
+          // Transform (recursively) any sequence expressions into a series of
+          // statements.
+          elements = flattenExpressions(t, elements);
+
+          // Ensure the last statement returns the DOM element.
           elements = statementsWithReturnLast(t, elements);
         }
 
-        if (!containingJSXElement) {
-          if (eagerDeclarators.length) {
-            // Find the closest statement, and insert our eager declarations
-            // before it.
-            const parentStatement = this.getStatementParent();
-            const [path] = parentStatement.insertBefore(t.variableDeclaration(
-              "let",
-              eagerDeclarators
-            ));
-            // Add our eager declarations to the scopes tracked bindings.
-            scope.registerBinding("let", path);
-          }
+        if (!containingJSXElement && eagerDeclarators.length) {
+          // Find the closest statement, and insert our eager declarations
+          // before it.
+          const parentStatement = this.getStatementParent();
+          const [path] = parentStatement.insertBefore(t.variableDeclaration(
+            "let",
+            eagerDeclarators
+          ));
+          // Add our eager declarations to the scopes tracked bindings.
+          scope.registerBinding("let", path);
         }
 
-        if (hoist && staticAttrs.length) {
-          staticAttrs.forEach((attrs) => {
-            const declaration = t.variableDeclaration("let", [attrs.declarator]);
-            const key = attrs.key;
-            const identifierKey = t.isIdentifier(key.value);
-            const binding = identifierKey && scope.getBinding(key.value.name);
-
-            if (identifierKey) {
-              let hoisted;
-              if (eager) {
-                hoisted = declaration;
-              } else {
-                hoisted = t.expressionStatement(t.assignmentExpression(
-                  "=",
-                  t.memberExpression(
-                    attrs.declarator.id,
-                    t.literal(key.index),
-                    true
-                  ),
-                  key.value
-                ));
-              }
-
-              const parent = (binding) ? binding.path.parentPath : this.parentPath;
-              if (parent.isArrowFunctionExpression()) {
-                const body = parent.get("body");
-                if (this.parentPath === parent) {
-                  elements.unshift(hoisted);
-                } else if (body.isBlockStatement()) {
-                  body.unshiftContainer("body", hoisted);
-                } else {
-                  parent.replaceWith(t.arrowFunctionExpression(
-                    parent.node.params,
-                    t.blockStatement([
-                      hoisted,
-                      t.returnStatement(body.node)
-                    ]),
-                    parent.node.async
-                  ));
-                }
-              } else if (parent.isFunction()) {
-                parent.get("body").unshiftContainer("body", hoisted);
-              } else if (binding) {
-                const statement = binding.path.getStatementParent();
-                statement.insertAfter(hoisted);
-              } else {
-                elements.unshift(hoisted);
-              }
-            }
-
-            if (!(binding && eager)) {
-              const programScope = scope.getProgramParent();
-              programScope.path.unshiftContainer("body", declaration);
-            }
-          });
+        if (!containingJSXElement && staticAttrs.length) {
+          hoistStatics(t, scope, this, staticAttrs, elements, { eager });
         }
 
         if (needsWrapper) {
@@ -229,11 +175,7 @@ export default function ({ Plugin, types: t }) {
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {
-          this.parentPath.replaceWith(t.arrowFunctionExpression(
-            parent.params,
-            t.blockStatement(elements),
-            parent.async
-          ));
+          replaceArrow(t, this.parentPath, elements);
         } else if (explicitReturn) {
           this.parentPath.replaceWithMultiple(elements);
         } else {

@@ -1,5 +1,4 @@
 import replaceArrow from "./replace-arrow";
-import getIdentifier from "./ast/get-identifier";
 
 function hoist(t, path, binding, hoisted, elements) {
   const parent = (binding) ? binding.path.parentPath : path.parentPath;
@@ -41,8 +40,8 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements) {
     const declarator = attrs.declarator;
     const { value, index } = attrs.key;
     const declaration = t.variableDeclaration("let", [declarator]);
-    const keyVariable = getIdentifier(t, value);
-    const binding = keyVariable && scope.getBinding(keyVariable.name);
+    const keyVariable = !t.isLiteral(value) && value;
+    const binding = t.isIdentifier(keyVariable) && scope.getBinding(keyVariable.name);
 
     if (keyVariable) {
       let hoisted;

@@ -5,10 +5,10 @@ import toStatement from "./ast/to-statement";
 export default function flattenExpressions(t, expressions, nodes = []) {
   return expressions.reduce((nodes, node) => {
     if (t.isSequenceExpression(node)) {
-      flattenExpressions(t, node.expressions, nodes);
-    } else {
-      nodes.push(toStatement(t, node));
+      return flattenExpressions(t, node.expressions, nodes);
     }
+
+    nodes.push(toStatement(t, node));
     return nodes;
   }, nodes);
 }

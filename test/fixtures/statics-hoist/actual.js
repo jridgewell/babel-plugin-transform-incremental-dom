@@ -109,3 +109,12 @@ function test() {
 
 var test = (key) =>  (1, <div id="id" key={key} />);
 
+var key;
+
+var test = (k) => key = k;
+
+key = 2;
+
+function test() {
+  return <div id="id" key={key} />;
+}

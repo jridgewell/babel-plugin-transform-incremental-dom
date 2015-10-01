@@ -57,6 +57,11 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements, { ea
         // Some rouge global key variable
         elements.unshift(hoisted);
       }
+
+      // TODO constantViolations
+      if (binding) {
+        console.log(binding.constantViolations);
+      }
     }
 
     // If we're not wrapping the JSX Element, put the statics array into

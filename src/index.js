@@ -174,10 +174,9 @@ export default function ({ Plugin, types: t }) {
     JSXOpeningElement: {
       exit(node, parent, scope, file) {
         const tag = toReference(t, node.name);
-        const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
 
-        // Only eagerly evaluate our attributes if we will be wrapping the element.
         const JSXElement = this.parentPath;
+        // Only eagerly evaluate our attributes if we will be wrapping the element.
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
 
         const {
@@ -233,6 +232,7 @@ export default function ({ Plugin, types: t }) {
           args.push(...attrs);
         }
 
+        const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
         return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
       }
     },

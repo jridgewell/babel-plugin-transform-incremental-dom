@@ -11,6 +11,7 @@ import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
 import replaceArrow from "./helpers/replace-arrow";
 import hoistStatics from "./helpers/hoist-statics";
+import eagerlyDeclare from "./helpers/eagerly-declare";
 
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
@@ -146,15 +147,7 @@ export default function ({ Plugin, types: t }) {
         }
 
         if (!containingJSXElement && eagerDeclarators.length) {
-          // Find the closest statement, and insert our eager declarations
-          // before it.
-          const parentStatement = this.getStatementParent();
-          const [path] = parentStatement.insertBefore(t.variableDeclaration(
-            "let",
-            eagerDeclarators
-          ));
-          // Add our eager declarations to the scopes tracked bindings.
-          scope.registerBinding("let", path);
+          eagerlyDeclare(t, scope, this, eagerDeclarators);
         }
 
         if (!containingJSXElement && staticAttrs.length) {

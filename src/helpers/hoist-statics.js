@@ -1,4 +1,3 @@
-import replaceArrow from "./replace-arrow";
 import eagerlyDeclare from "./eagerly-declare";
 
 export default function hoistStatics(t, scope, path, staticAttrs, elements) {

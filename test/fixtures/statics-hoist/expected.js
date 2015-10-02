@@ -1,3 +1,7 @@
+var _statics34 = ["id", "id", "key", undefined];
+var _statics33 = ["id", "id", "key", undefined];
+var _statics32 = ["id", "id", "key", undefined];
+var _statics31 = ["id", "id", "key", undefined];
 var _statics30 = ["id", "id", "key", undefined];
 var _statics29 = ["id", "id", "key", undefined];
 var _statics28 = ["id", "id", "key", undefined];
@@ -33,7 +37,6 @@ var _statics2 = ["id", "id"];
 var _statics = ["id", "id"];
 var key3 = 'test';
 
-_statics4[5] = key3;
 function fn() {
   return elementVoid("div", null, _statics);
 }
@@ -47,6 +50,7 @@ function fn2() {
 }
 
 function fn3() {
+  _statics4[5] = key3;
   return elementVoid("div", key3, _statics4);
 }
 
@@ -189,8 +193,7 @@ function test() {
 }
 
 var test = function test(key) {
-  _statics27[3] = key;
-  return (1, elementVoid("div", key, _statics27));
+  return (1, (_statics27[3] = key, elementVoid("div", key, _statics27)));
 };
 
 var key;
@@ -215,3 +218,26 @@ function test(props) {
   _statics30[3] = props.key;
   return elementVoid("div", props.key, _statics30);
 }
+
+function test(props) {
+  props.key = 1;
+  _statics31[3] = props.key;
+  return elementVoid("div", props.key, _statics31);
+}
+
+function test(key) {
+  key = 1;
+  _statics32[3] = key;
+  return elementVoid("div", key, _statics32);
+}
+
+function test() {
+  var key = 'test';
+  key = 1;
+  _statics33[3] = key;
+  return elementVoid("div", key, _statics33);
+}
+
+var test = function test(key) {
+  return (key = 2, (_statics34[3] = key, elementVoid("div", key, _statics34)));
+};

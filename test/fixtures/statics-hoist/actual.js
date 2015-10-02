@@ -131,3 +131,16 @@ function test(props) {
   props.key = 1;
   return <div id="id" key={props.key} />;
 }
+
+function test(key) {
+  key = 1;
+  return <div id="id" key={key} />;
+}
+
+function test() {
+  var key = 'test';
+  key = 1;
+  return <div id="id" key={key} />;
+}
+
+var test = (key) =>  (key = 2, <div id="id" key={key} />);

@@ -37,9 +37,11 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
       value = t.literal(true);
     }
 
+    const literal = t.isLiteral(value);
+
     if (name === "key") {
       statics.push(attr);
-      if (hoist && !(eager || t.isLiteral(value))) {
+      if (hoist && !(eager || literal)) {
         statics.push(t.identifier("undefined"));
         keyIndex = (i << 1) + 1;
       } else {
@@ -50,7 +52,7 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
       return;
     }
 
-    if (t.isLiteral(value)) {
+    if (literal) {
       statics.push(attr, value);
     } else {
       attrs.push(attr, value);

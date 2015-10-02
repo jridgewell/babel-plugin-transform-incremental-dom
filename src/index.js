@@ -116,7 +116,13 @@ export default function ({ Plugin, types: t }) {
         // into normal expressions.
         const openingElement = node.openingElement;
         const closingElement = node.closingElement;
-        const children = buildChildren(t, scope, file, node.children, eagerDeclarators, { eager });
+
+        const {
+          children,
+          eagerChildren
+        } = buildChildren(t, scope, file, node.children, { eager });
+
+        eagerDeclarators.push(...eagerChildren);
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }

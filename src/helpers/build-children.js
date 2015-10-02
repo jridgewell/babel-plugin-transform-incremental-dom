@@ -18,8 +18,8 @@ export default function buildChildren(t, scope, file, children, { eager }) {
     if (t.isJSXEmptyExpression(child)) { return children; }
 
     if (t.isLiteral(child)) {
-      const type = typeof child.value;
       let value = child.value;
+      const type = typeof value;
 
       if (type === "string") {
         value = cleanText(value);

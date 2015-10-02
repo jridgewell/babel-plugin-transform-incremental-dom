@@ -4,12 +4,13 @@ import toReference from "./ast/to-reference";
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, attributes, eager) {
+export default function extractOpenArguments(t, scope, file, attributes, eager) {
   const attributeDeclarators = [];
   let attrs = [];
   let hasSpread = false;
   let key = null;
   let statics = [];
+  var attrNames = new Set();
 
   attributes.forEach((attribute) => {
     if (t.isJSXSpreadAttribute(attribute)) {
@@ -21,6 +22,11 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
     const attr = toReference(t, attribute.name);
     const name = attr.value;
     let value = attribute.value;
+
+    if (attrNames.has(name)) {
+      throw file.errorWithNode(attribute, `Duplicate attribute "${name}".`);
+    }
+    attrNames.add(name);
 
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;

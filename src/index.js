@@ -159,6 +159,8 @@ export default function ({ Plugin, types: t }) {
           return wrapper;
         }
 
+        openingElement._iDOMisRoot = true;
+
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {

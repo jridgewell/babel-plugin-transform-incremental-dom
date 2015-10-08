@@ -37,3 +37,15 @@ function fn4() {
   });
   return elementVoid("root");
 }
+
+function fn5() {
+  var a = inner();
+  elementOpen("root");
+  return elementClose("root");
+
+  function inner() {
+    return _jsxWrapper(function () {
+      return elementVoid("div");
+    });
+  }
+}

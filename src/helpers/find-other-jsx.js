@@ -14,6 +14,13 @@ const jsxVisitor = {
   JSXElement(node, parent, scope, state) {
     state.otherJSX = true;
     this.stop();
+  },
+
+  CallExpression(node, parent, scope, state) {
+    if (node._iDOMisRoot) {
+      state.otherJSX = true;
+      this.stop();
+    }
   }
 };
 

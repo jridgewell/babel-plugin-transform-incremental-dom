@@ -5,10 +5,11 @@ import iDOMMethod from "./idom-method";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, scope, file, children, eagerDeclarators, { eager }) {
+export default function buildChildren(t, scope, file, children, { eager }) {
   let renderArbitraryRef;
+  const eagerChildren = [];
 
-  return children.reduce((children, child) => {
+  children = children.reduce((children, child) => {
     const wasInExpressionContainer = t.isJSXExpressionContainer(child);
     if (wasInExpressionContainer) {
       child = child.expression;
@@ -17,8 +18,8 @@ export default function buildChildren(t, scope, file, children, eagerDeclarators
     if (t.isJSXEmptyExpression(child)) { return children; }
 
     if (t.isLiteral(child)) {
-      const type = typeof child.value;
       let value = child.value;
+      const type = typeof value;
 
       if (type === "string") {
         value = cleanText(value);
@@ -33,7 +34,7 @@ export default function buildChildren(t, scope, file, children, eagerDeclarators
 
       if (eager) {
         const ref = scope.generateUidIdentifierBasedOnNode(child);
-        eagerDeclarators.push(t.variableDeclarator(ref, child));
+        eagerChildren.push(t.variableDeclarator(ref, child));
         child = ref;
       }
 
@@ -43,4 +44,6 @@ export default function buildChildren(t, scope, file, children, eagerDeclarators
     children.push(child);
     return children;
   }, []);
+
+  return { children, eagerChildren };
 }

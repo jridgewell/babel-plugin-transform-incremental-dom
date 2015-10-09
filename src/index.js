@@ -1,13 +1,17 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
 import toReference from "./helpers/ast/to-reference";
-import iDOMMethod from "./helpers/idom-method";
 
+import getOption from "./helpers/get-option";
+import iDOMMethod from "./helpers/idom-method";
 import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
 import extractOpenArguments from "./helpers/extract-open-arguments";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
+import replaceArrow from "./helpers/replace-arrow";
+import hoistStatics from "./helpers/hoist-statics";
+import eagerlyDeclare from "./helpers/eagerly-declare";
 
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
@@ -82,11 +86,15 @@ export default function ({ Plugin, types: t }) {
         const eagerDeclarators = (containingJSXElement) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
+        const staticAttrs = (containingJSXElement) ?
+          containingJSXElement.getData("staticAttrs") :
+          [];
 
         this.setData("containerNeedsWrapper", containerNeedsWrapper);
         this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
         this.setData("needsWrapper", needsWrapper);
+        this.setData("staticAttrs", staticAttrs);
       },
 
       exit(node, parent, scope, file) {
@@ -94,11 +102,13 @@ export default function ({ Plugin, types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          needsWrapper
+          staticAttrs,
+          needsWrapper,
+          key
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
-
+        const hoist = getOption(file, "hoist");
         const explicitReturn = t.isReturnStatement(parent);
         const implicitReturn = t.isArrowFunctionExpression(parent);
 
@@ -106,7 +116,13 @@ export default function ({ Plugin, types: t }) {
         // into normal expressions.
         const openingElement = node.openingElement;
         const closingElement = node.closingElement;
-        const children = buildChildren(t, scope, file, node.children, eagerDeclarators, { eager });
+
+        const {
+          children,
+          eagerChildren
+        } = buildChildren(t, scope, file, node.children, { eager });
+
+        eagerDeclarators.push(...eagerChildren);
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }
@@ -127,25 +143,21 @@ export default function ({ Plugin, types: t }) {
           return sequence;
         }
 
-        // Transform (recursively) any sequence expressions into a series of
-        // statements.
-        elements = flattenExpressions(t, elements);
+        if (explicitReturn || implicitReturn || needsWrapper) {
+          // Transform (recursively) any sequence expressions into a series of
+          // statements.
+          elements = flattenExpressions(t, elements);
 
-        if (eagerDeclarators.length && !containingJSXElement) {
-          // Find the closest statement, and insert our eager declarations
-          // before it.
-          const parentStatement = this.findParent((path) => {
-            return path.isStatement();
-          });
-          const declaration = t.variableDeclaration("let", eagerDeclarators);
-          const [path] = parentStatement.insertBefore(declaration);
-          // Add our eager declarations to the scopes tracked bindings.
-          scope.registerBinding("let", path);
+          // Ensure the last statement returns the DOM element.
+          elements = statementsWithReturnLast(t, elements);
         }
 
-        // Ensure the last statement returns the DOM element.
-        if (explicitReturn || implicitReturn || needsWrapper) {
-          elements = statementsWithReturnLast(t, elements);
+        if (!containingJSXElement && eagerDeclarators.length) {
+          eagerlyDeclare(t, scope, this, eagerDeclarators);
+        }
+
+        if (!containingJSXElement && staticAttrs.length) {
+          hoistStatics(t, scope, this, staticAttrs, elements);
         }
 
         if (needsWrapper) {
@@ -164,7 +176,7 @@ export default function ({ Plugin, types: t }) {
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {
-          parent.body = t.blockStatement(elements);
+          replaceArrow(t, this.parentPath, elements);
         } else if (explicitReturn) {
           this.parentPath.replaceWithMultiple(elements);
         } else {
@@ -180,18 +192,25 @@ export default function ({ Plugin, types: t }) {
         const JSXElement = this.parentPath;
         // Only eagerly evaluate our attributes if we will be wrapping the element.
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
+        const eagerDeclarators = JSXElement.getData("eagerDeclarators");
+        const hoist = getOption(file, "hoist");
+        const staticAttrs = JSXElement.getData("staticAttrs");
 
         const {
           key,
           statics,
           attrs,
           attributeDeclarators,
+          staticAttr,
           hasSpread
-        } = extractOpenArguments(t, scope, node.attributes, eager);
+        } = extractOpenArguments(t, scope, node.attributes, { eager, hoist });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
-        JSXElement.getData("eagerDeclarators").push(...attributeDeclarators);
+        eagerDeclarators.push(...attributeDeclarators);
+        if (staticAttr) {
+          staticAttrs.push(staticAttr);
+        }
 
         // Only push arguments if they're needed
         const args = [tag];
@@ -199,7 +218,7 @@ export default function ({ Plugin, types: t }) {
           args.push(key || t.literal(null));
         }
         if (statics) {
-          args.push(t.arrayExpression(statics));
+          args.push(statics);
         }
 
         // If there is a spread element, we need to use

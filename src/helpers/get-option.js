@@ -1,5 +1,5 @@
 // Deep retrieves from an object
-export default function get(object, path) {
+function get(object, path) {
   let i;
   for (i = 0; i < path.length; i++) {
     if (!object) { break; }
@@ -7,4 +7,8 @@ export default function get(object, path) {
   }
 
   return (i === path.length) ? object : undefined;
+}
+
+export default function getOption(file, option) {
+  return get(file, ['opts', 'extra', 'incremental-dom', option]);
 }

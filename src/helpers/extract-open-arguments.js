@@ -1,17 +1,20 @@
 import toReference from "./ast/to-reference";
+import getOption from "./get-option";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, attributes, eager) {
+export default function extractOpenArguments(t, scope, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
   let attrs = [];
   let hasSpread = false;
   let key = null;
   let statics = [];
+  let keyIndex = -1;
+  let staticAttr = null;
 
-  attributes.forEach((attribute) => {
+  attributes.forEach((attribute, i) => {
     if (t.isJSXSpreadAttribute(attribute)) {
       hasSpread = true;
       attrs.push(attribute);
@@ -34,20 +37,46 @@ export default function extractOpenArguments(t, scope, attributes, eager) {
       value = t.literal(true);
     }
 
+    const literal = t.isLiteral(value);
+
     if (name === "key") {
+      statics.push(attr);
+      if (hoist && !(eager || literal)) {
+        statics.push(t.identifier("undefined"));
+        keyIndex = (i << 1) + 1;
+      } else {
+        statics.push(value);
+      }
+
       key = value;
+      return;
     }
 
-    if (name === "key" || t.isLiteral(value)) {
+    if (literal) {
       statics.push(attr, value);
     } else {
       attrs.push(attr, value);
     }
   });
 
-  if (!statics.length) { statics = null; }
   if (!attrs.length) { attrs = null; }
+  if (statics.length) {
+    statics = t.arrayExpression(statics);
+    if (hoist) {
+      const ref = scope.generateUidIdentifier("statics");
+      staticAttr = {
+        declarator: t.variableDeclarator(ref, statics),
+        key: {
+          index: keyIndex,
+          value: key
+        }
+      };
+      statics = ref;
+    }
+  } else {
+    statics = null;
+  }
 
-  return { key, statics, attrs, attributeDeclarators, hasSpread };
+  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAttr, hasSpread };
 }
 

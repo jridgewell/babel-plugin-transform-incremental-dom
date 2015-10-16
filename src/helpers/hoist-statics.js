@@ -19,7 +19,7 @@ export default function hoistStatics(t, scope, path, staticAttrs, elements) {
           "=",
           t.memberExpression(declarator.id, t.literal(index), true),
           value
-        )))
+        )));
       }
     }
 

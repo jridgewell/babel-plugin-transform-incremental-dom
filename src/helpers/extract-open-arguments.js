@@ -1,5 +1,4 @@
 import toReference from "./ast/to-reference";
-import getOption from "./get-option";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key

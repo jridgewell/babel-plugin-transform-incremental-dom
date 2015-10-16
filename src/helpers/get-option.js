@@ -10,5 +10,5 @@ function get(object, path) {
 }
 
 export default function getOption(file, option) {
-  return get(file, ['opts', 'extra', 'incremental-dom', option]);
+  return get(file, ["opts", "extra", "incremental-dom", option]);
 }

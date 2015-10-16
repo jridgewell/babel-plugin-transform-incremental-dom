@@ -104,11 +104,9 @@ export default function ({ Plugin, types: t }) {
           eagerDeclarators,
           staticAttrs,
           needsWrapper,
-          key
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
-        const hoist = getOption(file, "hoist");
         const explicitReturn = t.isReturnStatement(parent);
         const implicitReturn = t.isArrowFunctionExpression(parent);
 

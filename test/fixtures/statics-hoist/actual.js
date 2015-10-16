@@ -148,3 +148,9 @@ var test = (key) =>  (key = 2, <div id="id" key={key} />);
 function fn3o() {
   return <div id="id" key={""} />;
 }
+
+function nest() {
+  return <div id="id" key={key}>
+    <div id="id" key={key} />
+  </div>;
+}

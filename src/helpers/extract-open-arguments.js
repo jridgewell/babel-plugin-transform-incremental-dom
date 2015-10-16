@@ -1,18 +1,19 @@
 import toReference from "./ast/to-reference";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
+import addStaticHoist from "./hoist-statics";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, attributes, { eager, hoist }) {
+export default function extractOpenArguments(t, scope, file, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
   let attrs = [];
   let hasSpread = false;
   let key = null;
   let statics = [];
   let keyIndex = -1;
-  let staticAttr = null;
+  let staticAssignment = null;
 
   attributes.forEach((attribute, i) => {
     if (t.isJSXSpreadAttribute(attribute)) {
@@ -40,15 +41,18 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
     const literal = isLiteralOrUndefined(t, value);
 
     if (name === "key") {
-      statics.push(attr);
-      if (hoist && !(eager || literal)) {
-        statics.push(t.identifier("undefined"));
+      key = value;
+      if (hoist && !(literal || eager)) {
+        value = t.literal("");
         keyIndex = (i << 1) + 1;
-      } else {
-        statics.push(value);
       }
 
-      key = value;
+      if (hoist && eager && !literal) {
+        attrs.push(attr, value);
+      } else {
+        statics.push(attr, value);
+      }
+
       return;
     }
 
@@ -63,20 +67,14 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
   if (statics.length) {
     statics = t.arrayExpression(statics);
     if (hoist) {
-      const ref = scope.generateUidIdentifier("statics");
-      staticAttr = {
-        declarator: t.variableDeclarator(ref, statics),
-        key: {
-          index: keyIndex,
-          value: key
-        }
-      };
-      statics = ref;
+      const hoist = addStaticHoist(t, scope, file, statics, key, keyIndex);
+      statics = hoist.id;
+      staticAssignment = hoist.staticAssignment;
     }
   } else {
     statics = null;
   }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAttr, hasSpread };
+  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAssignment, hasSpread };
 }
 

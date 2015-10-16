@@ -1,38 +1,37 @@
-import eagerlyDeclare from "./eagerly-declare";
-import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
+const namespace = "incremental-dom-hoists";
 
-export default function hoistStatics(t, scope, path, staticAttrs, elements) {
-  staticAttrs.forEach((attrs) => {
-    const declarator = attrs.declarator;
-    const { value, index } = attrs.key;
-    const keyVariable = !isLiteralOrUndefined(t, value) && value;
-
-    if (keyVariable) {
-      if (index === -1) {
-        // If there's no key index, that means we're eagerly evaluating
-        // the key variable. If that's true, we need to eagerly evaluate
-        // the declaration, too.
-        eagerlyDeclare(t, scope, path, [declarator]);
-      } else {
-        // We need to assign the key variable's value to the statics array
-        // at `index`.
-        elements.unshift(t.expressionStatement(t.assignmentExpression(
-          "=",
-          t.memberExpression(declarator.id, t.literal(index), true),
-          value
-        )));
-      }
-    }
-
-    // If the statics array does not have a key variable (or we're assigning
-    // it's value to index), then we know that we can hoist the statics array
-    // to the Program scope.
-    if (!keyVariable || index > -1) {
-      const declaration = t.variableDeclaration("let", [declarator]);
-      const programScope = scope.getProgramParent();
-      programScope.path.unshiftContainer("body", declaration);
-    }
-  });
+// Sets up the file to hoist all statics
+export function setupHoists(program, parent, scope, file) {
+  // A map to store helper variable references
+  // for each file
+  file.set(namespace, []);
 }
 
+export function hoistStatics(t, file, path) {
+  const hoists = file.get(namespace);
 
+  if (hoists.length) {
+    const declaration = t.variableDeclaration("const", hoists);
+    path.unshiftContainer("body", declaration);
+  }
+}
+
+export default function addStaticHoist(t, scope, file, statics, key, keyIndex) {
+  const id = scope.generateUidIdentifier("statics");
+  const declarator = t.variableDeclarator(id, statics);
+  let staticAssignment = null;
+
+  const hoists = file.get(namespace);
+  hoists.push(declarator);
+
+  if (keyIndex > -1) {
+    // We need to assign the key variable's value to the statics array at `index`.
+    staticAssignment = t.expressionStatement(t.assignmentExpression(
+      "=",
+      t.memberExpression(id, t.literal(keyIndex), true),
+      key
+    ));
+  }
+
+  return { id, staticAssignment };
+}

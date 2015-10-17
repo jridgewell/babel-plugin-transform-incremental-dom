@@ -1,4 +1,5 @@
 import toReference from "./ast/to-reference";
+import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
@@ -27,7 +28,7 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
 
-      if (eager && !t.isLiteral(value) && !value._iDOMwasJSX) {
+      if (eager && !isLiteralOrUndefined(t, value) && !value._iDOMwasJSX) {
         const ref = scope.generateUidIdentifierBasedOnNode(value);
         attributeDeclarators.push(t.variableDeclarator(ref, value));
         value = ref;
@@ -36,7 +37,7 @@ export default function extractOpenArguments(t, scope, attributes, { eager, hois
       value = t.literal(true);
     }
 
-    const literal = t.isLiteral(value);
+    const literal = isLiteralOrUndefined(t, value);
 
     if (name === "key") {
       statics.push(attr);

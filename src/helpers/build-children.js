@@ -2,6 +2,7 @@ import cleanText from "./clean-text";
 import toFunctionCall from "./ast/to-function-call";
 import injectRenderArbitrary from "./runtime/render-arbitrary";
 import iDOMMethod from "./idom-method";
+import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
@@ -17,7 +18,7 @@ export default function buildChildren(t, scope, file, children, { eager }) {
 
     if (t.isJSXEmptyExpression(child)) { return children; }
 
-    if (t.isLiteral(child)) {
+    if (isLiteralOrUndefined(t, child)) {
       let value = child.value;
       const type = typeof value;
 

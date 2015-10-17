@@ -144,3 +144,7 @@ function test() {
 }
 
 var test = (key) =>  (key = 2, <div id="id" key={key} />);
+
+function fn3o() {
+  return <div id="id" key={""} />;
+}

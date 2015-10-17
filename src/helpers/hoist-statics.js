@@ -1,10 +1,11 @@
 import eagerlyDeclare from "./eagerly-declare";
+import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 export default function hoistStatics(t, scope, path, staticAttrs, elements) {
   staticAttrs.forEach((attrs) => {
     const declarator = attrs.declarator;
     const { value, index } = attrs.key;
-    const keyVariable = !t.isLiteral(value) && value;
+    const keyVariable = !isLiteralOrUndefined(t, value) && value;
 
     if (keyVariable) {
       if (index === -1) {

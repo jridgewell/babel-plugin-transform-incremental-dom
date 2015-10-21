@@ -8,10 +8,24 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 2.2.0
+
+- **New Feature**
+  - Add optional Static Attribute hoisting.
+    - [#26](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/26)
+- **Bug Fix**
+  - Fixes detection of root JSX Element in sub-render functions.
+    - [#21](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/21)
+    - [#28](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/28)
+  - Supports JSX Elements implicitly returned by arrow functions.
+    - [#20](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/20)
+  - Fixes use of JSX Elements inside Sequence Expressions.
+    - [#24](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/24)
+
 ## 2.1.0
 
 - **New Feature**
-  - Add an optional function prefix to Incremental DOM functions
+  - Add an optional function prefix to Incremental DOM functions.
 
 ## 2.0.1
 

@@ -1,40 +1,46 @@
-var _statics34 = ["id", "id", "key", undefined];
-var _statics33 = ["id", "id", "key", undefined];
-var _statics32 = ["id", "id", "key", undefined];
-var _statics31 = ["id", "id", "key", undefined];
-var _statics30 = ["id", "id", "key", undefined];
-var _statics29 = ["id", "id", "key", undefined];
-var _statics28 = ["id", "id", "key", undefined];
-var _statics27 = ["id", "id", "key", undefined];
-var _statics26 = ["key", "test"];
-var _statics24 = ["id", "id"];
-var _statics23 = ["id", "id2", "key", undefined];
-var _statics22 = ["id", "id"];
-var _statics21 = ["id", "id2", "key", undefined];
-var _statics20 = ["id", "id"];
-var _statics19 = ["id", "id2"];
-var _statics18 = ["id", "id"];
-var _statics17 = ["id", "id", "key", "key"];
-var _statics16 = ["id", "id"];
-var _statics15 = ["id", "id"];
-var _statics14 = ["id", "id"];
-var _statics12 = ["id", "id", "key", undefined];
+var _statics = ["id", "id"],
+    _statics2 = ["id", "id"],
+    _statics3 = ["id", 3],
+    _statics4 = ["id", "id", "other", "value", "key", ""],
+    _statics5 = ["id", "id", "key", ""],
+    _statics6 = ["id", "id", "key", ""],
+    _statics7 = ["id", "id", "key", ""],
+    _statics8 = ["id", "id", "other", "value", "another", "test", "key", ""],
+    _statics9 = ["id", "id", "key", ""],
+    _statics10 = ["id", "id", "key", ""],
+    _statics11 = ["id", "id"],
+    _statics12 = ["id", "id", "key", ""],
+    _statics13 = ["id", "id"],
+    _statics14 = ["id", "id"],
+    _statics15 = ["id", "id"],
+    _statics16 = ["id", "id"],
+    _statics17 = ["id", "id", "key", "key"],
+    _statics18 = ["id", "id"],
+    _statics19 = ["id", "id2"],
+    _statics20 = ["id", "id"],
+    _statics21 = ["id", "id2", "key", ""],
+    _statics22 = ["id", "id"],
+    _statics23 = ["id", "id2", "key", ""],
+    _statics24 = ["id", "id"],
+    _statics25 = ["id", "id2"],
+    _statics26 = ["key", "test"],
+    _statics27 = ["id", "id", "key", ""],
+    _statics28 = ["id", "id", "key", ""],
+    _statics29 = ["id", "id", "key", ""],
+    _statics30 = ["id", "id", "key", ""],
+    _statics31 = ["id", "id", "key", ""],
+    _statics32 = ["id", "id", "key", ""],
+    _statics33 = ["id", "id", "key", ""],
+    _statics34 = ["id", "id", "key", ""],
+    _statics35 = ["id", "id", "key", ""],
+    _statics36 = ["id", "id", "key", ""],
+    _statics37 = ["id", "id", "key", ""];
 
 function _jsxWrapper(func) {
   func.__jsxDOMWrapper = true;
   return func;
 }
 
-var _statics10 = ["id", "id", "key", undefined];
-var _statics9 = ["id", "id", "key", undefined];
-var _statics8 = ["id", "id", "other", "value", "another", "test", "key", undefined];
-var _statics7 = ["id", "id", "key", undefined];
-var _statics6 = ["id", "id", "key", undefined];
-var _statics5 = ["id", "id", "key", undefined];
-var _statics4 = ["id", "id", "other", "value", "key", undefined];
-var _statics3 = ["id", 3];
-var _statics2 = ["id", "id"];
-var _statics = ["id", "id"];
 var key3 = 'test';
 
 function fn() {
@@ -89,10 +95,9 @@ function fn7(items) {
 
   var _loop = function () {
     var _i = i;
-    var _statics11 = ["id", "id", "key", _i];
 
     els.push(_jsxWrapper(function () {
-      return elementVoid("div", _i, _statics11);
+      return elementVoid("div", _i, _statics11, "key", _i);
     }));
   };
 
@@ -112,10 +117,9 @@ function fn7(items) {
 function fn7(items) {
   items = items.map(function (el, i) {
     var _i2 = i;
-    var _statics13 = ["id", "id", "key", _i2];
 
     return _jsxWrapper(function () {
-      return elementVoid("div", _i2, _statics13);
+      return elementVoid("div", _i2, _statics13, "key", _i2);
     });
   });
   return elementVoid("root");
@@ -178,11 +182,10 @@ function fn8(key4) {
 
 function fn8(key4) {
   var _key4 = key4;
-  var _statics25 = ["id", "id2", "key", _key4];
 
   var a = _jsxWrapper(function () {
     elementOpen("div", null, _statics24);
-    elementVoid("div", _key4, _statics25);
+    elementVoid("div", _key4, _statics25, "key", _key4);
     return elementClose("div");
   });
   return elementVoid("root");
@@ -241,3 +244,15 @@ function test() {
 var test = function test(key) {
   return (key = 2, (_statics34[3] = key, elementVoid("div", key, _statics34)));
 };
+
+function fn3o() {
+  return elementVoid("div", "", _statics35);
+}
+
+function nest() {
+  _statics36[3] = key;
+  _statics37[3] = key;
+  elementOpen("div", key, _statics36);
+  elementVoid("div", key, _statics37);
+  return elementClose("div");
+}

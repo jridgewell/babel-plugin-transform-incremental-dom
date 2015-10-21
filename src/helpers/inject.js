@@ -8,16 +8,11 @@ function setHelperRef(file, helper, value) {
   return file.get(namespace)[helper] = value;
 }
 
-function nullObject() {
-  return Object.create(null);
-}
-
-
 // Sets up the needed data maps for injecting runtime helpers.
 export function setupInjector(program, parent, scope, file) {
   // A map to store helper variable references
   // for each file
-  file.setDynamic(namespace, nullObject);
+  file.setDynamic(namespace, () => Object.create(null));
 }
 
 

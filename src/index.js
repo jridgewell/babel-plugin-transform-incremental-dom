@@ -10,7 +10,7 @@ import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
 import replaceArrow from "./helpers/replace-arrow";
-import hoistStatics from "./helpers/hoist-statics";
+import { setupHoists, hoistStatics } from "./helpers/hoist-statics";
 import eagerlyDeclare from "./helpers/eagerly-declare";
 
 import { setupInjector } from "./helpers/inject";
@@ -18,7 +18,13 @@ import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 export default function ({ Plugin, types: t }) {
   return new Plugin("incremental-dom", { visitor : {
-    Program: setupInjector,
+    Program: {
+      enter: [setupInjector, setupHoists],
+
+      exit(program, parent, scope, file) {
+        hoistStatics(t, file, this);
+      }
+    },
 
     JSXElement: {
       enter(node) {
@@ -86,15 +92,15 @@ export default function ({ Plugin, types: t }) {
         const eagerDeclarators = (containingJSXElement) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
-        const staticAttrs = (containingJSXElement) ?
-          containingJSXElement.getData("staticAttrs") :
+        const staticAssignments = (containingJSXElement) ?
+          containingJSXElement.getData("staticAssignments") :
           [];
 
         this.setData("containerNeedsWrapper", containerNeedsWrapper);
         this.setData("containingJSXElement", containingJSXElement);
         this.setData("eagerDeclarators", eagerDeclarators);
         this.setData("needsWrapper", needsWrapper);
-        this.setData("staticAttrs", staticAttrs);
+        this.setData("staticAssignments", staticAssignments);
       },
 
       exit(node, parent, scope, file) {
@@ -102,13 +108,11 @@ export default function ({ Plugin, types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          staticAttrs,
+          staticAssignments,
           needsWrapper,
-          key
         } = this.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
-        const hoist = getOption(file, "hoist");
         const explicitReturn = t.isReturnStatement(parent);
         const implicitReturn = t.isArrowFunctionExpression(parent);
 
@@ -156,8 +160,8 @@ export default function ({ Plugin, types: t }) {
           eagerlyDeclare(t, scope, this, eagerDeclarators);
         }
 
-        if (!containingJSXElement && staticAttrs.length) {
-          hoistStatics(t, scope, this, staticAttrs, elements);
+        if (!containingJSXElement && staticAssignments.length) {
+          elements = [...staticAssignments, ...elements];
         }
 
         if (needsWrapper) {
@@ -194,22 +198,22 @@ export default function ({ Plugin, types: t }) {
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
         const eagerDeclarators = JSXElement.getData("eagerDeclarators");
         const hoist = getOption(file, "hoist");
-        const staticAttrs = JSXElement.getData("staticAttrs");
+        const staticAssignments = JSXElement.getData("staticAssignments");
 
         const {
           key,
           statics,
           attrs,
           attributeDeclarators,
-          staticAttr,
+          staticAssignment,
           hasSpread
-        } = extractOpenArguments(t, scope, node.attributes, { eager, hoist });
+        } = extractOpenArguments(t, scope, file, node.attributes, { eager, hoist });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
         eagerDeclarators.push(...attributeDeclarators);
-        if (staticAttr) {
-          staticAttrs.push(staticAttr);
+        if (staticAssignment) {
+          staticAssignments.push(staticAssignment);
         }
 
         // Only push arguments if they're needed

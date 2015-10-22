@@ -8,12 +8,13 @@ import addStaticHoist from "./hoist-statics";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(t, scope, file, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
-  let attrs = [];
-  let hasSpread = false;
   let key = null;
+  let attrs = [];
   let statics = [];
   let keyIndex = -1;
   let staticAssignment = null;
+  let hasSpread = false;
+  let constant = true;
 
   attributes.forEach((attribute, i) => {
     if (t.isJSXSpreadAttribute(attribute)) {
@@ -63,7 +64,12 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
     }
   });
 
-  if (!attrs.length) { attrs = null; }
+  if (attrs.length) {
+    constant = false;
+  } else {
+    attrs = null;
+  }
+
   if (statics.length) {
     statics = t.arrayExpression(statics);
     if (hoist) {
@@ -75,6 +81,6 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
     statics = null;
   }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAssignment, hasSpread };
+  return { key, statics, attrs, attributeDeclarators, staticAssignment, hasSpread, constant };
 }
 

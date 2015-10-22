@@ -123,7 +123,8 @@ export default function ({ Plugin, types: t }) {
 
         const {
           children,
-          eagerChildren
+          eagerChildren,
+          constant
         } = buildChildren(t, scope, file, node.children, { eager });
 
         eagerDeclarators.push(...eagerChildren);
@@ -184,7 +185,7 @@ export default function ({ Plugin, types: t }) {
         } else if (explicitReturn) {
           this.parentPath.replaceWithMultiple(elements);
         } else {
-          return elements;
+          this.replaceWithMultiple(elements);
         }
       }
     },
@@ -206,7 +207,8 @@ export default function ({ Plugin, types: t }) {
           attrs,
           attributeDeclarators,
           staticAssignment,
-          hasSpread
+          hasSpread,
+          constant
         } = extractOpenArguments(t, scope, file, node.attributes, { eager, hoist });
 
         // Push any eager attribute declarators onto the element's list of

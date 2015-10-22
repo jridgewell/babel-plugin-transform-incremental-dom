@@ -9,6 +9,7 @@ import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 export default function buildChildren(t, scope, file, children, { eager }) {
   let renderArbitraryRef;
   const eagerChildren = [];
+  let constant = true;
 
   children = children.reduce((children, child) => {
     const wasInExpressionContainer = t.isJSXExpressionContainer(child);
@@ -31,6 +32,7 @@ export default function buildChildren(t, scope, file, children, { eager }) {
         child = toFunctionCall(t, iDOMMethod(file, "text"), [t.literal(value)]);
       }
     } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
+      constant = false;
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
 
       if (eager) {
@@ -46,5 +48,5 @@ export default function buildChildren(t, scope, file, children, { eager }) {
     return children;
   }, []);
 
-  return { children, eagerChildren };
+  return { children, eagerChildren, constant };
 }

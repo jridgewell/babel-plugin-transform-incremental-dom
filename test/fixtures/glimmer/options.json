@@ -1,0 +1,7 @@
+{
+  "extra": {
+    "incremental-dom": {
+      "glimmer": true
+    }
+  }
+}

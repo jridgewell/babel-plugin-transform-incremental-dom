@@ -1,18 +1,18 @@
 const namespace = "incremental-dom-hoists";
 
 // Sets up the file to hoist all statics
-export function setupHoists(program, parent, scope, file) {
+export function setupHoists(program, file) {
   // A map to store helper variable references
   // for each file
   file.set(namespace, []);
 }
 
-export function hoistStatics(t, file, path) {
+export function hoistStatics(t, program, file) {
   const hoists = file.get(namespace);
 
   if (hoists.length) {
     const declaration = t.variableDeclaration("const", hoists);
-    path.unshiftContainer("body", declaration);
+    program.unshiftContainer("body", declaration);
   }
 }
 

@@ -16,40 +16,40 @@ import eagerlyDeclare from "./helpers/eagerly-declare";
 import { setupInjector } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
-export default function ({ Plugin, types: t }) {
-  return new Plugin("incremental-dom", { visitor : {
+export default function ({ types: t }) {
+  return { visitor: {
     Program: {
       enter: [setupInjector, setupHoists],
 
-      exit(program, parent, scope, file) {
-        hoistStatics(t, file, this);
+      exit(path, file) {
+        hoistStatics(t, path, file);
       }
     },
 
     JSXElement: {
-      enter(node) {
+      enter(path) {
         let inAssignment = false;
         let inAttribute = false;
         let inCallExpression = false;
         let inCollection = false;
         let inReturnStatement = false;
         let containingJSXElement;
-        let last = node;
+        let last = path;
 
-        this.findParent((path) => {
+        path.findParent((path) => {
           if (path.isJSXElement()) {
             containingJSXElement = path;
             return true;
           }
           if (path.isArrowFunctionExpression()) {
-            inReturnStatement = inReturnStatement || !t.isBlockStatement(path.node.body);
+            inReturnStatement = inReturnStatement || !path.get("body").isBlockStatement();
             return true;
           }
           if (path.isFunction() || path.isProgram()) {
             return true;
           }
           if (path.isSequenceExpression()) {
-            const expressions = path.node.expressions;
+            const expressions = path.get("expressions");
             const index = expressions.indexOf(last);
             if (index !== expressions.length - 1) {
               return true;
@@ -66,7 +66,7 @@ export default function ({ Plugin, types: t }) {
           } else if (path.isCallExpression()) {
             inCallExpression = true;
           }
-          last = path.node;
+          last = path;
         });
 
         // Values are useless if they aren't assigned.
@@ -96,11 +96,11 @@ export default function ({ Plugin, types: t }) {
           containingJSXElement.getData("staticAssignments") :
           [];
 
-        this.setData("containerNeedsWrapper", containerNeedsWrapper);
-        this.setData("containingJSXElement", containingJSXElement);
-        this.setData("eagerDeclarators", eagerDeclarators);
-        this.setData("needsWrapper", needsWrapper);
-        this.setData("staticAssignments", staticAssignments);
+        path.setData("containerNeedsWrapper", containerNeedsWrapper);
+        path.setData("containingJSXElement", containingJSXElement);
+        path.setData("eagerDeclarators", eagerDeclarators);
+        path.setData("needsWrapper", needsWrapper);
+        path.setData("staticAssignments", staticAssignments);
       },
 
       exit(node, parent, scope, file) {
@@ -110,7 +110,7 @@ export default function ({ Plugin, types: t }) {
           eagerDeclarators,
           staticAssignments,
           needsWrapper,
-        } = this.data;
+        } = path.data;
 
         const eager = needsWrapper || containerNeedsWrapper;
         const explicitReturn = t.isReturnStatement(parent);
@@ -118,8 +118,8 @@ export default function ({ Plugin, types: t }) {
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        const openingElement = node.openingElement;
-        const closingElement = node.closingElement;
+        const openingElement = path.get("openingElement");
+        const closingElement = path.get("closingElement");
 
         const {
           children,
@@ -180,9 +180,9 @@ export default function ({ Plugin, types: t }) {
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {
-          replaceArrow(t, this.parentPath, elements);
+          replaceArrow(t, path.parentPath, elements);
         } else if (explicitReturn) {
-          this.parentPath.replaceWithMultiple(elements);
+          path.parentPath.replaceWithMultiple(elements);
         } else {
           return elements;
         }
@@ -193,7 +193,7 @@ export default function ({ Plugin, types: t }) {
       exit(node, parent, scope, file) {
         const tag = toReference(t, node.name);
 
-        const JSXElement = this.parentPath;
+        const JSXElement = path.parentPath;
         // Only eagerly evaluate our attributes if we will be wrapping the element.
         const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
         const eagerDeclarators = JSXElement.getData("eagerDeclarators");
@@ -271,5 +271,5 @@ export default function ({ Plugin, types: t }) {
     JSXNamespacedName: function() {
       throw this.errorWithNode("JSX Namespaces aren't supported.");
     }
-  }});
+  }};
 }

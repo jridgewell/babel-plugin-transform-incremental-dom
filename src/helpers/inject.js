@@ -1,10 +1,11 @@
 const namespace = "incremental-dom-helpers";
 
 function getHelperRef(file, helper) {
-  return file.get(namespace)[helper];
+  const injectedHelper = file.get(namespace)[helper];
+  return injectedHelper ? injectedHelper.ref : null;
 }
 
-function setHelperRef(file, helper, value) {
+function setHelper(file, helper, value) {
   return file.get(namespace)[helper] = value;
 }
 
@@ -32,16 +33,16 @@ export function injectHelpers(program, file) {
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
 export default function inject(t, file, helper, helperAstFn, dependencyInjectors = {}) {
-  let injectedHelper = getHelperRef(file, helper);
-  if (injectedHelper) {
-    return injectedHelper.ref;
+  let ref = getHelperRef(file, helper);
+  if (ref) {
+    return ref;
   }
 
-  injectedHelper = {
-    ref: file.scope.generateUidIdentifier(helper),
-    expression: null
-  };
-  setHelperRef(file, helper, injectedHelper);
+  ref = file.scope.generateUidIdentifier(helper);
+  let expression = null;
+
+  const injectedHelper = { ref, expression };
+  setHelper(file, helper, injectedHelper);
 
   const dependencyRefs = {};
 
@@ -57,5 +58,5 @@ export default function inject(t, file, helper, helperAstFn, dependencyInjectors
 
   injectedHelper.expression = helperAstFn(t, file, injectedHelper.ref, dependencyRefs);
 
-  return injectedHelper.ref;
+  return ref;
 }

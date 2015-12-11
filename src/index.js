@@ -183,9 +183,7 @@ export default function ({ types: t }) {
 
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
-        if (implicitReturn) {
-          replaceArrow(t, parentPath, elements);
-        } else if (explicitReturn) {
+        if (explicitReturn) {
           parentPath.replaceWithMultiple(elements);
         } else {
           path.replaceWithMultiple(elements);

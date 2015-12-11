@@ -30,6 +30,10 @@ function trim(str) {
   return str.replace(/^\s+|\s+$/, "");
 }
 
+function stripUseStrict(str) {
+  return str.replace(/^"use strict";\n+/, "");
+}
+
 
 describe("turn jsx into incremental-dom", () => {
   const fixturesDir = path.join(__dirname, "fixtures");
@@ -59,10 +63,13 @@ describe("turn jsx into incremental-dom", () => {
 
       if (throwMsg) {
         throw new Error("Expected error message: " + throwMsg + ". But parsing succeeded.");
-      } else if (expected) {
-        assert.equal(trim(actual), trim(expected));
+      }
+
+      actual = stripUseStrict(trim(actual));
+      if (expected) {
+        assert.equal(actual, trim(expected));
       } else {
-        require("fs").writeFileSync(path.join(fixtureDir, "expected.js"), trim(actual));
+        fs.writeFileSync(path.join(fixtureDir, "expected.js"), actual);
       }
     });
   });

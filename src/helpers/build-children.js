@@ -30,7 +30,7 @@ export default function buildChildren(t, scope, file, children, { eager }) {
       }
 
       if (type === "string" || type === "number") {
-        child = toFunctionCall(t, iDOMMethod(file, "text"), [t.stringLiteral(value)]);
+        child = toFunctionCall(t, iDOMMethod(file, "text"), [t.stringLiteral("" + value)]);
       }
     } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);

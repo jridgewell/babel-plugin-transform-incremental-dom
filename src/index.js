@@ -13,16 +13,20 @@ import replaceArrow from "./helpers/replace-arrow";
 import { setupHoists, hoistStatics } from "./helpers/hoist-statics";
 import eagerlyDeclare from "./helpers/eagerly-declare";
 
-import { setupInjector } from "./helpers/inject";
+import { setupInjector, injectHelpers } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 export default function ({ types: t }) {
   return { visitor: {
     Program: {
-      enter: [setupInjector, setupHoists],
+      enter(path, { file }) {
+        setupInjector(file);
+        setupHoists(file);
+      },
 
-      exit(path, file) {
+      exit(path, { file }) {
         hoistStatics(t, path, file);
+        injectHelpers(path, file);
       }
     },
 
@@ -103,7 +107,7 @@ export default function ({ types: t }) {
         path.setData("staticAssignments", staticAssignments);
       },
 
-      exit(path, file) {
+      exit(path, { file }) {
         const {
           containerNeedsWrapper,
           containingJSXElement,

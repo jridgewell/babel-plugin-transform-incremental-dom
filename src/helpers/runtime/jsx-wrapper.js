@@ -17,7 +17,7 @@ function jsxWrapperAST(t, file, ref) {
    *   return func;
    * }
    */
-  return t.functionDeclaration(
+  return t.functionExpression(
     ref,
     [func],
     t.blockStatement([

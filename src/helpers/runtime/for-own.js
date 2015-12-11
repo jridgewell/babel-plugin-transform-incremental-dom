@@ -21,7 +21,7 @@ function forOwnAST(t, file, ref, deps) {
    *   }
    * }
    */
-  return t.functionDeclaration(
+  return t.functionExpression(
     ref,
     [object, iterator],
     t.blockStatement([

@@ -14,7 +14,7 @@ function attrAST(t, file, ref) {
    *   attr(prop, value);
    * }
    */
-  return t.functionDeclaration(
+  return t.functionExpression(
     ref,
     [value, name],
     t.blockStatement([

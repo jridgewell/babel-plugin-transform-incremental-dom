@@ -9,23 +9,39 @@ function setHelperRef(file, helper, value) {
 }
 
 // Sets up the needed data maps for injecting runtime helpers.
-export function setupInjector(program, file) {
+export function setupInjector(file) {
   // A map to store helper variable references
   // for each file
-  file.setDynamic(namespace, () => Object.create(null));
+  file.set(namespace, Object.create(null));
+}
+
+export function injectHelpers(program, file) {
+  const injectedHelpers = file.get(namespace);
+
+  for (let helper in injectedHelpers) {
+    const { ref, expression } = injectedHelpers[helper];
+    file.scope.push({
+      id: ref,
+      init: expression,
+      unique: true
+    });
+  }
 }
 
 
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
 export default function inject(t, file, helper, helperAstFn, dependencyInjectors = {}) {
-  let helperRef = getHelperRef(file, helper);
-  if (helperRef) {
-    return helperRef;
+  let injectedHelper = getHelperRef(file, helper);
+  if (injectedHelper) {
+    return injectedHelper.ref;
   }
 
-  helperRef = file.scope.generateUidIdentifier(helper);
-  setHelperRef(file, helper, helperRef);
+  injectedHelper = {
+    ref: file.scope.generateUidIdentifier(helper),
+    expression: null
+  };
+  setHelperRef(file, helper, injectedHelper);
 
   const dependencyRefs = {};
 
@@ -39,7 +55,7 @@ export default function inject(t, file, helper, helperAstFn, dependencyInjectors
     dependencyRefs[dependency] = dependencyRef;
   }
 
-  file.path.unshiftContainer("body", helperAstFn(t, file, helperRef, dependencyRefs));
+  injectedHelper.expression = helperAstFn(t, file, injectedHelper.ref, dependencyRefs);
 
-  return helperRef;
+  return injectedHelper.ref;
 }

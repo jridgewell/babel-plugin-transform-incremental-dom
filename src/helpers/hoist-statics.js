@@ -1,7 +1,7 @@
 const namespace = "incremental-dom-hoists";
 
 // Sets up the file to hoist all statics
-export function setupHoists(program, file) {
+export function setupHoists(file) {
   // A map to store helper variable references
   // for each file
   file.set(namespace, []);

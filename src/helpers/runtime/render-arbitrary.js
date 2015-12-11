@@ -74,7 +74,7 @@ function renderArbitraryAST(t, file, ref, deps) {
    *   }
    * }
    */
-  return t.functionDeclaration(
+  return t.functionExpression(
     ref,
     [child],
     t.blockStatement([

@@ -1,1 +1,3 @@
-var fn = () => (<bad />, 1);
+function render() {
+  var fn = () => (<bad />, 1);
+}

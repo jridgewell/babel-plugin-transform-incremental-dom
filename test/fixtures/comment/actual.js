@@ -1,5 +1,7 @@
-return (<div /* inline */ >
-{/*
-  child
-*/}
-</div>);
+function render() {
+  return (<div /* inline */ >
+  {/*
+    child
+  */}
+  </div>);
+}

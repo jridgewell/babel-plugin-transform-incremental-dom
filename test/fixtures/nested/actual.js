@@ -1,6 +1,5 @@
-return (<div>
-  <div></div>
-  <div>
+function render() {
+  return (<div>
     <div></div>
     <div>
       <div></div>
@@ -8,8 +7,11 @@ return (<div>
         <div></div>
         <div>
           <div></div>
+          <div>
+            <div></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>);
+  </div>);
+}

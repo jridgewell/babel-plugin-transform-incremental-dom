@@ -1,3 +1,5 @@
-<div />;
+function render() {
+  <div />;
 
-return <div />
+  return <div />
+}

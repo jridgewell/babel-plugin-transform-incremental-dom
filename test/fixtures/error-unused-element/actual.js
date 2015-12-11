@@ -1,1 +1,3 @@
-<div />;
+function render() {
+  <div />;
+}

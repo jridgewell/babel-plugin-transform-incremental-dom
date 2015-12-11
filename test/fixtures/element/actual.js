@@ -1,1 +1,3 @@
-return (<div></div>);
+function render() {
+  return (<div></div>);
+}

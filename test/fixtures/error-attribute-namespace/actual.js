@@ -1,1 +1,3 @@
-return <input a:type="text" />;
+function render() {
+  return <input a:type="text" />;
+}

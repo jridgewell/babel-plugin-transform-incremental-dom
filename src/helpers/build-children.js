@@ -11,14 +11,16 @@ export default function buildChildren(t, scope, file, children, { eager }) {
   const eagerChildren = [];
 
   children = children.reduce((children, child) => {
-    const wasInExpressionContainer = t.isJSXExpressionContainer(child);
+    const wasInExpressionContainer = child.isJSXExpressionContainer();
     if (wasInExpressionContainer) {
-      child = child.expression;
+      child = child.get("expression");
     }
+    const isJSXText = child.isJSXText();
 
-    if (t.isJSXEmptyExpression(child)) { return children; }
+    if (child.isJSXEmptyExpression()) { return children; }
+    child = child.node;
 
-    if (isLiteralOrUndefined(t, child)) {
+    if (isLiteralOrUndefined(t, child) || isJSXText) {
       let value = child.value;
       const type = typeof value;
 

@@ -7,7 +7,7 @@ import attrsToAttrCalls from "./attributes-to-attr-calls";
 import extractOpenArguments from "./extract-open-arguments";
 import elementCloseCall from "./element-close-call";
 
-export default function elementOpenCall(t, path, file) {
+export default function elementOpenCall(t, path, plugin) {
   const tag = toReference(t, path.node.name);
   const selfClosing = path.node.selfClosing;
 
@@ -25,7 +25,7 @@ export default function elementOpenCall(t, path, file) {
     attributeDeclarators,
     staticAssignment,
     hasSpread
-  } = extractOpenArguments(t, path.scope, file, path.get("attributes"), { eager, hoist });
+  } = extractOpenArguments(t, path.scope, plugin, path.get("attributes"), { eager, hoist });
 
   // Push any eager attribute declarators onto the element's list of
   // eager declarations.
@@ -48,15 +48,15 @@ export default function elementOpenCall(t, path, file) {
   // This allows spreads to be transformed into
   // attr(name, value) calls.
   if (hasSpread) {
-    const attrCalls = attrsToAttrCalls(t, file, attrs);
+    const attrCalls = attrsToAttrCalls(t, plugin, attrs);
 
     const expressions = [
-      toFunctionCall(t, iDOMMethod(file, "elementOpenStart"), args),
+      toFunctionCall(t, iDOMMethod("elementOpenStart", plugin), args),
       ...attrCalls,
-      toFunctionCall(t, iDOMMethod(file, "elementOpenEnd"), [tag])
+      toFunctionCall(t, iDOMMethod("elementOpenEnd", plugin), [tag])
     ];
     if (selfClosing) {
-      expressions.push(elementCloseCall(t, path, file));
+      expressions.push(elementCloseCall(t, path, plugin));
     }
 
     return t.sequenceExpression(expressions);
@@ -76,5 +76,5 @@ export default function elementOpenCall(t, path, file) {
   }
 
   const elementFunction = (selfClosing) ? "elementVoid" : "elementOpen";
-  return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
+  return toFunctionCall(t, iDOMMethod(elementFunction, plugin), args);
 }

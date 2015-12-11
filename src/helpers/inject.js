@@ -10,13 +10,13 @@ function setHelper(file, helper, value) {
 }
 
 // Sets up the needed data maps for injecting runtime helpers.
-export function setupInjector(file) {
+export function setupInjector({ file }) {
   // A map to store helper variable references
   // for each file
   file.set(namespace, Object.create(null));
 }
 
-export function injectHelpers(program, file) {
+export function injectHelpers({ file }) {
   const injectedHelpers = file.get(namespace);
 
   for (let helper in injectedHelpers) {
@@ -32,7 +32,8 @@ export function injectHelpers(program, file) {
 
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
-export default function inject(t, file, helper, helperAstFn, dependencyInjectors = {}) {
+export default function inject(t, plugin, helper, helperAstFn, dependencyInjectors = {}) {
+  const { file } = plugin;
   let ref = getHelperRef(file, helper);
   if (ref) {
     return ref;
@@ -50,13 +51,13 @@ export default function inject(t, file, helper, helperAstFn, dependencyInjectors
     let dependencyRef = getHelperRef(file, dependency);
 
     if (!dependencyRef) {
-      dependencyRef = dependencyInjectors[dependency](t, file);
+      dependencyRef = dependencyInjectors[dependency](t, plugin);
     }
 
     dependencyRefs[dependency] = dependencyRef;
   }
 
-  injectedHelper.expression = helperAstFn(t, file, injectedHelper.ref, dependencyRefs);
+  injectedHelper.expression = helperAstFn(t, plugin, injectedHelper.ref, dependencyRefs);
 
   return ref;
 }

@@ -4,7 +4,7 @@ import inject from "../inject";
 // the specified iterator function with
 // value and prop name.
 // Depends on the _hasOwn helper.
-function jsxWrapperAST(t, file, ref) {
+function jsxWrapperAST(t, plugin, ref) {
   const func = t.identifier("func");
   const jsxProp = t.memberExpression(
     func,
@@ -27,6 +27,6 @@ function jsxWrapperAST(t, file, ref) {
   );
 }
 
-export default function injectJSXWrapper(t, file) {
-  return inject(t, file, "jsxWrapper", jsxWrapperAST);
+export default function injectJSXWrapper(t, plugin) {
+  return inject(t, plugin, "jsxWrapper", jsxWrapperAST);
 }

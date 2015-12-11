@@ -15,14 +15,14 @@ import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 export default function ({ types: t }) {
   return { visitor: {
     Program: {
-      enter(path, { file }) {
-        setupInjector(file);
-        setupHoists(file);
+      enter() {
+        setupInjector(this);
+        setupHoists(this);
       },
 
-      exit(path, { file }) {
-        hoistStatics(t, path, file);
-        injectHelpers(path, file);
+      exit(path) {
+        hoistStatics(t, path, this);
+        injectHelpers(this);
       }
     },
 
@@ -103,7 +103,7 @@ export default function ({ types: t }) {
         path.setData("staticAssignments", staticAssignments);
       },
 
-      exit(path, { file }) {
+      exit(path) {
         const {
           containerNeedsWrapper,
           containingJSXElement,
@@ -119,13 +119,13 @@ export default function ({ types: t }) {
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        const openingElement = elementOpenCall(t, path.get("openingElement"), file);
-        const closingElement = elementCloseCall(t, path.get("closingElement"), file);
+        const openingElement = elementOpenCall(t, path.get("openingElement"), this);
+        const closingElement = elementCloseCall(t, path.get("closingElement"), this);
 
         const {
           children,
           eagerChildren
-        } = buildChildren(t, path.scope, file, path.get("children"), { eager });
+        } = buildChildren(t, path.scope, this, path.get("children"), { eager });
 
         eagerDeclarators.push(...eagerChildren);
 
@@ -170,7 +170,7 @@ export default function ({ types: t }) {
         if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
-          const jsxWrapperRef = injectJSXWrapper(t, file);
+          const jsxWrapperRef = injectJSXWrapper(t, this);
           const wrapper = toFunctionCall(t, jsxWrapperRef, [
             t.functionExpression(null, [], t.blockStatement(elements))
           ]);

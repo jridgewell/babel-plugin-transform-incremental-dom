@@ -6,7 +6,7 @@ import toFunctionCallStatement from "../ast/to-function-call-statement";
 // the specified iterator function with
 // value and prop name.
 // Depends on the _hasOwn helper.
-function forOwnAST(t, file, ref, deps) {
+function forOwnAST(t, plugin, ref, deps) {
   const hasOwn = deps.hasOwn;
   const object = t.identifier("object");
   const iterator = t.identifier("iterator");
@@ -43,8 +43,8 @@ function forOwnAST(t, file, ref, deps) {
   );
 }
 
-export default function injectForOwn(t, file) {
-  return inject(t, file, "forOwn", forOwnAST, {
+export default function injectForOwn(t, plugin) {
+  return inject(t, plugin, "forOwn", forOwnAST, {
     hasOwn: injectHasOwn
   });
 }

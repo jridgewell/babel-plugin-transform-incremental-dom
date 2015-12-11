@@ -6,7 +6,7 @@ import addStaticHoist from "./hoist-statics";
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, file, attributes, { eager, hoist }) {
+export default function extractOpenArguments(t, scope, plugin, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
   let attrs = [];
   let hasSpread = false;
@@ -61,7 +61,7 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
   if (statics.length) {
     statics = t.arrayExpression(statics);
     if (hoist) {
-      const hoist = addStaticHoist(t, scope, file, statics, key, keyIndex);
+      const hoist = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
       statics = hoist.id;
       staticAssignment = hoist.staticAssignment;
     }

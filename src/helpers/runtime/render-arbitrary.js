@@ -51,7 +51,7 @@ function isArray(t, value) {
 // It may also be an Array or Object, which will be iterated
 // recursively.
 // Depends on the _forOwn helper.
-function renderArbitraryAST(t, file, ref, deps) {
+function renderArbitraryAST(t, plugin, ref, deps) {
   const forOwn = deps.forOwn;
   const child = t.identifier("child");
   const type = t.identifier("type");
@@ -87,7 +87,7 @@ function renderArbitraryAST(t, file, ref, deps) {
       t.IfStatement(
         isTextual(t, type, child),
         t.blockStatement([
-          toFunctionCallStatement(t, iDOMMethod(file, "text"), [child])
+          toFunctionCallStatement(t, iDOMMethod("text", plugin), [child])
         ]),
         t.ifStatement(
           isDOMWrapper(t, type, child),
@@ -109,8 +109,8 @@ function renderArbitraryAST(t, file, ref, deps) {
   );
 }
 
-export default function injectRenderArbitrary(t, file) {
-  return inject(t, file, "renderArbitrary", renderArbitraryAST, {
+export default function injectRenderArbitrary(t, plugin) {
+  return inject(t, plugin, "renderArbitrary", renderArbitraryAST, {
     forOwn: injectForOwn
   });
 }

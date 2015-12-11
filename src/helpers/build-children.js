@@ -6,7 +6,7 @@ import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, scope, file, children, { eager }) {
+export default function buildChildren(t, scope, plugin, children, { eager }) {
   let renderArbitraryRef;
   const eagerChildren = [];
 
@@ -30,10 +30,10 @@ export default function buildChildren(t, scope, file, children, { eager }) {
       }
 
       if (type === "string" || type === "number") {
-        child = toFunctionCall(t, iDOMMethod(file, "text"), [t.stringLiteral("" + value)]);
+        child = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
       }
     } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
-      renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
+      renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
       if (eager) {
         const ref = scope.generateUidIdentifierBasedOnNode(child);

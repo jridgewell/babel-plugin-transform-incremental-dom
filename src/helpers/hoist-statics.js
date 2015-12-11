@@ -1,13 +1,13 @@
 const namespace = "incremental-dom-hoists";
 
 // Sets up the file to hoist all statics
-export function setupHoists(file) {
+export function setupHoists({ file }) {
   // A map to store helper variable references
   // for each file
   file.set(namespace, []);
 }
 
-export function hoistStatics(t, program, file) {
+export function hoistStatics(t, program, { file }) {
   const hoists = file.get(namespace);
 
   if (hoists.length) {
@@ -16,12 +16,12 @@ export function hoistStatics(t, program, file) {
   }
 }
 
-export default function addStaticHoist(t, scope, file, statics, key, keyIndex) {
+export default function addStaticHoist(t, scope, plugin, statics, key, keyIndex) {
   const id = scope.generateUidIdentifier("statics");
   const declarator = t.variableDeclarator(id, statics);
   let staticAssignment = null;
 
-  const hoists = file.get(namespace);
+  const hoists = plugin.file.get(namespace);
   hoists.push(declarator);
 
   if (keyIndex > -1) {

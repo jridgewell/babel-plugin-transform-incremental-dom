@@ -6,13 +6,13 @@ import iDOMMethod from "../idom-method";
 // Isolated AST code to determine if a value is textual
 // (strings and numbers).
 function isTextual(t, type, value) {
-  return t.binaryExpression(
+  return t.logicalExpression(
     "||",
     t.binaryExpression("===", type, t.stringLiteral("number")),
-    t.binaryExpression(
+    t.logicalExpression(
       "||",
       t.binaryExpression("===", type, t.stringLiteral("string")),
-      t.binaryExpression(
+      t.logicalExpression(
         "&&",
         value,
         t.binaryExpression("instanceof", value, t.identifier("String"))
@@ -24,7 +24,7 @@ function isTextual(t, type, value) {
 // Isolated AST code to determine if a value is a wrapped
 // DOM manipulator function.
 function isDOMWrapper(t, type, value) {
-  return t.binaryExpression(
+  return t.logicalExpression(
     "&&",
     t.binaryExpression("===", type, t.stringLiteral("function")),
     t.memberExpression(

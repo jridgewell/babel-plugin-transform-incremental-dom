@@ -26,7 +26,7 @@ function forOwnAST(t, file, ref, deps) {
     [object, iterator],
     t.blockStatement([
       t.forInStatement(
-        t.variableDeclaration("var", [prop]),
+        t.variableDeclaration("var", [t.variableDeclarator(prop)]),
         object,
         t.ifStatement(
           t.callExpression(t.memberExpression(

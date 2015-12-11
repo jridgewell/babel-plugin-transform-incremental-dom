@@ -1,6 +1,4 @@
-import getOption from "./get-option";
-
-export default function iDOMMethod(file, method) {
-  const prefix = getOption(file, "prefix") || "";
+export default function iDOMMethod(method, plugin) {
+  const prefix = plugin.opts.prefix || "";
   return prefix ? `${prefix}.${method}` : method;
 }

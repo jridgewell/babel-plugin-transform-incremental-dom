@@ -16,9 +16,9 @@ function resolve(path) {
   return expected;
 }
 
-function transform(path, extra) {
+function transform(path, options) {
   return transformFileSync(path, {
-    plugins: [plugin, "syntax-jsx"]
+    plugins: ["syntax-jsx", [plugin, options]]
   }).code;
 }
 
@@ -44,11 +44,11 @@ describe("turn jsx into incremental-dom", () => {
       const expected = resolve(path.join(fixtureDir, "expected.js"));
       const opts = parse(resolve(path.join(fixtureDir, "options.json")));
       const throwMsg = opts.throws;
-      const extra = opts.extra;
+      const options = opts.options;
       let actual;
 
       try {
-        actual = transform(path.join(fixtureDir, "actual.js"), extra);
+        actual = transform(path.join(fixtureDir, "actual.js"), options);
       } catch (err) {
         if (throwMsg) {
           if (err.message.indexOf(throwMsg) >= 0) {

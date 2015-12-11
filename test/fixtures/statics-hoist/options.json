@@ -1,7 +1,5 @@
 {
-  "extra": {
-    "incremental-dom": {
-      "hoist": true
-    }
+  "options": {
+    "hoist": true
   }
 }

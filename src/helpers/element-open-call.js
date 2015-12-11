@@ -1,7 +1,6 @@
 import toFunctionCall from "./ast/to-function-call";
 import toReference from "./ast/to-reference";
 
-import getOption from "./get-option";
 import iDOMMethod from "./idom-method";
 import attrsToAttrCalls from "./attributes-to-attr-calls";
 import extractOpenArguments from "./extract-open-arguments";
@@ -15,7 +14,7 @@ export default function elementOpenCall(t, path, plugin) {
   // Only eagerly evaluate our attributes if we will be wrapping the element.
   const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
   const eagerDeclarators = JSXElement.getData("eagerDeclarators");
-  const hoist = getOption(file, "hoist");
+  const hoist = plugin.opts.hoist;
   const staticAssignments = JSXElement.getData("staticAssignments");
 
   const {

@@ -134,8 +134,9 @@ export default function ({ types: t }) {
 
         // If we're inside a JSX node, flattening expressions
         // may force us into an unwanted function scope.
-        if (t.isJSXElement(parent)) {
-          return elements;
+        if (parentPath.isJSXElement()) {
+          path.replaceWithMultiple(elements);
+          return;
         }
 
         // Expressions Containers must contain an expression and not statements.
@@ -145,7 +146,8 @@ export default function ({ types: t }) {
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
           sequence._iDOMwasJSX = true;
-          return sequence;
+          path.replaceWith(sequence);
+          return;
         }
 
         if (explicitReturn || implicitReturn || needsWrapper) {
@@ -173,7 +175,8 @@ export default function ({ types: t }) {
             t.functionExpression(null, [], t.blockStatement(elements))
           ]);
           wrapper._iDOMwasJSX = true;
-          return wrapper;
+          path.replaceWith(wrapper);
+          return;
         }
 
         openingElement._iDOMisRoot = true;
@@ -185,7 +188,7 @@ export default function ({ types: t }) {
         } else if (explicitReturn) {
           parentPath.replaceWithMultiple(elements);
         } else {
-          return elements;
+          path.replaceWithMultiple(elements);
         }
       }
     },

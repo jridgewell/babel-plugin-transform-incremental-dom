@@ -119,8 +119,8 @@ export default function ({ types: t }) {
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
-        const openingElement = path.get("openingElement");
-        const closingElement = path.get("closingElement");
+        const openingElement = elementOpenCall(t, path.get("openingElement"), file);
+        const closingElement = elementCloseCall(t, path.get("closingElement"), file);
 
         const {
           children,
@@ -191,86 +191,7 @@ export default function ({ types: t }) {
       }
     },
 
-    JSXOpeningElement: {
-      exit(path, file) {
-        const tag = toReference(t, path.node.name);
-
-        const JSXElement = path.parentPath;
-        // Only eagerly evaluate our attributes if we will be wrapping the element.
-        const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
-        const eagerDeclarators = JSXElement.getData("eagerDeclarators");
-        const hoist = getOption(file, "hoist");
-        const staticAssignments = JSXElement.getData("staticAssignments");
-
-        const {
-          key,
-          statics,
-          attrs,
-          attributeDeclarators,
-          staticAssignment,
-          hasSpread
-        } = extractOpenArguments(t, path.scope, file, path.get("attributes"), { eager, hoist });
-
-        // Push any eager attribute declarators onto the element's list of
-        // eager declarations.
-        eagerDeclarators.push(...attributeDeclarators);
-        if (staticAssignment) {
-          staticAssignments.push(staticAssignment);
-        }
-
-        // Only push arguments if they're needed
-        const args = [tag];
-        if (key || statics) {
-          args.push(key || t.nullLiteral(null));
-        }
-        if (statics) {
-          args.push(statics);
-        }
-
-        // If there is a spread element, we need to use
-        // the elementOpenStart/elementOpenEnd syntax.
-        // This allows spreads to be transformed into
-        // attr(name, value) calls.
-        if (hasSpread) {
-          const attrCalls = attrsToAttrCalls(t, file, attrs);
-
-          const expressions = [
-            toFunctionCall(t, iDOMMethod(file, "elementOpenStart"), args),
-            ...attrCalls,
-            toFunctionCall(t, iDOMMethod(file, "elementOpenEnd"), [tag])
-          ];
-          if (path.node.selfClosing) {
-            expressions.push(toFunctionCall(t, iDOMMethod(file, "elementClose"), [tag]));
-          }
-
-          return t.sequenceExpression(expressions);
-        }
-
-        if (attrs) {
-          // Only push key and statics if they have not
-          // already been pushed.
-          if (!statics) {
-            if (!key) {
-              args.push(t.nullLiteral(null));
-            }
-            args.push(t.nullLiteral(null));
-          }
-
-          args.push(...attrs);
-        }
-
-        return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
-        const elementFunction = (path.node.selfClosing) ? "elementVoid" : "elementOpen";
-      }
-    },
-
-    JSXClosingElement: {
-        return toFunctionCall(t, iDOMMethod(file, "elementClose"), [toReference(t, node.name)]);
-      exit(path, file) {
-      }
-    },
-
-    JSXNamespacedName: function() {
+    JSXNamespacedName(path) {
       throw path.buildCodeFrameError("JSX Namespaces aren't supported.");
     }
   }};

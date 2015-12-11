@@ -1,17 +1,13 @@
 import toFunctionCall from "./helpers/ast/to-function-call";
-import toReference from "./helpers/ast/to-reference";
 
-import getOption from "./helpers/get-option";
-import iDOMMethod from "./helpers/idom-method";
-import attrsToAttrCalls from "./helpers/attributes-to-attr-calls";
 import buildChildren from "./helpers/build-children";
-import extractOpenArguments from "./helpers/extract-open-arguments";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
-import replaceArrow from "./helpers/replace-arrow";
 import { setupHoists, hoistStatics } from "./helpers/hoist-statics";
 import eagerlyDeclare from "./helpers/eagerly-declare";
+import elementOpenCall from "./helpers/element-open-call";
+import elementCloseCall from "./helpers/element-close-call";
 
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";

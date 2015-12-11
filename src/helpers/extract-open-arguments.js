@@ -35,7 +35,7 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
         value = ref;
       }
     } else if (!value) {
-      value = t.literal(true);
+      value = t.booleanLiteral(true);
     }
 
     let literal = isLiteralOrUndefined(t, value);
@@ -43,7 +43,7 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
     if (name === "key") {
       key = value;
       if (hoist && !eager && !literal) {
-        value = t.literal("");
+        value = t.stringLiteral("");
         keyIndex = statics.length + 1;
       }
       literal = literal || !hoist || !eager;

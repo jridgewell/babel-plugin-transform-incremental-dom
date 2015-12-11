@@ -8,10 +8,10 @@ import iDOMMethod from "../idom-method";
 function isTextual(t, type, value) {
   return t.binaryExpression(
     "||",
-    t.binaryExpression("===", type, t.literal("number")),
+    t.binaryExpression("===", type, t.stringLiteral("number")),
     t.binaryExpression(
       "||",
-      t.binaryExpression("===", type, t.literal("string")),
+      t.binaryExpression("===", type, t.stringLiteral("string")),
       t.binaryExpression(
         "&&",
         value,
@@ -26,7 +26,7 @@ function isTextual(t, type, value) {
 function isDOMWrapper(t, type, value) {
   return t.binaryExpression(
     "&&",
-    t.binaryExpression("===", type, t.literal("function")),
+    t.binaryExpression("===", type, t.stringLiteral("function")),
     t.memberExpression(
       value,
       t.identifier("__jsxDOMWrapper")

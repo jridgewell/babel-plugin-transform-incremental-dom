@@ -84,7 +84,7 @@ export default function ({ types: t }) {
         let needsWrapper = inAttribute || inAssignment || inCollection || inCallExpression;
         if (!containingJSXElement && !needsWrapper) {
           // Determine if there are JSXElements in a higher scope.
-          needsWrapper = findOtherJSX(this);
+          needsWrapper = findOtherJSX(path);
         }
 
         // Tie a child JSXElement's eager declarations with the parent's, so
@@ -103,7 +103,7 @@ export default function ({ types: t }) {
         path.setData("staticAssignments", staticAssignments);
       },
 
-      exit(node, parent, scope, file) {
+      exit(path, file) {
         const {
           containerNeedsWrapper,
           containingJSXElement,
@@ -112,9 +112,10 @@ export default function ({ types: t }) {
           needsWrapper,
         } = path.data;
 
+        const parentPath = path.parentPath;
         const eager = needsWrapper || containerNeedsWrapper;
-        const explicitReturn = t.isReturnStatement(parent);
-        const implicitReturn = t.isArrowFunctionExpression(parent);
+        const explicitReturn = parentPath.isReturnStatement();
+        const implicitReturn = parentPath.isArrowFunctionExpression();
 
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
@@ -124,7 +125,7 @@ export default function ({ types: t }) {
         const {
           children,
           eagerChildren
-        } = buildChildren(t, scope, file, node.children, { eager });
+        } = buildChildren(t, path.scope, file, path.get("children"), { eager });
 
         eagerDeclarators.push(...eagerChildren);
 
@@ -157,7 +158,7 @@ export default function ({ types: t }) {
         }
 
         if (!containingJSXElement && eagerDeclarators.length) {
-          eagerlyDeclare(t, scope, this, eagerDeclarators);
+          eagerlyDeclare(t, path.scope, path, eagerDeclarators);
         }
 
         if (!containingJSXElement && staticAssignments.length) {
@@ -180,9 +181,9 @@ export default function ({ types: t }) {
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (implicitReturn) {
-          replaceArrow(t, path.parentPath, elements);
+          replaceArrow(t, parentPath, elements);
         } else if (explicitReturn) {
-          path.parentPath.replaceWithMultiple(elements);
+          parentPath.replaceWithMultiple(elements);
         } else {
           return elements;
         }
@@ -190,8 +191,8 @@ export default function ({ types: t }) {
     },
 
     JSXOpeningElement: {
-      exit(node, parent, scope, file) {
-        const tag = toReference(t, node.name);
+      exit(path, file) {
+        const tag = toReference(t, path.node.name);
 
         const JSXElement = path.parentPath;
         // Only eagerly evaluate our attributes if we will be wrapping the element.
@@ -207,7 +208,7 @@ export default function ({ types: t }) {
           attributeDeclarators,
           staticAssignment,
           hasSpread
-        } = extractOpenArguments(t, scope, file, node.attributes, { eager, hoist });
+        } = extractOpenArguments(t, path.scope, file, path.get("attributes"), { eager, hoist });
 
         // Push any eager attribute declarators onto the element's list of
         // eager declarations.
@@ -219,7 +220,7 @@ export default function ({ types: t }) {
         // Only push arguments if they're needed
         const args = [tag];
         if (key || statics) {
-          args.push(key || t.literal(null));
+          args.push(key || t.nullLiteral(null));
         }
         if (statics) {
           args.push(statics);
@@ -237,7 +238,7 @@ export default function ({ types: t }) {
             ...attrCalls,
             toFunctionCall(t, iDOMMethod(file, "elementOpenEnd"), [tag])
           ];
-          if (node.selfClosing) {
+          if (path.node.selfClosing) {
             expressions.push(toFunctionCall(t, iDOMMethod(file, "elementClose"), [tag]));
           }
 
@@ -249,22 +250,22 @@ export default function ({ types: t }) {
           // already been pushed.
           if (!statics) {
             if (!key) {
-              args.push(t.literal(null));
+              args.push(t.nullLiteral(null));
             }
-            args.push(t.literal(null));
+            args.push(t.nullLiteral(null));
           }
 
           args.push(...attrs);
         }
 
-        const elementFunction = (node.selfClosing) ? "elementVoid" : "elementOpen";
         return toFunctionCall(t, iDOMMethod(file, elementFunction), args);
+        const elementFunction = (path.node.selfClosing) ? "elementVoid" : "elementOpen";
       }
     },
 
     JSXClosingElement: {
-      exit(node, parent, scope, file) {
         return toFunctionCall(t, iDOMMethod(file, "elementClose"), [toReference(t, node.name)]);
+      exit(path, file) {
       }
     },
 

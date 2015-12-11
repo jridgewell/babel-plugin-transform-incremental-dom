@@ -21,7 +21,7 @@ function jsxWrapperAST(t, file, ref) {
     ref,
     [func],
     t.blockStatement([
-      t.expressionStatement(t.AssignmentExpression("=", jsxProp, t.literal(true))),
+      t.expressionStatement(t.AssignmentExpression("=", jsxProp, t.booleanLiteral(true))),
       t.returnStatement(func)
     ])
   );

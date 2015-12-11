@@ -75,7 +75,7 @@ export default function ({ types: t }) {
         //   <div /> // Useless JSX node
         // ```
         if (!(inReturnStatement || inAssignment || inCallExpression || containingJSXElement)) {
-          throw this.errorWithNode("Unused JSX Elements aren't supported.");
+          throw path.buildCodeFrameError("Unused JSX Elements aren't supported.");
         }
 
         const containerNeedsWrapper = (containingJSXElement) ?
@@ -269,7 +269,7 @@ export default function ({ types: t }) {
     },
 
     JSXNamespacedName: function() {
-      throw this.errorWithNode("JSX Namespaces aren't supported.");
+      throw path.buildCodeFrameError("JSX Namespaces aren't supported.");
     }
   }};
 }

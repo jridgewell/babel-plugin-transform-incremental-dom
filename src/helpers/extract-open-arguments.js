@@ -16,15 +16,16 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
   let staticAssignment = null;
 
   attributes.forEach((attribute, i) => {
-    if (t.isJSXSpreadAttribute(attribute)) {
+    const node = attribute.node;
+    if (attribute.isJSXSpreadAttribute()) {
       hasSpread = true;
-      attrs.push(attribute);
+      attrs.push(node);
       return;
     }
 
-    const attr = toReference(t, attribute.name);
+    const attr = toReference(t, node.name);
     const name = attr.value;
-    let value = attribute.value;
+    let value = node.value;
 
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;

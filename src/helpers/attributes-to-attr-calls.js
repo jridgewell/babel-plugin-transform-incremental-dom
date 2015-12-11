@@ -12,13 +12,11 @@ export default function attrsToAttrCalls(t, file, attrs) {
   return attrs.reduce((calls, attr) => {
     if (t.isJSXSpreadAttribute(attr)) {
       calls.push(toFunctionCall(t, forOwn, [attr.argument, forOwnAttr]));
+    } else if (name) {
+      calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), [name, attr]));
+      name = null;
     } else {
-      if (name) {
-        calls.push(toFunctionCall(t, iDOMMethod(file, "attr"), [name, attr]));
-        name = null;
-      } else {
-        name = attr;
-      }
+      name = attr;
     }
 
     return calls;

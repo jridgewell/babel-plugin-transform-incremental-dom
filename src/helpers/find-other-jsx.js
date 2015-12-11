@@ -11,15 +11,15 @@ const jsxVisitor = {
     }
   },
 
-  JSXElement(node, parent, scope, state) {
+  JSXElement(path, state) {
     state.otherJSX = true;
-    this.stop();
+    path.stop();
   },
 
-  CallExpression(node, parent, scope, state) {
-    if (node._iDOMisRoot) {
+  CallExpression(path, state) {
+    if (path.node._iDOMisRoot) {
       state.otherJSX = true;
-      this.stop();
+      path.stop();
     }
   }
 };

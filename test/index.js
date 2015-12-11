@@ -1,15 +1,15 @@
-const path   = require("path");
-const fs     = require("fs");
-const assert = require("assert");
-const babel  = require("babel");
-const plugin = require("../src/index");
+import path   from "path";
+import fs     from "fs";
+import assert from "assert";
+import { transformFileSync } from "babel-core";
+import plugin from "../src/index";
 
 function resolve(path) {
-  let expected = '';
+  let expected = "";
   try {
     expected = fs.readFileSync(path).toString();
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (err.code !== "ENOENT") {
       throw err;
     }
   }
@@ -17,10 +17,8 @@ function resolve(path) {
 }
 
 function transform(path, extra) {
-  return babel.transformFileSync(path, {
-    blacklist: ['strict', 'react'],
-    plugins: [plugin],
-    extra: extra
+  return transformFileSync(path, {
+    plugins: [plugin, "syntax-jsx"]
   }).code;
 }
 

@@ -26,6 +26,7 @@ function _jsxWrapper(func) {
 function render() {
   elementOpen("div");
   text("Hello World!");
+  text("1521334.3");
   elementOpen("div");
   text("Hiya!");
   elementClose("div");

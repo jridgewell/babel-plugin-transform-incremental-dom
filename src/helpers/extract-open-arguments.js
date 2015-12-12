@@ -30,9 +30,9 @@ export default function extractOpenArguments(t, scope, plugin, attributes, { eag
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
 
-      if (eager && !isLiteralOrUndefined(t, value) && !value._iDOMwasJSX) {
+      if (eager && !value._iDOMwasJSX && !scope.isStatic(value)) {
         const ref = scope.generateUidIdentifierBasedOnNode(value);
-        attributeDeclarators.push(t.variableDeclarator(ref, value));
+        eager.push({ ref, value });
         value = ref;
       }
     } else if (!value) {

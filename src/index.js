@@ -89,9 +89,7 @@ export default function ({ types: t }) {
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        const eagerDeclarators = (containingJSXElement) ?
-          containingJSXElement.getData("eagerDeclarators") :
-          [];
+        const eagerDeclarators = [];
         const staticAssignments = (containingJSXElement) ?
           containingJSXElement.getData("staticAssignments") :
           [];
@@ -159,10 +157,6 @@ export default function ({ types: t }) {
           elements = statementsWithReturnLast(t, elements);
         }
 
-        if (!containingJSXElement && eagerDeclarators.length) {
-          eagerlyDeclare(t, path.scope, path, eagerDeclarators);
-        }
-
         if (!containingJSXElement && staticAssignments.length) {
           elements = [...staticAssignments, ...elements];
         }
@@ -171,9 +165,14 @@ export default function ({ types: t }) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const jsxWrapperRef = injectJSXWrapper(t, this);
-          const wrapper = toFunctionCall(t, jsxWrapperRef, [
-            t.functionExpression(null, [], t.blockStatement(elements))
-          ]);
+          const params = eagerDeclarators.map((d) => d.ref);
+          const args = [ t.functionExpression(null, params, t.blockStatement(elements)) ];
+          if (params.length) {
+            const paramArgs = eagerDeclarators.map((d) => d.value);
+            args.push(t.arrayExpression(paramArgs));
+          }
+
+          const wrapper = toFunctionCall(t, jsxWrapperRef, args);
           wrapper._iDOMwasJSX = true;
           path.replaceWith(wrapper);
           return;

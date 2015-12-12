@@ -15,13 +15,13 @@ export default function buildChildren(t, scope, plugin, children, { eager }) {
     if (wasInExpressionContainer) {
       child = child.get("expression");
     }
-    const isJSXText = child.isJSXText();
 
     if (child.isJSXEmptyExpression()) { return children; }
-    child = child.node;
+    const isJSXText = child.isJSXText();
+    let node = child.node;
 
-    if (isLiteralOrUndefined(t, child) || isJSXText) {
-      let value = child.value;
+    if (isLiteralOrUndefined(t, node) || isJSXText) {
+      let value = node.value;
       const type = typeof value;
 
       if (type === "string") {
@@ -30,21 +30,21 @@ export default function buildChildren(t, scope, plugin, children, { eager }) {
       }
 
       if (type === "string" || type === "number") {
-        child = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
+        node = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
       }
-    } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
+    } else if (wasInExpressionContainer && !node._iDOMwasJSX) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
-      if (eager) {
-        const ref = scope.generateUidIdentifierBasedOnNode(child);
-        eagerChildren.push(t.variableDeclarator(ref, child));
-        child = ref;
+      if (eager && !scope.isStatic(node)) {
+        const ref = scope.generateUidIdentifierBasedOnNode(node);
+        eagerChildren.push({ ref, value: node });
+        node = ref;
       }
 
-      child = toFunctionCall(t, renderArbitraryRef, [child]);
+      node = toFunctionCall(t, renderArbitraryRef, [node]);
     }
 
-    children.push(child);
+    children.push(node);
     return children;
   }, []);
 

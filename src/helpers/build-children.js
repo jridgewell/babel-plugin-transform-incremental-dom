@@ -35,8 +35,10 @@ export default function buildChildren(t, scope, plugin, children, { eager }) {
     } else if (wasInExpressionContainer && !node._iDOMwasJSX) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
-      if (eager && !scope.isStatic(node)) {
-        const ref = scope.generateUidIdentifierBasedOnNode(node);
+      if (eager) {
+        const ref = t.isIdentifier(node) ?
+          node :
+          scope.generateUidIdentifierBasedOnNode(node);
         eagerChildren.push({ ref, value: node });
         node = ref;
       }

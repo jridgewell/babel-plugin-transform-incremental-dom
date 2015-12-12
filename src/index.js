@@ -4,8 +4,7 @@ import buildChildren from "./helpers/build-children";
 import findOtherJSX from "./helpers/find-other-jsx";
 import flattenExpressions from "./helpers/flatten-expressions";
 import statementsWithReturnLast from "./helpers/statements-with-return-last";
-import { setupHoists, hoistStatics } from "./helpers/hoist-statics";
-import eagerlyDeclare from "./helpers/eagerly-declare";
+import { addHoistedDeclarator, setupHoists, hoist } from "./helpers/hoist";
 import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 
@@ -21,7 +20,7 @@ export default function ({ types: t }) {
       },
 
       exit(path) {
-        hoistStatics(t, path, this);
+        hoist(t, path, this);
         injectHelpers(this);
       }
     },
@@ -89,9 +88,11 @@ export default function ({ types: t }) {
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        const eagerDeclarators = [];
         const staticAssignments = (containingJSXElement) ?
           containingJSXElement.getData("staticAssignments") :
+          [];
+        const eagerDeclarators = (containingJSXElement && !needsWrapper) ?
+          containingJSXElement.getData("eagerDeclarators") :
           [];
 
         path.setData("containerNeedsWrapper", containerNeedsWrapper);
@@ -110,7 +111,7 @@ export default function ({ types: t }) {
           needsWrapper,
         } = path.data;
 
-        const parentPath = path.parentPath;
+        const { parentPath, scope } = path;
         const eager = needsWrapper || containerNeedsWrapper;
         const explicitReturn = parentPath.isReturnStatement();
         const implicitReturn = parentPath.isArrowFunctionExpression();
@@ -123,7 +124,7 @@ export default function ({ types: t }) {
         const {
           children,
           eagerChildren
-        } = buildChildren(t, path.scope, this, path.get("children"), { eager });
+        } = buildChildren(t, scope, this, path.get("children"), { eager });
 
         eagerDeclarators.push(...eagerChildren);
 
@@ -166,15 +167,18 @@ export default function ({ types: t }) {
           // child expressions can identify and "render" it.
           const jsxWrapperRef = injectJSXWrapper(t, this);
           const params = eagerDeclarators.map((d) => d.ref);
-          const args = [ t.functionExpression(null, params, t.blockStatement(elements)) ];
+          const wrapper = t.functionExpression(null, params, t.blockStatement(elements));
+          const hoistedWrapper = addHoistedDeclarator(t, scope, "wrapper", wrapper, this);
+
+          const args = [ hoistedWrapper ];
           if (params.length) {
             const paramArgs = eagerDeclarators.map((d) => d.value);
             args.push(t.arrayExpression(paramArgs));
           }
 
-          const wrapper = toFunctionCall(t, jsxWrapperRef, args);
-          wrapper._iDOMwasJSX = true;
-          path.replaceWith(wrapper);
+          const wrapperCall = toFunctionCall(t, jsxWrapperRef, args);
+          wrapperCall._iDOMwasJSX = true;
+          path.replaceWith(wrapperCall);
           return;
         }
 

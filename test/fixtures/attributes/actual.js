@@ -1,4 +1,9 @@
 function render() {
+  var test = <div grand={i++}>
+      <div parent={i++}>
+        {i++}
+      </div>
+    </div>;
   return (<root>
     <div class="my-class"></div>
     <div class={"my-class"}></div>

@@ -114,7 +114,7 @@ export default function ({ types: t }) {
         // Filter out empty children, and transform JSX expressions
         // into normal expressions.
         const openingElement = elementOpenCall(t, path.get("openingElement"), this);
-        const closingElement = elementCloseCall(t, path.get("closingElement"), this);
+        const closingElement = elementCloseCall(t, path.get("openingElement"), this);
 
         const {
           children,

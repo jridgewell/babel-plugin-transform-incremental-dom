@@ -49,9 +49,6 @@ export default function elementOpenCall(t, path, plugin) {
       ...attrCalls,
       toFunctionCall(t, iDOMMethod("elementOpenEnd", plugin), [tag])
     ];
-    if (selfClosing) {
-      expressions.push(elementCloseCall(t, path, plugin));
-    }
 
     return t.sequenceExpression(expressions);
   }

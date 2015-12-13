@@ -15,23 +15,18 @@ export default function elementOpenCall(t, path, plugin) {
   const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
   const eagerDeclarators = JSXElement.getData("eagerDeclarators");
   const hoist = plugin.opts.hoist;
-  const staticAssignments = JSXElement.getData("staticAssignments");
 
   const {
     key,
     statics,
     attrs,
     attributeDeclarators,
-    staticAssignment,
     hasSpread
   } = extractOpenArguments(t, path.scope, plugin, path.get("attributes"), { eager, hoist });
 
   // Push any eager attribute declarators onto the element's list of
   // eager declarations.
   eagerDeclarators.push(...attributeDeclarators);
-  if (staticAssignment) {
-    staticAssignments.push(staticAssignment);
-  }
 
   // Only push arguments if they're needed
   const args = [tag];

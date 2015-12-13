@@ -88,9 +88,6 @@ export default function ({ types: t }) {
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        const staticAssignments = (containingJSXElement) ?
-          containingJSXElement.getData("staticAssignments") :
-          [];
         const eagerDeclarators = (containingJSXElement && !needsWrapper) ?
           containingJSXElement.getData("eagerDeclarators") :
           [];
@@ -99,7 +96,6 @@ export default function ({ types: t }) {
         path.setData("containingJSXElement", containingJSXElement);
         path.setData("eagerDeclarators", eagerDeclarators);
         path.setData("needsWrapper", needsWrapper);
-        path.setData("staticAssignments", staticAssignments);
       },
 
       exit(path) {
@@ -107,7 +103,6 @@ export default function ({ types: t }) {
           containerNeedsWrapper,
           containingJSXElement,
           eagerDeclarators,
-          staticAssignments,
           needsWrapper,
         } = path.data;
 
@@ -156,10 +151,6 @@ export default function ({ types: t }) {
 
           // Ensure the last statement returns the DOM element.
           elements = statementsWithReturnLast(t, elements);
-        }
-
-        if (!containingJSXElement && staticAssignments.length) {
-          elements = [...staticAssignments, ...elements];
         }
 
         if (needsWrapper) {

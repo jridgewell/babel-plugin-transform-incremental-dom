@@ -2,16 +2,18 @@ import { addHoistedDeclarator } from "./hoist";
 
 export default function addStaticHoist(t, scope, plugin, statics, key, keyIndex) {
   const id = addHoistedDeclarator(t, scope, "statics", statics, plugin);
-  let staticAssignment = null;
 
-  if (keyIndex > -1) {
+  if (keyIndex === -1) {
+    return id;
+  } else {
     // We need to assign the key variable's value to the statics array at `index`.
-    staticAssignment = t.expressionStatement(t.assignmentExpression(
-      "=",
-      t.memberExpression(id, t.numericLiteral(keyIndex), true),
-      key
-    ));
+    return t.sequenceExpression([
+      t.assignmentExpression(
+        "=",
+        t.memberExpression(id, t.numericLiteral(keyIndex), true),
+        key
+      ),
+      id
+    ]);
   }
-
-  return { id, staticAssignment };
 }

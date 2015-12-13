@@ -9,11 +9,11 @@ import addStaticHoist from "./hoist-statics";
 export default function extractOpenArguments(t, scope, plugin, attributes, { eager, hoist }) {
   const attributeDeclarators = [];
   let attrs = [];
+  let staticAttrs = [];
   let hasSpread = false;
   let key = null;
-  let statics = [];
   let keyIndex = -1;
-  let staticAssignment = null;
+  let statics = t.arrayExpression(staticAttrs);
 
   attributes.forEach((attribute, i) => {
     const node = attribute.node;
@@ -47,30 +47,27 @@ export default function extractOpenArguments(t, scope, plugin, attributes, { eag
       key = value;
       if (hoist && !eager && !literal) {
         value = t.stringLiteral("");
-        keyIndex = statics.length + 1;
+        keyIndex = staticAttrs.length + 1;
       }
       literal = literal || !hoist || !eager;
     }
 
     if (literal) {
-      statics.push(attr, value);
+      staticAttrs.push(attr, value);
     } else {
       attrs.push(attr, value);
     }
   });
 
   if (!attrs.length) { attrs = null; }
-  if (statics.length) {
-    statics = t.arrayExpression(statics);
+  if (staticAttrs.length) {
     if (hoist) {
-      const hoist = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
-      statics = hoist.id;
-      staticAssignment = hoist.staticAssignment;
+      statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
     }
   } else {
     statics = null;
   }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAssignment, hasSpread };
+  return { key, keyIndex, statics, attrs, attributeDeclarators, hasSpread };
 }
 

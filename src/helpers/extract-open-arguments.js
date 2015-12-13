@@ -11,7 +11,7 @@ import iDOMMethod from "./idom-method";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(t, path, plugin, { eager, hoist }) {
   const attributes = path.get("attributes");
-  const attributeDeclarators = [];
+  const eagerAttributes = [];
   const { scope } = path;
   let attrs = [];
   let staticAttrs = [];
@@ -44,7 +44,7 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
         const ref = t.isIdentifier(value) ?
           value :
           scope.generateUidIdentifierBasedOnNode(value);
-        attributeDeclarators.push({ ref, value });
+        eagerAttributes.push({ ref, value });
         value = ref;
       }
     } else if (!value) {
@@ -78,6 +78,6 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
     statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
   }
 
-  return { key, statics, attrs, attributeDeclarators, hasSpread };
+  return { key, statics, attrs, eagerAttributes, hasSpread };
 }
 

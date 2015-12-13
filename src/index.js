@@ -88,13 +88,13 @@ export default function ({ types: t }) {
 
         // Tie a child JSXElement's eager declarations with the parent's, so
         // so all declarations come before the element.
-        const eagerDeclarators = (containingJSXElement && !needsWrapper) ?
-          containingJSXElement.getData("eagerDeclarators") :
+        const eagerExpressions = (containingJSXElement && !needsWrapper) ?
+          containingJSXElement.getData("eagerExpressions") :
           [];
 
         path.setData("containerNeedsWrapper", containerNeedsWrapper);
         path.setData("containingJSXElement", containingJSXElement);
-        path.setData("eagerDeclarators", eagerDeclarators);
+        path.setData("eagerExpressions", eagerExpressions);
         path.setData("needsWrapper", needsWrapper);
       },
 
@@ -102,7 +102,7 @@ export default function ({ types: t }) {
         const {
           containerNeedsWrapper,
           containingJSXElement,
-          eagerDeclarators,
+          eagerExpressions,
           needsWrapper,
         } = path.data;
 
@@ -121,7 +121,7 @@ export default function ({ types: t }) {
           eagerChildren
         } = buildChildren(t, scope, this, path.get("children"), { eager });
 
-        eagerDeclarators.push(...eagerChildren);
+        eagerExpressions.push(...eagerChildren);
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }
@@ -156,18 +156,17 @@ export default function ({ types: t }) {
         if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
-          const jsxWrapperRef = injectJSXWrapper(t, this);
-          const params = eagerDeclarators.map((d) => d.ref);
+          const params = eagerExpressions.map((e) => e.ref);
           const wrapper = t.functionExpression(null, params, t.blockStatement(elements));
           const hoistedWrapper = addHoistedDeclarator(t, scope, "wrapper", wrapper, this);
 
           const args = [ hoistedWrapper ];
-          if (params.length) {
-            const paramArgs = eagerDeclarators.map((d) => d.value);
+          if (eagerExpressions.length) {
+            const paramArgs = eagerExpressions.map((e) => e.value);
             args.push(t.arrayExpression(paramArgs));
           }
 
-          const wrapperCall = toFunctionCall(t, jsxWrapperRef, args);
+          const wrapperCall = toFunctionCall(t, injectJSXWrapper(t, this), args);
           wrapperCall._iDOMwasJSX = true;
           path.replaceWith(wrapperCall);
           return;

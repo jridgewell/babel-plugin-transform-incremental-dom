@@ -12,20 +12,20 @@ export default function elementOpenCall(t, path, plugin) {
   const JSXElement = path.parentPath;
   // Only eagerly evaluate our attributes if we will be wrapping the element.
   const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
-  const eagerDeclarators = JSXElement.getData("eagerDeclarators");
+  const eagerExpressions = JSXElement.getData("eagerExpressions");
   const hoist = plugin.opts.hoist;
 
   const {
     key,
     statics,
     attrs,
-    attributeDeclarators,
+    eagerAttributes,
     hasSpread
   } = extractOpenArguments(t, path, plugin, { eager, hoist });
 
   // Push any eager attribute declarators onto the element's list of
   // eager declarations.
-  eagerDeclarators.push(...attributeDeclarators);
+  eagerExpressions.push(...eagerAttributes);
 
   // Only push arguments if they're needed
   const args = [tag];

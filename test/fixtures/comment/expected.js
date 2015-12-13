@@ -1,5 +1,7 @@
-elementOpen("div");
-return elementClose("div");
+function render() {
+  elementOpen("div");
+  return elementClose("div");
+}
 /* inline */ /*
               child
              */

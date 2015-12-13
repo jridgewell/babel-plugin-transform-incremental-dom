@@ -21,30 +21,32 @@ function _forOwn(object, iterator) {
 }
 
 var _hasOwn = Object.prototype.hasOwnProperty;
-IncrementalDOM.elementOpen("div");
-IncrementalDOM.elementOpenStart("div");
+function render() {
+  IncrementalDOM.elementOpen("div");
+  IncrementalDOM.elementOpenStart("div");
 
-_forOwn(props, _attr);
+  _forOwn(props, _attr);
 
-IncrementalDOM.elementOpenEnd("div");
-IncrementalDOM.elementClose("div");
-IncrementalDOM.elementOpenStart("div");
+  IncrementalDOM.elementOpenEnd("div");
+  IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementOpenStart("div");
 
-_forOwn(props, _attr);
+  _forOwn(props, _attr);
 
-IncrementalDOM.elementOpenEnd("div");
-IncrementalDOM.elementClose("div");
-IncrementalDOM.elementOpen("div");
-IncrementalDOM.elementClose("div");
-IncrementalDOM.elementOpen("div");
-IncrementalDOM.text("value");
-IncrementalDOM.elementClose("div");
-IncrementalDOM.elementOpen("div");
-IncrementalDOM.text(3);
-IncrementalDOM.elementClose("div");
-IncrementalDOM.elementOpen("div");
+  IncrementalDOM.elementOpenEnd("div");
+  IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementOpen("div");
+  IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementOpen("div");
+  IncrementalDOM.text("value");
+  IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementOpen("div");
+  IncrementalDOM.text(3);
+  IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementOpen("div");
 
-_renderArbitrary(value);
+  _renderArbitrary(value);
 
-IncrementalDOM.elementClose("div");
-return IncrementalDOM.elementClose("div");
+  IncrementalDOM.elementClose("div");
+  return IncrementalDOM.elementClose("div");
+}

@@ -23,21 +23,23 @@ function _jsxWrapper(func) {
   return func;
 }
 
-elementOpen("div");
-text("Hello World!");
-elementOpen("div");
-text("Hiya!");
-elementClose("div");
-elementOpen("div");
-text("First · Second");
-elementClose("div");
-elementOpen("div");
+function render() {
+  elementOpen("div");
+  text("Hello World!");
+  elementOpen("div");
+  text("Hiya!");
+  elementClose("div");
+  elementOpen("div");
+  text("First · Second");
+  elementClose("div");
+  elementOpen("div");
 
-_renderArbitrary(["First ", _jsxWrapper(function () {
-  elementOpen("span");
-  text("·");
-  return elementClose("span");
-}), " Second"]);
+  _renderArbitrary(["First ", _jsxWrapper(function () {
+    elementOpen("span");
+    text("·");
+    return elementClose("span");
+  }), " Second"]);
 
-elementClose("div");
-return elementClose("div");
+  elementClose("div");
+  return elementClose("div");
+}

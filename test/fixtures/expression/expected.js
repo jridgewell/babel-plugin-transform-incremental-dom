@@ -17,34 +17,36 @@ function _forOwn(object, iterator) {
 }
 
 var _hasOwn = Object.prototype.hasOwnProperty;
-elementOpen("div");
+function render() {
+  elementOpen("div");
 
-_renderArbitrary(queries.forEach(function (query) {
-  elementOpen("div", query.id, ["key", query.id]);
+  _renderArbitrary(queries.forEach(function (query) {
+    elementOpen("div", query.id, ["key", query.id]);
+    return elementClose("div");
+  }));
+
+  _renderArbitrary(a());
+
+  _renderArbitrary(message);
+
+  _renderArbitrary(data.message);
+
+  text("text");
+  text(123);
+  elementOpen("div");
+
+  _renderArbitrary(a());
+
+  elementClose("div");
+  elementOpen("div");
+
+  _renderArbitrary(message);
+
+  elementClose("div");
+  elementOpen("div");
+
+  _renderArbitrary(data.message);
+
+  elementClose("div");
   return elementClose("div");
-}));
-
-_renderArbitrary(a());
-
-_renderArbitrary(message);
-
-_renderArbitrary(data.message);
-
-text("text");
-text(123);
-elementOpen("div");
-
-_renderArbitrary(a());
-
-elementClose("div");
-elementOpen("div");
-
-_renderArbitrary(message);
-
-elementClose("div");
-elementOpen("div");
-
-_renderArbitrary(data.message);
-
-elementClose("div");
-return elementClose("div");
+}

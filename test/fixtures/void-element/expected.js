@@ -1,1 +1,3 @@
-return elementVoid("input", null, ["type", "text"]);
+function render() {
+  return elementVoid("input", null, ["type", "text"]);
+}

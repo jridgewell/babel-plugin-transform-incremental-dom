@@ -1,2 +1,4 @@
-elementOpen(a.b.div);
-return elementClose(a.b.div);
+function render() {
+  elementOpen(a.b.div);
+  return elementClose(a.b.div);
+}

@@ -4,15 +4,15 @@ function _jsxWrapper(func) {
 }
 
 function fn() {
-  return (1, elementVoid("good"));
+  return 1, elementVoid("good");
 }
 
 var fn = function fn() {
-  return (1, elementVoid("good"));
+  return 1, elementVoid("good");
 };
 
 var fn = function fn() {
-  return (1, elementVoid("good"));
+  return 1, elementVoid("good");
 };
 
 function fn() {

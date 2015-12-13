@@ -196,7 +196,7 @@ function test() {
 }
 
 var test = function test(key) {
-  return (1, (_statics27[3] = key, elementVoid("div", key, _statics27)));
+  return 1, (_statics27[3] = key, elementVoid("div", key, _statics27));
 };
 
 var key;
@@ -242,7 +242,7 @@ function test() {
 }
 
 var test = function test(key) {
-  return (key = 2, (_statics34[3] = key, elementVoid("div", key, _statics34)));
+  return key = 2, (_statics34[3] = key, elementVoid("div", key, _statics34));
 };
 
 function fn3o() {

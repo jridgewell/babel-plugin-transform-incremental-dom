@@ -1,31 +1,41 @@
-import toReference from "./ast/to-reference";
+import injectAttr from "./runtime/attr";
+import injectForOwn from "./runtime/for-own";
+import toFunctionCall from "./ast/to-function-call";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
+import iDOMMethod from "./idom-method";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, plugin, attributes, { eager, hoist }) {
+export default function extractOpenArguments(t, path, plugin, { eager, hoist }) {
+  const attributes = path.get("attributes");
   const attributeDeclarators = [];
+  const { scope } = path;
   let attrs = [];
   let staticAttrs = [];
-  let hasSpread = false;
   let key = null;
   let keyIndex = -1;
   let statics = t.arrayExpression(staticAttrs);
 
-  attributes.forEach((attribute, i) => {
-    const node = attribute.node;
-    if (attribute.isJSXSpreadAttribute()) {
-      hasSpread = true;
-      attrs.push(node);
-      return;
+  const hasSpread = attributes.some((a) => a.isJSXSpreadAttribute());
+  let forOwn, forOwnAttr;
+  if (hasSpread) {
+    forOwn = injectForOwn(t, plugin);
+    forOwnAttr = injectAttr(t, plugin);
+  }
+
+  attributes.forEach((attribute) => {
+    if (hasSpread && attribute.isJSXSpreadAttribute()) {
+      return attrs.push(t.callExpression(forOwn, [
+        attribute.get("argument").node,
+        forOwnAttr
+      ]));
     }
 
-    const attr = toReference(t, node.name);
-    const name = attr.value;
-    let value = node.value;
+    const name = t.stringLiteral(attribute.get("name").node.name);
+    let value = attribute.get("value").node;
 
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
@@ -43,31 +53,31 @@ export default function extractOpenArguments(t, scope, plugin, attributes, { eag
 
     let literal = isLiteralOrUndefined(t, value);
 
-    if (name === "key") {
+    if (name.value === "key") {
       key = value;
       if (hoist && !eager && !literal) {
         value = t.stringLiteral("");
         keyIndex = staticAttrs.length + 1;
       }
-      literal = literal || !hoist || !eager;
+      literal = literal || !(hoist && eager);
     }
 
     if (literal) {
-      staticAttrs.push(attr, value);
+      staticAttrs.push(name, value);
+    } else if (hasSpread) {
+      attrs.push(toFunctionCall(t, iDOMMethod("attr", plugin), [name, value]));
     } else {
-      attrs.push(attr, value);
+      attrs.push(name, value);
     }
   });
 
-  if (!attrs.length) { attrs = null; }
-  if (staticAttrs.length) {
-    if (hoist) {
-      statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
-    }
-  } else {
+  if (attrs.length === 0) { attrs = null; }
+  if (staticAttrs.length === 0) {
     statics = null;
+  } else if (hoist) {
+    statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
   }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, hasSpread };
+  return { key, statics, attrs, attributeDeclarators, hasSpread };
 }
 

@@ -2,7 +2,6 @@ import toFunctionCall from "./ast/to-function-call";
 import toReference from "./ast/to-reference";
 
 import iDOMMethod from "./idom-method";
-import attrsToAttrCalls from "./attributes-to-attr-calls";
 import extractOpenArguments from "./extract-open-arguments";
 import elementCloseCall from "./element-close-call";
 
@@ -22,7 +21,7 @@ export default function elementOpenCall(t, path, plugin) {
     attrs,
     attributeDeclarators,
     hasSpread
-  } = extractOpenArguments(t, path.scope, plugin, path.get("attributes"), { eager, hoist });
+  } = extractOpenArguments(t, path, plugin, { eager, hoist });
 
   // Push any eager attribute declarators onto the element's list of
   // eager declarations.
@@ -42,11 +41,9 @@ export default function elementOpenCall(t, path, plugin) {
   // This allows spreads to be transformed into
   // attr(name, value) calls.
   if (hasSpread) {
-    const attrCalls = attrsToAttrCalls(t, plugin, attrs);
-
     const expressions = [
       toFunctionCall(t, iDOMMethod("elementOpenStart", plugin), args),
-      ...attrCalls,
+      ...attrs,
       toFunctionCall(t, iDOMMethod("elementOpenEnd", plugin), [tag])
     ];
 

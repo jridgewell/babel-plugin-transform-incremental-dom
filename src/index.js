@@ -119,7 +119,7 @@ export default function ({ types: t }) {
         const {
           children,
           eagerChildren
-        } = buildChildren(t, scope, this, path.get("children"), { eager });
+        } = buildChildren(t, scope, path.get("children"), this, { eager });
 
         eagerExpressions.push(...eagerChildren);
 

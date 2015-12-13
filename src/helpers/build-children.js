@@ -6,7 +6,7 @@ import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, scope, plugin, children, { eager }) {
+export default function buildChildren(t, scope, children, plugin, { eager }) {
   let renderArbitraryRef;
   const eagerChildren = [];
 

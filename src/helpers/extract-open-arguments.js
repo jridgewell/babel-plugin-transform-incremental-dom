@@ -38,22 +38,15 @@ export default function extractOpenArguments(t, scope, file, attributes, { eager
       value = t.literal(true);
     }
 
-    const literal = isLiteralOrUndefined(t, value);
+    let literal = isLiteralOrUndefined(t, value);
 
     if (name === "key") {
       key = value;
-      if (hoist && !(literal || eager)) {
+      if (hoist && !eager && !literal) {
         value = t.literal("");
-        keyIndex = (i << 1) + 1;
+        keyIndex = statics.length + 1;
       }
-
-      if (hoist && eager && !literal) {
-        attrs.push(attr, value);
-      } else {
-        statics.push(attr, value);
-      }
-
-      return;
+      literal = literal || !hoist || !eager;
     }
 
     if (literal) {

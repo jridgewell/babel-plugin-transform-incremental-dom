@@ -17,10 +17,9 @@ export default function buildChildren(t, children, plugin) {
     }
 
     if (child.isJSXEmptyExpression()) { return children; }
-    const isJSXText = child.isJSXText();
     let node = child.node;
 
-    if (isJSXText || isLiteralOrUndefined(t, node)) {
+    if (child.isJSXText() || isLiteralOrUndefined(child)) {
       let value = node.value;
       const type = typeof value;
 

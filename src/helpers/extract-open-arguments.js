@@ -33,32 +33,35 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
       ]));
     }
 
-    const name = t.stringLiteral(attribute.get("name").node.name);
-    let value = attribute.get("value").node;
+    const name = t.stringLiteral(attribute.node.name.name);
+    let value = attribute.get("value");
+    let node = value.node;
 
-    if (t.isJSXExpressionContainer(value)) {
-      value = value.expression;
-    } else if (!value) {
-      value = t.booleanLiteral(true);
+    if (!node) {
+      value.replaceWith(t.jSXExpressionContainer(t.booleanLiteral(true)));
+    }
+    if (value.isJSXExpressionContainer()) {
+      value = value.get("expression");
+      node = value.node;
     }
 
-    let literal = isLiteralOrUndefined(t, value);
+    let literal = isLiteralOrUndefined(value);
 
     if (name.value === "key") {
-      key = value;
+      key = node;
       if (hoist && !literal && !eager) {
-        value = t.stringLiteral("");
+        node = t.stringLiteral("");
         keyIndex = staticAttrs.length + 1;
       }
       literal = literal || !(hoist && eager);
     }
 
     if (literal) {
-      staticAttrs.push(name, value);
+      staticAttrs.push(name, node);
     } else if (hasSpread) {
-      attrs.push(toFunctionCall(t, iDOMMethod("attr", plugin), [name, value]));
+      attrs.push(toFunctionCall(t, iDOMMethod("attr", plugin), [name, node]));
     } else {
-      attrs.push(name, value);
+      attrs.push(name, node);
     }
   });
 

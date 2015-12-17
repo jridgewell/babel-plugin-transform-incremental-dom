@@ -3,10 +3,11 @@ import isChildElement from "./helpers/is-child-element";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
+import expressionExtractor from "./helpers/extract-expressions";
+
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 import toFunctionCall from "./helpers/ast/to-function-call";
-import isLiteralOrUndefined from "./helpers/ast/is-literal-or-undefined";
 import flattenExpressions from "./helpers/ast/flatten-expressions";
 import statementsWithReturnLast from "./helpers/ast/statements-with-return-last";
 
@@ -25,14 +26,14 @@ export default function ({ types: t }) {
       enter(path) {
         let { secondaryTree, root, replacedElements } = this;
         const needsWrapper = root !== path && !isChildElement(path);
-        const eagerExpressions = needsWrapper ? [] : this.eagerExpressions || [];
+        const closureVars = needsWrapper ? [] : this.closureVars || [];
 
-        path.setData("eagerExpressions", eagerExpressions);
+        path.setData("closureVars", closureVars);
 
         if (secondaryTree || needsWrapper) {
           const { opts, file } = this;
-          const state = { secondaryTree: false, root, replacedElements, eagerExpressions, opts, file };
-          path.traverse(eagernessVisitor, state);
+          const state = { secondaryTree: false, root, replacedElements, closureVars, opts, file };
+          path.traverse(expressionExtractor, state);
           path.traverse(elementVisitor, state);
         }
       },
@@ -43,7 +44,7 @@ export default function ({ types: t }) {
         const isChild = isChildElement(path);
         const needsWrapper = root !== path && !isChild;
         const eager = secondaryTree || needsWrapper;
-        const eagerExpressions = path.getData("eagerExpressions");
+        const closureVars = path.getData("closureVars");
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -79,13 +80,13 @@ export default function ({ types: t }) {
         if (secondaryTree || needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
-          const params = eagerExpressions.map((e) => e.ref);
+          const params = closureVars.map((e) => e.param);
           const wrapper = t.functionExpression(null, params, t.blockStatement(elements));
           const hoistedWrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
 
           const args = [ hoistedWrapper ];
-          if (eagerExpressions.length) {
-            const paramArgs = eagerExpressions.map((e) => e.value);
+          if (closureVars.length) {
+            const paramArgs = closureVars.map((e) => e.arg);
             args.push(t.arrayExpression(paramArgs));
           }
 
@@ -102,44 +103,6 @@ export default function ({ types: t }) {
         } else {
           path.replaceWithMultiple(elements);
         }
-      }
-    }
-  };
-
-  const eagernessVisitor = {
-    // Ensure that elements are transformed before we eagerly extract the
-    // references.
-    // JSXElement: elementVisitor.JSXElement,
-
-    JSXSpreadAttribute: {
-      enter(path) {
-        const argument = path.get("argument");
-        const node = argument.node;
-        let ref = node;
-        if (!t.isIdentifier(node)) {
-          ref = path.scope.generateUidIdentifierBasedOnNode(node);
-        }
-
-        this.eagerExpressions.push({ ref, value: node });
-        argument.replaceWith(ref);
-      }
-    },
-
-    JSXExpressionContainer: {
-      enter(path) {
-        const expression = path.get("expression");
-        const node = expression.node;
-        if (isLiteralOrUndefined(t, node) || expression.isJSXElement()) {
-          return;
-        }
-
-        let ref = node;
-        if (!t.isIdentifier(node)) {
-          ref = path.scope.generateUidIdentifierBasedOnNode(node);
-        }
-
-        this.eagerExpressions.push({ ref, value: node });
-        expression.replaceWith(ref);
       }
     }
   };

@@ -1,4 +1,5 @@
 import inject from "../inject";
+import toFunctionCall from "../ast/to-function-call";
 
 // Loops over all own properties, calling
 // the specified iterator function with
@@ -27,7 +28,8 @@ function jsxWrapperAST(t, plugin, ref) {
         t.functionExpression(
           wrapper,
           [],
-          t.blockStatement([t.returnStatement(t.callExpression(
+          t.blockStatement([t.returnStatement(toFunctionCall(
+            t,
             t.memberExpression(func, t.identifier("apply")),
             [t.identifier("this"), args]
           ))])

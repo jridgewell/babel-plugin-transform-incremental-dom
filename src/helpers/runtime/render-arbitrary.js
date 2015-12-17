@@ -1,5 +1,6 @@
 import inject from "../inject";
 import injectForOwn from "./for-own";
+import toFunctionCall from "../ast/to-function-call";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 import iDOMMethod from "../idom-method";
 
@@ -36,7 +37,8 @@ function isDOMWrapper(t, type, value) {
 
 // Isolated AST code to determine if a value an Array.
 function isArray(t, value) {
-  return t.callExpression(
+  return toFunctionCall(
+    t,
     t.memberExpression(
       t.identifier("Array"),
       t.identifier("isArray")

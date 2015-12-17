@@ -1,7 +1,7 @@
 import inject from "../inject";
 
 // Caches a reference to Object#hasOwnProperty.
-function hasOwnAST(t, plugin, ref) {
+function hasOwnAST(t) {
   /**
    * var _hasOwn = Object.prototype.hasOwnProperty;
    */

@@ -1,4 +1,4 @@
-import toStatement from "./ast/to-statement";
+import toStatement from "./to-statement";
 
 // Helper to flatten out sequence expressions into a top level
 // expression statements.

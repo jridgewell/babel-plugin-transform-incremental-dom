@@ -6,9 +6,9 @@ import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
 // Filters out empty children, and transform JSX expressions
 // into function calls.
-export default function buildChildren(t, scope, children, plugin, { eager }) {
+export default function buildChildren(t, children, plugin) {
   let renderArbitraryRef;
-  const eagerChildren = [];
+  const { replacedElements } = plugin;
 
   children = children.reduce((children, child) => {
     const wasInExpressionContainer = child.isJSXExpressionContainer();
@@ -20,7 +20,7 @@ export default function buildChildren(t, scope, children, plugin, { eager }) {
     const isJSXText = child.isJSXText();
     let node = child.node;
 
-    if (isLiteralOrUndefined(t, node) || isJSXText) {
+    if (isJSXText || isLiteralOrUndefined(t, node)) {
       let value = node.value;
       const type = typeof value;
 
@@ -31,17 +31,11 @@ export default function buildChildren(t, scope, children, plugin, { eager }) {
 
       if (type === "string" || type === "number") {
         node = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
+      } else {
+        return children;
       }
-    } else if (wasInExpressionContainer && !node._iDOMwasJSX) {
+    } else if (wasInExpressionContainer && !replacedElements.has(node)) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
-
-      if (eager) {
-        const ref = t.isIdentifier(node) ?
-          node :
-          scope.generateUidIdentifierBasedOnNode(node);
-        eagerChildren.push({ ref, value: node });
-        node = ref;
-      }
 
       node = toFunctionCall(t, renderArbitraryRef, [node]);
     }
@@ -50,5 +44,5 @@ export default function buildChildren(t, scope, children, plugin, { eager }) {
     return children;
   }, []);
 
-  return { children, eagerChildren };
+  return children;
 }

@@ -1,5 +1,6 @@
 import inject from "../inject";
 import injectHasOwn from "./has-own";
+import toFunctionCall from "../ast/to-function-call";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 
 // Loops over all own properties, calling
@@ -29,7 +30,7 @@ function forOwnAST(t, plugin, ref, deps) {
         t.variableDeclaration("var", [t.variableDeclarator(prop)]),
         object,
         t.ifStatement(
-          t.callExpression(t.memberExpression(
+          toFunctionCall(t, t.memberExpression(
             hasOwn,
             t.identifier("call")
           ), [object, prop]),

@@ -11,7 +11,6 @@ import iDOMMethod from "./idom-method";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(t, path, plugin, { eager, hoist }) {
   const attributes = path.get("attributes");
-  const eagerAttributes = [];
   const { scope } = path;
   let attrs = [];
   let staticAttrs = [];
@@ -28,7 +27,7 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
 
   attributes.forEach((attribute) => {
     if (hasSpread && attribute.isJSXSpreadAttribute()) {
-      return attrs.push(t.callExpression(forOwn, [
+      return attrs.push(toFunctionCall(t, forOwn, [
         attribute.get("argument").node,
         forOwnAttr
       ]));
@@ -39,14 +38,6 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
 
     if (t.isJSXExpressionContainer(value)) {
       value = value.expression;
-
-      if (eager && !isLiteralOrUndefined(t, value) && !value._iDOMwasJSX) {
-        const ref = t.isIdentifier(value) ?
-          value :
-          scope.generateUidIdentifierBasedOnNode(value);
-        eagerAttributes.push({ ref, value });
-        value = ref;
-      }
     } else if (!value) {
       value = t.booleanLiteral(true);
     }
@@ -55,7 +46,7 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
 
     if (name.value === "key") {
       key = value;
-      if (hoist && !eager && !literal) {
+      if (hoist && !literal && !eager) {
         value = t.stringLiteral("");
         keyIndex = staticAttrs.length + 1;
       }
@@ -78,6 +69,6 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
     statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
   }
 
-  return { key, statics, attrs, eagerAttributes, hasSpread };
+  return { key, statics, attrs, hasSpread };
 }
 

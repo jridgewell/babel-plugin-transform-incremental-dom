@@ -3,32 +3,18 @@ import toReference from "./ast/to-reference";
 
 import iDOMMethod from "./idom-method";
 import extractOpenArguments from "./extract-open-arguments";
-import elementCloseCall from "./element-close-call";
 
-export default function elementOpenCall(t, path, plugin) {
+export default function elementOpenCall(t, path, plugin, options) {
   const tag = toReference(t, path.node.name);
-  const selfClosing = path.node.selfClosing;
-
-  const JSXElement = path.parentPath;
-  // Only eagerly evaluate our attributes if we will be wrapping the element.
-  const eager = JSXElement.getData("needsWrapper") || JSXElement.getData("containerNeedsWrapper");
-  const eagerExpressions = JSXElement.getData("eagerExpressions");
-  const hoist = plugin.opts.hoist;
-
+  const args = [tag];
   const {
     key,
     statics,
     attrs,
-    eagerAttributes,
     hasSpread
-  } = extractOpenArguments(t, path, plugin, { eager, hoist });
-
-  // Push any eager attribute declarators onto the element's list of
-  // eager declarations.
-  eagerExpressions.push(...eagerAttributes);
+  } = extractOpenArguments(t, path, plugin, options);
 
   // Only push arguments if they're needed
-  const args = [tag];
   if (key || statics) {
     args.push(key || t.nullLiteral());
   }
@@ -63,6 +49,7 @@ export default function elementOpenCall(t, path, plugin) {
     args.push(...attrs);
   }
 
+  const selfClosing = path.node.selfClosing;
   const elementFunction = (selfClosing) ? "elementVoid" : "elementOpen";
   return toFunctionCall(t, iDOMMethod(elementFunction, plugin), args);
 }

@@ -1,6 +1,8 @@
 import isRootJSX from "./helpers/is-root-jsx";
+import isChildElement from "./helpers/is-child-element";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
+
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 import toFunctionCall from "./helpers/ast/to-function-call";
@@ -13,19 +15,6 @@ import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 
 
-function elementNeedsWrapper(path) {
-  let isChild = false;
-  path.findParent((path) => {
-    if (path.isJSXElement()) {
-      isChild = true;
-      return true;
-    }
-    return !path.isJSXExpressionContainer();
-  });
-
-  return !isChild;
-}
-
 export default function ({ types: t }) {
   const elementVisitor = {
     JSXNamespacedName(path) {
@@ -35,7 +24,7 @@ export default function ({ types: t }) {
     JSXElement: {
       enter(path) {
         let { secondaryTree, root, replacedElements } = this;
-        const needsWrapper = root !== path && elementNeedsWrapper(path);
+        const needsWrapper = root !== path && !isChildElement(path);
         const eagerExpressions = needsWrapper ? [] : this.eagerExpressions || [];
 
         path.setData("eagerExpressions", eagerExpressions);
@@ -51,7 +40,8 @@ export default function ({ types: t }) {
       exit(path) {
         const hoist = this.opts.hoist;
         const { root, secondaryTree, replacedElements } = this;
-        const needsWrapper = root !== path && elementNeedsWrapper(path);
+        const isChild = isChildElement(path);
+        const needsWrapper = root !== path && !isChild;
         const eager = secondaryTree || needsWrapper;
         const eagerExpressions = path.getData("eagerExpressions");
 
@@ -68,7 +58,7 @@ export default function ({ types: t }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (!elementNeedsWrapper(path)) {
+        if (isChild) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.

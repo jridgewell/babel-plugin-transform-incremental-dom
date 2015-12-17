@@ -32,7 +32,7 @@ export default function ({ types: t }) {
 
         if (secondaryTree || needsWrapper) {
           const { opts, file } = this;
-          const state = { secondaryTree: false, root, replacedElements, closureVars, opts, file };
+          const state = { secondaryTree: false, root: path, replacedElements, closureVars, opts, file };
           path.traverse(expressionExtractor, state);
           path.traverse(elementVisitor, state);
         }

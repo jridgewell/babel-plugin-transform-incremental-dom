@@ -1,7 +1,7 @@
-function _renderArbitrary(child) {
+var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
-  if (type === "number" || (type === "string" || child && child instanceof String)) {
+  if (type === "number" || type === "string" || child && child instanceof String) {
     IncrementalDOM.text(child);
   } else if (type === "function" && child.__jsxDOMWrapper) {
     child();
@@ -10,17 +10,20 @@ function _renderArbitrary(child) {
   } else {
     _forOwn(child, _renderArbitrary);
   }
-}
+};
 
-function _attr(value, name) {
+var _attr = function _attr(value, name) {
   IncrementalDOM.attr(name, value);
-}
-
-function _forOwn(object, iterator) {
-  for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-}
+};
 
 var _hasOwn = Object.prototype.hasOwnProperty;
+
+var _forOwn = function _forOwn(object, iterator) {
+  for (var prop in object) {
+    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+  }
+};
+
 function render() {
   IncrementalDOM.elementOpen("div");
   IncrementalDOM.elementOpenStart("div");
@@ -41,7 +44,7 @@ function render() {
   IncrementalDOM.text("value");
   IncrementalDOM.elementClose("div");
   IncrementalDOM.elementOpen("div");
-  IncrementalDOM.text(3);
+  IncrementalDOM.text("3");
   IncrementalDOM.elementClose("div");
   IncrementalDOM.elementOpen("div");
 

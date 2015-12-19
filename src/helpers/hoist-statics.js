@@ -1,5 +1,7 @@
 import { addHoistedDeclarator } from "./hoist";
 
+// Hoists the static attributes array, so that the array instance is not
+// recreated multiple times.
 export default function addStaticHoist(t, scope, plugin, statics, key, keyIndex) {
   const id = addHoistedDeclarator(t, scope, "statics", statics, plugin);
 

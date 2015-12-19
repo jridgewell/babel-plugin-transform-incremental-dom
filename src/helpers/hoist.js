@@ -16,6 +16,7 @@ export function hoist(t, program, { file }) {
   }
 }
 
+// Hoists the variable to the top of the file.
 export function addHoistedDeclarator(t, scope, name, value, { file }) {
   const ref = scope.generateUidIdentifier(name);
   const declarator = t.variableDeclarator(ref, value);

@@ -26,10 +26,16 @@ export default function ({ types: t }) {
       enter(path) {
         let { secondaryTree, root, replacedElements } = this;
         const needsWrapper = root !== path && !isChildElement(path);
+
+        // If this element needs a closure wrapper, we need a new array of
+        // closure parameters. Otherwise, use the parent's, since it may need
+        // a closure wrapper.
         const closureVars = needsWrapper ? [] : this.closureVars || [];
 
         path.setData("closureVars", closureVars);
 
+        // If this element needs to be wrapped in a closure, we need to transform
+        // it's children without wrapping them.
         if (secondaryTree || needsWrapper) {
           const { opts, file } = this;
           const state = { secondaryTree: false, root: path, replacedElements, closureVars, opts, file };
@@ -110,6 +116,7 @@ export default function ({ types: t }) {
     }
   };
 
+  // This visitor first finds the root element, and ignores all the others.
   return { visitor: {
     Program: {
       enter() {

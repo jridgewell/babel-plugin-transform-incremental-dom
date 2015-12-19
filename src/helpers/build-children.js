@@ -4,8 +4,7 @@ import injectRenderArbitrary from "./runtime/render-arbitrary";
 import iDOMMethod from "./idom-method";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
-// Filters out empty children, and transform JSX expressions
-// into function calls.
+// Transforms the children into an array of iDOM function calls
 export default function buildChildren(t, children, plugin) {
   let renderArbitraryRef;
   const { replacedElements } = plugin;
@@ -23,20 +22,26 @@ export default function buildChildren(t, children, plugin) {
       let value = node.value;
       const type = typeof value;
 
+      // Clean up the text, so we don't have to have multiple TEXT nodes.
       if (type === "string") {
         value = cleanText(value);
         if (!value) { return children; }
       }
 
+      // Only strings and numbers will print, anything else is skipped.
       if (type === "string" || type === "number") {
         node = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
       } else {
         return children;
       }
     } else if (wasInExpressionContainer && !replacedElements.has(node)) {
+      // Arbitrary expressions, e.g. variables, need to be inspected at runtime
+      // to determine how to render them.
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
       node = toFunctionCall(t, renderArbitraryRef, [node]);
+    } else {
+      throw child.buildCodeFrameError("Hmm... what's this child?");
     }
 
     children.push(node);

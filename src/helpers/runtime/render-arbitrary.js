@@ -23,7 +23,7 @@ function isTextual(t, type, value) {
 }
 
 // Isolated AST code to determine if a value is a wrapped
-// DOM manipulator function.
+// DOM closure.
 function isDOMWrapper(t, type, value) {
   return t.logicalExpression(
     "&&",
@@ -48,10 +48,9 @@ function isArray(t, value) {
 }
 
 // Renders an arbitrary JSX Expression into the DOM.
-// Valid types are strings, numbers, and DOM manipulators
-// (which will be wrapped).
+// Valid types are strings, numbers, and DOM closures.
 // It may also be an Array or Object, which will be iterated
-// recursively.
+// recursively to find a valid type.
 // Depends on the _forOwn helper.
 function renderArbitraryAST(t, plugin, ref, deps) {
   const forOwn = deps.forOwn;

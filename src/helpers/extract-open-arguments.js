@@ -37,9 +37,12 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
     let value = attribute.get("value");
     let node = value.node;
 
+    // Attributes without a value are interpreted as `true`.
     if (!node) {
       value.replaceWith(t.jSXExpressionContainer(t.booleanLiteral(true)));
     }
+
+    // Get the value inside the expression.
     if (value.isJSXExpressionContainer()) {
       value = value.get("expression");
       node = value.node;
@@ -47,8 +50,13 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
 
     let literal = isLiteralOrUndefined(value);
 
+    // The key attribute must be passed to the `elementOpen` call.
     if (name.value === "key") {
       key = node;
+
+      // If it's not a literal key, we must assign it in the statics array.
+      // That is, unless this element is being closure wrapped, in which
+      // case we must push the key attribute into the dynamic attributes.
       if (hoist && !literal && !eager) {
         node = t.stringLiteral("");
         keyIndex = staticAttrs.length + 1;

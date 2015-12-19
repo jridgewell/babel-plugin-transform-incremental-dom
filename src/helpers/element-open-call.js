@@ -4,6 +4,7 @@ import toReference from "./ast/to-reference";
 import iDOMMethod from "./idom-method";
 import extractOpenArguments from "./extract-open-arguments";
 
+// Returns the opening element's function call.
 export default function elementOpenCall(t, path, plugin, options) {
   const tag = toReference(t, path.node.name);
   const args = [tag];

@@ -1,10 +1,11 @@
 import inject from "../inject";
 import toFunctionCall from "../ast/to-function-call";
 
-// Loops over all own properties, calling
-// the specified iterator function with
-// value and prop name.
-// Depends on the _hasOwn helper.
+// Wraps a JSX element in a closure, capturing the arguments
+// that it's attributes and children need to render.
+// Also sets `__jsxDOMWrapper` property, so that the closure
+// may be identified as a wrapper that should be called during
+// render.
 function jsxWrapperAST(t, plugin, ref) {
   const func = t.identifier("func");
   const args = t.identifier("args");

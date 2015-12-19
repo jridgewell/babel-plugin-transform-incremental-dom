@@ -8,6 +8,9 @@ function addClosureVar(expression, closureVars) {
   expression.replaceWith(param);
 }
 
+// Extracts variable expressions into an array of closure parameters,
+// so that when the closure is finally evaluated, it will have the correct
+// values.
 const expressionExtractor = {
   JSXSpreadAttribute: {
     enter(path) {

@@ -18,10 +18,10 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
-var _wrapper = function _wrapper(props) {
+var _wrapper = function _wrapper(_props) {
   elementOpenStart("div");
 
-  _forOwn(props, _attr);
+  _forOwn(_props, _attr);
 
   elementOpenEnd("div");
   return elementClose("div");

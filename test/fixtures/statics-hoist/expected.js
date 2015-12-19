@@ -19,8 +19,8 @@ var _statics = ["id", "id"],
     _statics11 = ["id", "id", "key", ""],
     _statics12 = ["id", "id", "key", ""],
     _statics13 = ["id", "id"],
-    _wrapper = function _wrapper(i) {
-  return elementVoid("div", i, _statics13, "key", i);
+    _wrapper = function _wrapper(_i) {
+  return elementVoid("div", _i, _statics13, "key", _i);
 },
     _statics14 = ["id", "id"],
     _statics15 = ["id", "id"],
@@ -37,9 +37,9 @@ var _statics = ["id", "id"],
     _statics23 = ["id", "id"],
     _statics24 = ["id", "id2", "key", ""],
     _statics25 = ["id", "id"],
-    _wrapper3 = function _wrapper3(key4) {
+    _wrapper3 = function _wrapper3(_key) {
   elementOpen("div", null, _statics25);
-  elementVoid("div", key4, (_statics24[3] = key4, _statics24));
+  elementVoid("div", _key, (_statics24[3] = _key, _statics24));
   return elementClose("div");
 },
     _statics26 = ["key", "test"],

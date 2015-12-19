@@ -33,38 +33,38 @@ var _wrapper = function _wrapper() {
   text("will be wrapped");
   return elementClose("array");
 },
-    _wrapper2 = function _wrapper2(i) {
+    _wrapper2 = function _wrapper2(_i) {
   elementOpen("div");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i);
 
   return elementClose("div");
 },
-    _wrapper3 = function _wrapper3(i) {
+    _wrapper3 = function _wrapper3(_i2) {
   elementOpen("div");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i2);
 
   return elementClose("div");
 },
-    _wrapper4 = function _wrapper4(i) {
+    _wrapper4 = function _wrapper4(_i3) {
   elementOpen("map");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i3);
 
   return elementClose("map");
 },
-    _wrapper5 = function _wrapper5(i) {
+    _wrapper5 = function _wrapper5(_i4) {
   elementOpen("map2");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i4);
 
   return elementClose("map2");
 },
-    _wrapper6 = function _wrapper6(i) {
+    _wrapper6 = function _wrapper6(_i5) {
   elementOpen("map3");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i5);
 
   return elementClose("map3");
 },
@@ -99,42 +99,57 @@ var _wrapper = function _wrapper() {
 
   return elementClose("two");
 },
-    _wrapper12 = function _wrapper12(i) {
+    _wrapper12 = function _wrapper12(_i6) {
   elementOpen("outer");
   elementOpen("inner");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i6);
 
   elementClose("inner");
   return elementClose("outer");
 },
-    _wrapper13 = function _wrapper13(i) {
+    _wrapper13 = function _wrapper13(_i7) {
   elementOpen("outer2");
   elementOpen("inner2");
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i7);
 
   elementClose("inner2");
   return elementClose("outer2");
 },
-    _wrapper14 = function _wrapper14(i) {
+    _wrapper14 = function _wrapper14(_i8) {
   elementOpen("outer3");
-  elementOpen("inner3", null, null, "attr", i);
+  elementOpen("inner3", null, null, "attr", _i8);
   elementClose("inner3");
   return elementClose("outer3");
 },
-    _wrapper15 = function _wrapper15(i, i) {
-  elementOpen("span", null, null, "attr", i);
+    _wrapper15 = function _wrapper15(_i11, _i12) {
+  elementOpen("span", null, null, "attr", _i11);
 
-  _renderArbitrary(i);
+  _renderArbitrary(_i12);
 
   return elementClose("span");
 },
-    _wrapper16 = function _wrapper16(i, i) {
+    _wrapper16 = function _wrapper16(_i9, _i10) {
   elementOpen("outer4");
-  elementOpen("inner4", null, null, "attr", _jsxWrapper(_wrapper15, [i, i]));
+  elementOpen("inner4", null, null, "attr", _jsxWrapper(_wrapper15, [_i9, _i10]));
   elementClose("inner4");
   return elementClose("outer4");
+},
+    _wrapper17 = function _wrapper17(_i15, _ref6, _i16) {
+  elementOpen("span", null, null, "attr", _i15);
+
+  _renderArbitrary(_ref6);
+
+  _renderArbitrary(_i16);
+
+  return elementClose("span");
+},
+    _wrapper18 = function _wrapper18(_i13, _ref5, _i14) {
+  elementOpen("outer5");
+  elementOpen("inner5", null, null, "attr", _jsxWrapper(_wrapper17, [_i13, _ref5, _i14]));
+  elementClose("inner5");
+  return elementClose("outer5");
 };
 
 function render() {
@@ -192,6 +207,10 @@ function render() {
 
   var mapNested4 = [1, 2, 3].map(function (i) {
     return _jsxWrapper(_wrapper16, [i, i]);
+  });
+
+  var mapNested5 = [1, 2, 3].map(function (i) {
+    return _jsxWrapper(_wrapper18, [i, i++, i]);
   });
 
   elementOpen("fin");

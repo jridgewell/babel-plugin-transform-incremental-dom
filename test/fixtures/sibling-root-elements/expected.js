@@ -6,31 +6,22 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var _wrapper = function _wrapper() {
-  return elementVoid("div");
-},
-    _wrapper2 = function _wrapper2() {
-  elementOpen("div");
-  return elementClose("div");
-},
-    _wrapper3 = function _wrapper3() {
-  return elementVoid("div");
-},
-    _wrapper4 = function _wrapper4() {
-  return elementVoid("div");
-};
-
 function fn() {
   return elementVoid("root");
 }
 
 function render() {
   function fn1() {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(function () {
+      return elementVoid("div");
+    });
   }
 
   function fn2() {
-    return _jsxWrapper(_wrapper2);
+    return _jsxWrapper(function () {
+      elementOpen("div");
+      return elementClose("div");
+    });
   }
 
   elementOpen("root");
@@ -43,7 +34,9 @@ function fn3() {
 
 function fn4() {
   var items = items.map(function (item) {
-    return _jsxWrapper(_wrapper3);
+    return _jsxWrapper(function () {
+      return elementVoid("div");
+    });
   });
   return elementVoid("root");
 }
@@ -54,6 +47,8 @@ function fn5() {
   return elementClose("root");
 
   function inner() {
-    return _jsxWrapper(_wrapper4);
+    return _jsxWrapper(function () {
+      return elementVoid("div");
+    });
   }
 }

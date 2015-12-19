@@ -28,23 +28,6 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var _wrapper = function _wrapper() {
-  return elementVoid("span");
-},
-    _wrapper2 = function _wrapper2() {
-  return elementVoid("span");
-},
-    _wrapper3 = function _wrapper3(_ref) {
-  return elementVoid("span", null, null, "attr", _ref);
-},
-    _wrapper4 = function _wrapper4(_ref2) {
-  elementOpen("span");
-
-  _renderArbitrary(_ref2);
-
-  return elementClose("span");
-};
-
 function render() {
   elementOpen("root");
   elementOpen("div", null, ["class", "my-class"]);
@@ -55,11 +38,23 @@ function render() {
   elementClose("div");
   elementOpen("div", null, null, "class", props.myClass);
   elementClose("div");
-  elementOpen("div", null, null, "prop", x ? _jsxWrapper(_wrapper) : _jsxWrapper(_wrapper2));
+  elementOpen("div", null, null, "prop", x ? _jsxWrapper(function () {
+    return elementVoid("span");
+  }) : _jsxWrapper(function () {
+    return elementVoid("span");
+  }));
   elementClose("div");
-  elementOpen("div", null, null, "prop", _jsxWrapper(_wrapper3, [i++]));
+  elementOpen("div", null, null, "prop", _jsxWrapper(function (_ref) {
+    return elementVoid("span", null, null, "attr", _ref);
+  }, [i++]));
   elementClose("div");
-  elementOpen("div", null, null, "prop", _jsxWrapper(_wrapper4, [i++]));
+  elementOpen("div", null, null, "prop", _jsxWrapper(function (_ref2) {
+    elementOpen("span");
+
+    _renderArbitrary(_ref2);
+
+    return elementClose("span");
+  }, [i++]));
   elementClose("div");
   return elementClose("root");
 }

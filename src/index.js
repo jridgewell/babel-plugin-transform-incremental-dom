@@ -81,10 +81,13 @@ export default function ({ types: t }) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const params = closureVars.map((e) => e.param);
-          const wrapper = t.functionExpression(null, params, t.blockStatement(elements));
-          const hoistedWrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
+          let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
-          const args = [ hoistedWrapper ];
+          if (hoist) {
+            wrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
+          }
+
+          const args = [ wrapper ];
           if (closureVars.length) {
             const paramArgs = closureVars.map((e) => e.arg);
             args.push(t.arrayExpression(paramArgs));

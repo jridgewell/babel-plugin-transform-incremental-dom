@@ -28,16 +28,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var _wrapper = function _wrapper(_query$id) {
-  elementOpen("div", _query$id, ["key", _query$id]);
-  return elementClose("div");
-};
-
 function render() {
   elementOpen("div");
 
   _renderArbitrary(queries.forEach(function (query) {
-    return _jsxWrapper(_wrapper, [query.id]);
+    return _jsxWrapper(function (_query$id) {
+      elementOpen("div", _query$id, ["key", _query$id]);
+      return elementClose("div");
+    }, [query.id]);
   }));
 
   _renderArbitrary(a());

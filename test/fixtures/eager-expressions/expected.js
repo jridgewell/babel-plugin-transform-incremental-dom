@@ -28,26 +28,24 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
-  elementOpen("div", null, null, "attr", _ref);
-  elementOpen("div", null, null, "first", _ref2);
-
-  _renderArbitrary(_ref3);
-
-  elementClose("div");
-
-  _renderArbitrary(_ref4);
-
-  elementOpen("div", null, null, "second", _ref5);
-
-  _renderArbitrary(_ref6);
-
-  elementClose("div");
-  return elementClose("div");
-};
-
 function render() {
-  var test = _jsxWrapper(_wrapper, [i++, i++, i++, i++, i++, i++]);
+  var test = _jsxWrapper(function (_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
+    elementOpen("div", null, null, "attr", _ref);
+    elementOpen("div", null, null, "first", _ref2);
+
+    _renderArbitrary(_ref3);
+
+    elementClose("div");
+
+    _renderArbitrary(_ref4);
+
+    elementOpen("div", null, null, "second", _ref5);
+
+    _renderArbitrary(_ref6);
+
+    elementClose("div");
+    return elementClose("div");
+  }, [i++, i++, i++, i++, i++, i++]);
   elementOpen("root");
 
   _renderArbitrary(test);

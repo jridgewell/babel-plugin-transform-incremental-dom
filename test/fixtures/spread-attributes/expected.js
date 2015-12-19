@@ -18,17 +18,15 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
-var _wrapper = function _wrapper(_props) {
-  elementOpenStart("div");
-
-  _forOwn(_props, _attr);
-
-  elementOpenEnd("div");
-  return elementClose("div");
-};
-
 function render() {
-  var test = _jsxWrapper(_wrapper, [props]);
+  var test = _jsxWrapper(function (_props) {
+    elementOpenStart("div");
+
+    _forOwn(_props, _attr);
+
+    elementOpenEnd("div");
+    return elementClose("div");
+  }, [props]);
   elementOpenStart("div", "test", ["class", "test", "key", "test"]);
   attr("id", id);
 

@@ -8,26 +8,32 @@ function addClosureVar(expression, closureVars) {
   expression.replaceWith(param);
 }
 
+function last(array) {
+  return array[array.length - 1];
+}
+
 // Extracts variable expressions into an array of closure parameters,
 // so that when the closure is finally evaluated, it will have the correct
 // values.
 const expressionExtractor = {
   JSXSpreadAttribute: {
     enter(path) {
-      addClosureVar(path.get("argument"), this.closureVars);
+      const { closureVarsStack } = this;
+      addClosureVar(path.get("argument"), last(closureVarsStack));
     }
   },
 
   JSXExpressionContainer: {
     enter(path) {
       const expression = path.get("expression");
-
       // If the variable is constant (or will be wrapped), don't extract.
       if (isLiteralOrUndefined(expression) || expression.isJSXElement()) {
         return;
       }
 
-      addClosureVar(expression, this.closureVars);
+      const { closureVarsStack } = this;
+
+      addClosureVar(expression, last(closureVarsStack));
     }
   }
 };

@@ -40,8 +40,6 @@ export default function buildChildren(t, children, plugin) {
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
       node = toFunctionCall(t, renderArbitraryRef, [node]);
-    } else {
-      throw child.buildCodeFrameError("Hmm... what's this child?");
     }
 
     children.push(node);

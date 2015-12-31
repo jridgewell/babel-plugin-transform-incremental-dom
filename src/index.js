@@ -24,21 +24,19 @@ export default function ({ types: t }) {
 
     JSXElement: {
       enter(path) {
-        let { secondaryTree, root, replacedElements } = this;
+        let { secondaryTree, root, replacedElements, closureVarsStack } = this;
         const needsWrapper = root !== path && !isChildElement(path);
-
-        // If this element needs a closure wrapper, we need a new array of
-        // closure parameters. Otherwise, use the parent's, since it may need
-        // a closure wrapper.
-        const closureVars = needsWrapper ? [] : this.closureVars || [];
-
-        path.setData("closureVars", closureVars);
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
         if (secondaryTree || needsWrapper) {
+          // If this element needs a closure wrapper, we need a new array of
+          // closure parameters. Otherwise, use the parent's, since it may need
+          // a closure wrapper.
+          closureVarsStack.push([]);
+
           const { opts, file } = this;
-          const state = { secondaryTree: false, root: path, replacedElements, closureVars, opts, file };
+          const state = { secondaryTree: false, root: path, replacedElements, closureVarsStack, opts, file };
           path.traverse(expressionExtractor, state);
           path.traverse(elementVisitor, state);
         }
@@ -46,11 +44,10 @@ export default function ({ types: t }) {
 
       exit(path) {
         const hoist = this.opts.hoist;
-        const { root, secondaryTree, replacedElements } = this;
+        const { root, secondaryTree, replacedElements, closureVarsStack } = this;
         const isChild = isChildElement(path);
         const needsWrapper = root !== path && !isChild;
         const eager = secondaryTree || needsWrapper;
-        const closureVars = path.getData("closureVars");
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -86,6 +83,7 @@ export default function ({ types: t }) {
         if (secondaryTree || needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
+          const closureVars = closureVarsStack.pop();
           const params = closureVars.map((e) => e.param);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
@@ -136,7 +134,15 @@ export default function ({ types: t }) {
       if (isRoot) {
         const { opts, file } = this;
         const replacedElements = new Set();
-        const state = { secondaryTree: false, root: path, replacedElements, opts, file };
+        const closureVarsStack = [];
+        const state = {
+          secondaryTree: false,
+          root: path,
+          replacedElements,
+          closureVarsStack,
+          opts,
+          file
+        };
 
         path.parentPath.traverse(elementVisitor, state);
 

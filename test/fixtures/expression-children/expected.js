@@ -1,7 +1,23 @@
-function _renderArbitrary(child) {
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  var wrapper = args ? function wrapper() {
+    return func.apply(this, args);
+  } : func;
+  wrapper.__jsxDOMWrapper = true;
+  return wrapper;
+};
+
+var _hasOwn = Object.prototype.hasOwnProperty;
+
+var _forOwn = function _forOwn(object, iterator) {
+  for (var prop in object) {
+    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+  }
+};
+
+var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
-  if (type === "number" || (type === "string" || child && child instanceof String)) {
+  if (type === "number" || type === "string" || child && child instanceof String) {
     text(child);
   } else if (type === "function" && child.__jsxDOMWrapper) {
     child();
@@ -10,18 +26,7 @@ function _renderArbitrary(child) {
   } else {
     _forOwn(child, _renderArbitrary);
   }
-}
-
-function _forOwn(object, iterator) {
-  for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-}
-
-var _hasOwn = Object.prototype.hasOwnProperty;
-
-function _jsxWrapper(func) {
-  func.__jsxDOMWrapper = true;
-  return func;
-}
+};
 
 function render() {
   var children = [1, 2, 3, _jsxWrapper(function () {
@@ -31,90 +36,68 @@ function render() {
   })];
 
   var items = [];
-
-  var _loop = function () {
-    var _i = i;
-
-    items.push(_jsxWrapper(function () {
+  for (var i = 0; i < 10; i++) {
+    items.push(_jsxWrapper(function (_i) {
       elementOpen("div");
 
       _renderArbitrary(_i);
 
       return elementClose("div");
-    }));
-  };
-
-  for (var i = 0; i < 10; i++) {
-    _loop();
+    }, [i]));
   }
 
-  var _loop2 = function () {
-    var _i2 = i;
-
-    items[i] = _jsxWrapper(function () {
+  for (var i = 0; i < 10; i++) {
+    items[i] = _jsxWrapper(function (_i2) {
       elementOpen("div");
 
       _renderArbitrary(_i2);
 
       return elementClose("div");
-    });
-  };
-
-  for (var i = 0; i < 10; i++) {
-    _loop2();
+    }, [i]);
   }
 
   var map = [1, 2, 3].map(function (i) {
-    var _i3 = i;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_i3) {
       elementOpen("map");
 
       _renderArbitrary(_i3);
 
       return elementClose("map");
-    });
+    }, [i]);
   });
 
   var map2 = [1, 2, 3].map(function (i) {
-    var _i4 = i;
-
-    var el = _jsxWrapper(function () {
+    var el = _jsxWrapper(function (_i4) {
       elementOpen("map2");
 
       _renderArbitrary(_i4);
 
       return elementClose("map2");
-    });
+    }, [i]);
     return el;
   });
 
   var map3 = function map3() {
     [1, 2, 3].map(function (i) {
-      var _i5 = i;
-
-      return _jsxWrapper(function () {
+      return _jsxWrapper(function (_i5) {
         elementOpen("map3");
 
         _renderArbitrary(_i5);
 
         return elementClose("map3");
-      });
+      }, [i]);
     });
   };
 
   var attr = 0;
   var attrs = [1, 2, 3].map(function () {
-    var _ref = attr++,
-        _ref2 = attr++;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_ref, _ref2) {
       elementOpen("attrs", null, null, "attr", _ref);
 
       _renderArbitrary(_ref2);
 
       return elementClose("attrs");
-    });
+    }, [attr++, attr++]);
   });
 
   var declarator = _jsxWrapper(function () {
@@ -131,31 +114,23 @@ function render() {
   });
 
   var i = 1;
-
-  var _ref3 = i++;
-
-  var one = _jsxWrapper(function () {
+  var one = _jsxWrapper(function (_ref3) {
     elementOpen("one");
 
     _renderArbitrary(_ref3);
 
     return elementClose("one");
-  });
-
-  var _ref4 = i++;
-
-  var two = _jsxWrapper(function () {
+  }, [i++]);
+  var two = _jsxWrapper(function (_ref4) {
     elementOpen("two");
 
     _renderArbitrary(_ref4);
 
     return elementClose("two");
-  });
+  }, [i++]);
 
   var mapNested = [1, 2, 3].map(function (i) {
-    var _i6 = i;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_i6) {
       elementOpen("outer");
       elementOpen("inner");
 
@@ -163,13 +138,11 @@ function render() {
 
       elementClose("inner");
       return elementClose("outer");
-    });
+    }, [i]);
   });
 
   var mapNested2 = [1, 2, 3].map(function (i) {
-    var _i7 = i;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_i7) {
       elementOpen("outer2");
       elementOpen("inner2");
 
@@ -177,36 +150,48 @@ function render() {
 
       elementClose("inner2");
       return elementClose("outer2");
-    });
+    }, [i]);
   });
 
   var mapNested3 = [1, 2, 3].map(function (i) {
-    var _i8 = i;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_i8) {
       elementOpen("outer3");
       elementOpen("inner3", null, null, "attr", _i8);
       elementClose("inner3");
       return elementClose("outer3");
-    });
+    }, [i]);
   });
 
   var mapNested4 = [1, 2, 3].map(function (i) {
-    var _i9 = i,
-        _i10 = i;
-
-    return _jsxWrapper(function () {
+    return _jsxWrapper(function (_i9, _i10) {
       elementOpen("outer4");
-      elementOpen("inner4", null, null, "attr", _jsxWrapper(function () {
-        elementOpen("span", null, null, "attr", _i9);
+      elementOpen("inner4", null, null, "attr", _jsxWrapper(function (_i11, _i12) {
+        elementOpen("span", null, null, "attr", _i11);
 
-        _renderArbitrary(_i10);
+        _renderArbitrary(_i12);
 
         return elementClose("span");
-      }));
+      }, [_i9, _i10]));
       elementClose("inner4");
       return elementClose("outer4");
-    });
+    }, [i, i]);
+  });
+
+  var mapNested5 = [1, 2, 3].map(function (i) {
+    return _jsxWrapper(function (_i13, _ref5, _i14) {
+      elementOpen("outer5");
+      elementOpen("inner5", null, null, "attr", _jsxWrapper(function (_i15, _ref6, _i16) {
+        elementOpen("span", null, null, "attr", _i15);
+
+        _renderArbitrary(_ref6);
+
+        _renderArbitrary(_i16);
+
+        return elementClose("span");
+      }, [_i13, _ref5, _i14]));
+      elementClose("inner5");
+      return elementClose("outer5");
+    }, [i, i++, i]);
   });
 
   elementOpen("fin");

@@ -55,6 +55,10 @@ function render() {
     return (<outer4>{<inner4 attr={<span attr={i}>{i}</span>}></inner4>}</outer4>);
   });
 
+  var mapNested5 = [1, 2, 3].map(function(i) {
+    return (<outer5>{<inner5 attr={<span attr={i}>{i++}{i}</span>}></inner5>}</outer5>);
+  });
+
   return <fin>
     {children}
     {<span>won't be wrapped</span>}

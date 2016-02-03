@@ -1,26 +1,24 @@
-const path   = require("path");
-const fs     = require("fs");
-const assert = require("assert");
-const babel  = require("babel");
-const plugin = require("../src/index");
+import path   from "path";
+import fs     from "fs";
+import assert from "assert";
+import { transformFileSync } from "babel-core";
+import plugin from "../src/index";
 
 function resolve(path) {
-  let expected = '';
+  let expected = "";
   try {
     expected = fs.readFileSync(path).toString();
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (err.code !== "ENOENT") {
       throw err;
     }
   }
   return expected;
 }
 
-function transform(path, extra) {
-  return babel.transformFileSync(path, {
-    blacklist: ['strict', 'react'],
-    plugins: [plugin],
-    extra: extra
+function transform(path, options) {
+  return transformFileSync(path, {
+    plugins: ["syntax-jsx", [plugin, options]]
   }).code;
 }
 
@@ -30,6 +28,10 @@ function parse(json) {
 
 function trim(str) {
   return str.replace(/^\s+|\s+$/, "");
+}
+
+function stripUseStrict(str) {
+  return str.replace(/^"use strict";\n+/, "");
 }
 
 
@@ -42,11 +44,11 @@ describe("turn jsx into incremental-dom", () => {
       const expected = resolve(path.join(fixtureDir, "expected.js"));
       const opts = parse(resolve(path.join(fixtureDir, "options.json")));
       const throwMsg = opts.throws;
-      const extra = opts.extra;
+      const options = opts.options;
       let actual;
 
       try {
-        actual = transform(path.join(fixtureDir, "actual.js"), extra);
+        actual = transform(path.join(fixtureDir, "actual.js"), options);
       } catch (err) {
         if (throwMsg) {
           if (err.message.indexOf(throwMsg) >= 0) {
@@ -61,10 +63,13 @@ describe("turn jsx into incremental-dom", () => {
 
       if (throwMsg) {
         throw new Error("Expected error message: " + throwMsg + ". But parsing succeeded.");
-      } else if (expected) {
-        assert.equal(trim(actual), trim(expected));
+      }
+
+      actual = stripUseStrict(trim(actual));
+      if (expected) {
+        assert.equal(actual, trim(expected));
       } else {
-        require("fs").writeFileSync(path.join(fixtureDir, "expected.js"), trim(actual));
+        fs.writeFileSync(path.join(fixtureDir, "expected.js"), actual);
       }
     });
   });

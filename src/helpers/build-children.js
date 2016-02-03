@@ -4,47 +4,47 @@ import injectRenderArbitrary from "./runtime/render-arbitrary";
 import iDOMMethod from "./idom-method";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 
-// Filters out empty children, and transform JSX expressions
-// into function calls.
-export default function buildChildren(t, scope, file, children, { eager }) {
+// Transforms the children into an array of iDOM function calls
+export default function buildChildren(t, children, plugin) {
   let renderArbitraryRef;
-  const eagerChildren = [];
+  const { replacedElements } = plugin;
 
   children = children.reduce((children, child) => {
-    const wasInExpressionContainer = t.isJSXExpressionContainer(child);
+    const wasInExpressionContainer = child.isJSXExpressionContainer();
     if (wasInExpressionContainer) {
-      child = child.expression;
+      child = child.get("expression");
     }
 
-    if (t.isJSXEmptyExpression(child)) { return children; }
+    if (child.isJSXEmptyExpression()) { return children; }
+    let node = child.node;
 
-    if (isLiteralOrUndefined(t, child)) {
-      let value = child.value;
+    if (child.isJSXText() || isLiteralOrUndefined(child)) {
+      let value = node.value;
       const type = typeof value;
 
+      // Clean up the text, so we don't have to have multiple TEXT nodes.
       if (type === "string") {
         value = cleanText(value);
         if (!value) { return children; }
       }
 
+      // Only strings and numbers will print, anything else is skipped.
       if (type === "string" || type === "number") {
-        child = toFunctionCall(t, iDOMMethod(file, "text"), [t.literal(value)]);
+        node = toFunctionCall(t, iDOMMethod("text", plugin), [t.stringLiteral("" + value)]);
+      } else {
+        return children;
       }
-    } else if (wasInExpressionContainer && !child._iDOMwasJSX) {
-      renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, file);
+    } else if (wasInExpressionContainer && !replacedElements.has(node)) {
+      // Arbitrary expressions, e.g. variables, need to be inspected at runtime
+      // to determine how to render them.
+      renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(t, plugin);
 
-      if (eager) {
-        const ref = scope.generateUidIdentifierBasedOnNode(child);
-        eagerChildren.push(t.variableDeclarator(ref, child));
-        child = ref;
-      }
-
-      child = toFunctionCall(t, renderArbitraryRef, [child]);
+      node = toFunctionCall(t, renderArbitraryRef, [node]);
     }
 
-    children.push(child);
+    children.push(node);
     return children;
   }, []);
 
-  return { children, eagerChildren };
+  return children;
 }

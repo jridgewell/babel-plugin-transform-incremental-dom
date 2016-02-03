@@ -12,14 +12,17 @@ export default function toReference(t, node, identifier = false) {
 
     return t.identifier(node);
   }
+
   if (t.isJSXIdentifier(node)) {
-    return identifier ? t.identifier(node.name) : t.literal(node.name);
+    return identifier ? t.identifier(node.name) : t.stringLiteral(node.name);
   }
+
   if (t.isJSXMemberExpression(node)) {
     return t.memberExpression(
       toReference(t, node.object, true),
       toReference(t, node.property, true)
     );
   }
+
   return node;
 }

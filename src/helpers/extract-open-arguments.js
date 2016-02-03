@@ -1,73 +1,85 @@
-import toReference from "./ast/to-reference";
+import injectAttr from "./runtime/attr";
+import injectForOwn from "./runtime/for-own";
+import toFunctionCall from "./ast/to-function-call";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
+import iDOMMethod from "./idom-method";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, scope, file, attributes, { eager, hoist }) {
-  const attributeDeclarators = [];
+export default function extractOpenArguments(t, path, plugin, { eager, hoist }) {
+  const attributes = path.get("attributes");
+  const { scope } = path;
   let attrs = [];
-  let hasSpread = false;
+  let staticAttrs = [];
   let key = null;
-  let statics = [];
   let keyIndex = -1;
-  let staticAssignment = null;
+  let statics = t.arrayExpression(staticAttrs);
 
-  attributes.forEach((attribute, i) => {
-    if (t.isJSXSpreadAttribute(attribute)) {
-      hasSpread = true;
-      attrs.push(attribute);
-      return;
+  const hasSpread = attributes.some((a) => a.isJSXSpreadAttribute());
+  let forOwn, forOwnAttr;
+  if (hasSpread) {
+    forOwn = injectForOwn(t, plugin);
+    forOwnAttr = injectAttr(t, plugin);
+  }
+
+  attributes.forEach((attribute) => {
+    if (hasSpread && attribute.isJSXSpreadAttribute()) {
+      return attrs.push(toFunctionCall(t, forOwn, [
+        attribute.get("argument").node,
+        forOwnAttr
+      ]));
     }
 
-    const attr = toReference(t, attribute.name);
-    const name = attr.value;
-    let value = attribute.value;
+    const name = t.stringLiteral(attribute.node.name.name);
+    let value = attribute.get("value");
+    let node = value.node;
 
-    if (t.isJSXExpressionContainer(value)) {
-      value = value.expression;
-
-      if (eager && !isLiteralOrUndefined(t, value) && !value._iDOMwasJSX) {
-        const ref = scope.generateUidIdentifierBasedOnNode(value);
-        attributeDeclarators.push(t.variableDeclarator(ref, value));
-        value = ref;
-      }
-    } else if (!value) {
-      value = t.literal(true);
+    // Attributes without a value are interpreted as `true`.
+    if (!node) {
+      value.replaceWith(t.jSXExpressionContainer(t.booleanLiteral(true)));
     }
 
-    let literal = isLiteralOrUndefined(t, value);
+    // Get the value inside the expression.
+    if (value.isJSXExpressionContainer()) {
+      value = value.get("expression");
+      node = value.node;
+    }
 
-    if (name === "key") {
-      key = value;
-      if (hoist && !eager && !literal) {
-        value = t.literal("");
-        keyIndex = statics.length + 1;
+    let literal = isLiteralOrUndefined(value);
+
+    // The key attribute must be passed to the `elementOpen` call.
+    if (name.value === "key") {
+      key = node;
+
+      // If it's not a literal key, we must assign it in the statics array.
+      // That is, unless this element is being closure wrapped, in which
+      // case we must push the key attribute into the dynamic attributes.
+      if (hoist && !literal && !eager) {
+        node = t.stringLiteral("");
+        keyIndex = staticAttrs.length + 1;
       }
-      literal = literal || !hoist || !eager;
+      literal = literal || !(hoist && eager);
     }
 
     if (literal) {
-      statics.push(attr, value);
+      staticAttrs.push(name, node);
+    } else if (hasSpread) {
+      attrs.push(toFunctionCall(t, iDOMMethod("attr", plugin), [name, node]));
     } else {
-      attrs.push(attr, value);
+      attrs.push(name, node);
     }
   });
 
-  if (!attrs.length) { attrs = null; }
-  if (statics.length) {
-    statics = t.arrayExpression(statics);
-    if (hoist) {
-      const hoist = addStaticHoist(t, scope, file, statics, key, keyIndex);
-      statics = hoist.id;
-      staticAssignment = hoist.staticAssignment;
-    }
-  } else {
+  if (attrs.length === 0) { attrs = null; }
+  if (staticAttrs.length === 0) {
     statics = null;
+  } else if (hoist) {
+    statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
   }
 
-  return { key, keyIndex, statics, attrs, attributeDeclarators, staticAssignment, hasSpread };
+  return { key, statics, attrs, hasSpread };
 }
 

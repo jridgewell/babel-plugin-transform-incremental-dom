@@ -1,7 +1,5 @@
 {
-  "extra": {
-    "incremental-dom": {
-      "prefix": "IncrementalDOM"
-    }
+  "options": {
+    "prefix": "IncrementalDOM"
   }
 }

@@ -1,5 +1,5 @@
 import isRootJSX from "./helpers/is-root-jsx";
-import isChildElement from "./helpers/is-child-element";
+import { isChildElement, isRootSubtree } from "./helpers/element-subtrees";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
@@ -15,7 +15,6 @@ import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 
-
 export default function ({ types: t }) {
   const elementVisitor = {
     JSXNamespacedName(path) {
@@ -25,7 +24,8 @@ export default function ({ types: t }) {
     JSXElement: {
       enter(path) {
         let { secondaryTree, root, replacedElements, closureVarsStack } = this;
-        const needsWrapper = root !== path && !isChildElement(path);
+        const allowRootSubtree = this.opts['root-tree-optimized'];
+        const needsWrapper = !isRootSubtree(path, root, { allowRootSubtree }) && !isChildElement(path);
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -43,10 +43,12 @@ export default function ({ types: t }) {
       },
 
       exit(path) {
-        const hoist = this.opts.hoist;
+        const { hoist } = this.opts;
+        const allowRootSubtree = this.opts['root-tree-optimized'];
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
+        const subtree = isRootSubtree(path, root, { allowRootSubtree });
         const isChild = isChildElement(path);
-        const needsWrapper = root !== path && !isChild;
+        const needsWrapper = !subtree && !isChild;
         const eager = secondaryTree || needsWrapper;
 
         const { parentPath } = path;
@@ -80,7 +82,7 @@ export default function ({ types: t }) {
           elements = statementsWithReturnLast(t, elements);
         }
 
-        if (secondaryTree || needsWrapper) {
+        if ((secondaryTree || needsWrapper) && !subtree) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();

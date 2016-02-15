@@ -106,41 +106,74 @@ $ npm install babel-plugin-incremental-dom
 
 ```json
 {
-  "blacklist": ["react"],
-  "plugins": ["incremental-dom"],
-  "extra": {
-    "incremental-dom": {
-        "prefix": "IncrementalDOM"
+  "presets": ["es2015"],
+  "plugins": ["syntax-jsx", [
+    "incremental-dom", {
+      "hoist": true,
+      "prefix": "IncrementalDOM",
+      "runtime": "iDOMHelpers"
     }
-  }
+  ]]
 }
 ```
 
-An optional [function prefix](#function-prefix) may be passed.
+An optional [function prefix](#function-prefix), [runtime](#runtime),
+and [hoist boolean](#hoist) may be passed.
 
 ### Via CLI
 
 ```sh
-$ babel --blacklist react --plugins incremental-dom script.js
+$ babel --plugins syntax-jsx,incremental-dom script.js
 ```
 
 ### Via Node API
 
 ```javascript
 require("babel-core").transform("code", {
-  blacklist: ["react"],
-  plugins: ["incremental-dom"],
-  extra: {
-    "incremental-dom": {
-        prefix: "IncrementalDOM" // Optional function prefix
+  "presets": ["es2015"],
+  "plugins": ["syntax-jsx", [
+    "incremental-dom", {
+      "hoist": true,
+      "prefix": "IncrementalDOM",
+      "runtime": "iDOMHelpers"
     }
-  }
+  ]],
 });
 ```
 
-An optional [function prefix](#function-prefix) may be passed.
+An optional [function prefix](#function-prefix), [runtime](#runtime),
+and [hoist boolean](#hoist) may be passed.
 
-### Function Prefix
+### Options
+
+#### Hoist
+
+You may enable the experimental `hoist` option to hoist static attribute
+arrays and element wrappers to the highest available scope. This avoids
+expensive instance allocations when running the render function multiple
+times.
+
+```js
+var _statics = ["id", "container"];
+
+function render(data) {
+    return elementVoid("div", null, _statics);
+}
+```
+
+To do this, simply add the `hoist` option to the Incremental DOM plugin:
+
+```json
+{
+  "plugins": ["syntax-jsx", [
+    "incremental-dom", {
+      "hoist": true
+    }
+  ]],
+}
+```
+
+#### Function Prefix
 
 By deafult, `babel-plugin-incremental-dom` directly calls Incremental
 DOM functions:
@@ -163,11 +196,111 @@ plugin:
 
 ```json
 {
-  "plugins": ["incremental-dom"],
-  "extra": {
-    "incremental-dom": {
-        "prefix": "IncrementalDOM"
+  "plugins": ["syntax-jsx", [
+    "incremental-dom", {
+      "prefix": "IncrementalDOM"
+    }
+  ]],
+}
+```
+
+#### Runtime
+
+By deafult, `babel-plugin-incremental-dom` injects several helpers into
+each file as needed. When transforming multiple files with JSX, you can
+avoid this helper duplication by specifying a runtime library to use
+instead.
+
+The runtime's required functions are:
+
+- `attr`
+
+  Not to be confused with IncrementalDOM's own `#attr` function, the
+  runtime's `attr` must take in a `value` and `attrName` and call
+  IncrementalDOM's `#attr`. Basically, it flip flops its parameters so
+  that `IncrementalDOM#attr` can be used in a `Array#forEach` like
+  method signature.
+
+  ```js
+  runtime.attr = function(value, attrName) {
+    IncrementalDOM.attr(attrName, value);
+  };
+  ```
+
+- `forOwn`
+
+  No surprises here, this iterates over every enumerable-own property of
+  `object`, calling `iterator` with the property's value and name.
+
+  ```js
+  runtime.forOwn = function(object, iterator) {
+    var hasOwn = Object.prototype.hasOwnProperty;
+    for (var prop in object) {
+      if (hasOwn.call(object, prop)) {
+        iterator(object[prop], prop);
+      }
+    }
+  };
+  ```
+
+- `jsxWrapper`
+
+  To prevent iDOM's incremental nature from screwing up our beautiful
+  JSX syntax, certain elements must be wrapped in a function closure
+  that will be later evaluated. That closure will be passed into
+  `jsxWrapper`, along with an array of any (if any) arguments
+  needed to render the contained JSX element.
+
+  Note it is not `jsxWrapper`'s responsibility to create the JSX
+  closure, merely to help identify the passed in closure later. Here, we
+  set the `__jsxDOMWrapper` property of the returned closure.
+
+  ```js
+  runtime.jsxWrapper = function(elementClosure, args) {
+    var wrapper = args ? function() {
+      return elementClosure.apply(this, args);
+    } : jsxClosure;
+    wrapper.__jsxDOMWrapper = true;
+    return wrapper;
+  }
+  ```
+
+- `renderArbitrary`
+
+  To render child elements correctly, we'll need to be able to identify
+  them. `renderArbitrary` receives a `child`, and must call the
+  appropriate action. For string and numbers, that's to call
+  `IncrementalDOM#text`. For wrapped JSX Closures, that's to invoke the
+  closure. For arrays, that's to render every element. And for objects,
+  that's to render every property.
+
+  Note that we identify JSX Closures by the `__jsxDOMWrapper` property
+  we set inside the `jsxWrapper` runtime function.
+
+  ```js
+  runtime.renderArbitrary = function _renderArbitrary(child) {
+    var type = typeof child;
+    if (type === "number" || (type === string || child && child instanceof String)) {
+      IncrementalDOM.text(child);
+    } else if (type === "function" && child.__jsxDOMWrapper) {
+      child();
+    } else if (Array.isArray(child)) {
+      child.forEach(_renderArbitrary);
+    } else {
+      runtime.forOwn(child, _renderArbitrary);
     }
   }
+  ```
+
+To do this, simply add the `runtime` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": ["syntax-jsx", [
+    "incremental-dom", {
+      "runtime": "iDOMHelpers"
+    }
+  ]],
 }
 ```

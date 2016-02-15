@@ -7,7 +7,7 @@ Turn JSX into [Incremental DOM](http://google.github.io/incremental-dom/).
 **In**
 
 ```javascript
-function render(data) {
+export default function render(data) {
     var header = data.conditional ? <div /> : null;
     var collection = data.items.map((item) => {
         return <li key={item.id} class={item.className}>{item.name}</li>;
@@ -21,54 +21,21 @@ function render(data) {
 }
 ```
 
-**Out**
+**Out** (default, unoptimized options)
 
 ```javascript
-function _attr(value, name) {
-    attr(name, value);
-}
-
-function _renderArbitrary(child) {
-    var type = typeof child;
-
-    if (type === "number" || (type === "string" || child && child instanceof String)) {
-        text(child);
-    } else if (type === "function" && child.__jsxDOMWrapper) {
-        child();
-    } else if (Array.isArray(child)) {
-        child.forEach(_renderArbitrary);
-    } else {
-        _forOwn(child, _renderArbitrary);
-    }
-}
-
-function _forOwn(object, iterator) {
-    for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-}
-
-var _hasOwn = Object.prototype.hasOwnProperty;
-
-function _jsxWrapper(func) {
-    func.__jsxDOMWrapper = true;
-    return func;
-}
-
-function render(data) {
+export default function render(data) {
     var header = data.conditional ? _jsxWrapper(function () {
         return elementVoid("div");
     }) : null;
     var collection = data.items.map(function (item) {
-        var _item$id = item.id,
-            _item$className = item.className,
-            _item$name = item.name;
-
-        return _jsxWrapper(function () {
+        return _jsxWrapper(function (_item$id, _item$className, _item$name) {
             elementOpen("li", _item$id, ["key", _item$id], "class", _item$className);
 
             _renderArbitrary(_item$name);
 
             return elementClose("li");
-        });
+        }, [item.id, item.className, item.name]);
     });
 
     elementOpen("div", null, ["id", "container"]);
@@ -89,6 +56,40 @@ function render(data) {
     elementClose("p");
     return elementClose("div");
 }
+
+var _jsxWrapper = function _jsxWrapper(func, args) {
+    var wrapper = args ? function wrapper() {
+        return func.apply(this, args);
+    } : func;
+    wrapper.__jsxDOMWrapper = true;
+    return wrapper;
+};
+
+var _attr = function _attr(value, name) {
+    attr(name, value);
+};
+
+var _hasOwn = Object.prototype.hasOwnProperty;
+
+var _forOwn = function _forOwn(object, iterator) {
+    for (var prop in object) {
+        if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+    }
+};
+
+var _renderArbitrary = function _renderArbitrary(child) {
+    var type = typeof child;
+
+    if (type === "number" || type === "string" || child && child instanceof String) {
+        text(child);
+    } else if (type === "function" && child.__jsxDOMWrapper) {
+        child();
+    } else if (Array.isArray(child)) {
+        child.forEach(_renderArbitrary);
+    } else {
+        _forOwn(child, _renderArbitrary);
+    }
+};
 ```
 
 ## Installation

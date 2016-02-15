@@ -1,0 +1,1 @@
+var fn6 = (key6) => <div id="id" key={key6} />;

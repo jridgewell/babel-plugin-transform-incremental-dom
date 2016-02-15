@@ -1,0 +1,1 @@
+var test = (key) =>  (1, <div id="id" key={key} />);

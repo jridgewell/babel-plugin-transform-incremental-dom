@@ -115,43 +115,48 @@ export default function ({ types: t }) {
   };
 
   // This visitor first finds the root element, and ignores all the others.
-  return { visitor: {
-    Program: {
-      enter() {
-        setupInjector(this);
-        setupHoists(this);
+  return {
+    manipulateOptions(opts, parserOpts) {
+      parserOpts.plugins.push("jsx");
+    },
+    visitor: {
+      Program: {
+        enter() {
+          setupInjector(this);
+          setupHoists(this);
+        },
+
+        exit(path) {
+          hoist(t, path, this);
+          injectHelpers(this);
+        }
       },
 
-      exit(path) {
-        hoist(t, path, this);
-        injectHelpers(this);
-      }
-    },
+      JSXElement(path) {
+        const isRoot = isRootJSX(path);
 
-    JSXElement(path) {
-      const isRoot = isRootJSX(path);
+        if (isRoot) {
+          const { opts, file } = this;
+          const replacedElements = new Set();
+          const closureVarsStack = [];
+          const state = {
+            secondaryTree: false,
+            root: path,
+            replacedElements,
+            closureVarsStack,
+            opts,
+            file
+          };
 
-      if (isRoot) {
-        const { opts, file } = this;
-        const replacedElements = new Set();
-        const closureVarsStack = [];
-        const state = {
-          secondaryTree: false,
-          root: path,
-          replacedElements,
-          closureVarsStack,
-          opts,
-          file
-        };
+          path.parentPath.traverse(elementVisitor, state);
 
-        path.parentPath.traverse(elementVisitor, state);
-
-        state.secondaryTree = true;
-        const parent = path.getFunctionParent();
-        parent.traverse(elementVisitor, state);
-      } else {
-        path.skip();
+          state.secondaryTree = true;
+          const parent = path.getFunctionParent();
+          parent.traverse(elementVisitor, state);
+        } else {
+          path.skip();
+        }
       }
     }
-  }};
+  };
 }

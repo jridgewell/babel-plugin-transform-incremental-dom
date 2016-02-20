@@ -107,13 +107,7 @@ $ npm install babel-plugin-incremental-dom
 ```json
 {
   "presets": ["es2015"],
-  "plugins": ["syntax-jsx", [
-    "incremental-dom", {
-      "hoist": true,
-      "prefix": "IncrementalDOM",
-      "runtime": "iDOMHelpers"
-    }
-  ]]
+  "plugins": ["incremental-dom"]
 }
 ```
 
@@ -123,7 +117,7 @@ and [hoist boolean](#hoist) may be passed.
 ### Via CLI
 
 ```sh
-$ babel --plugins syntax-jsx,incremental-dom script.js
+$ babel --plugins incremental-dom script.js
 ```
 
 ### Via Node API
@@ -131,13 +125,7 @@ $ babel --plugins syntax-jsx,incremental-dom script.js
 ```javascript
 require("babel-core").transform("code", {
   "presets": ["es2015"],
-  "plugins": ["syntax-jsx", [
-    "incremental-dom", {
-      "hoist": true,
-      "prefix": "IncrementalDOM",
-      "runtime": "iDOMHelpers"
-    }
-  ]],
+  "plugins": ["incremental-dom"],
 });
 ```
 
@@ -165,7 +153,7 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
 
 ```json
 {
-  "plugins": ["syntax-jsx", [
+  "plugins": [[
     "incremental-dom", {
       "hoist": true
     }
@@ -196,7 +184,7 @@ plugin:
 
 ```json
 {
-  "plugins": ["syntax-jsx", [
+  "plugins": [[
     "incremental-dom", {
       "prefix": "IncrementalDOM"
     }
@@ -297,7 +285,7 @@ plugin:
 
 ```json
 {
-  "plugins": ["syntax-jsx", [
+  "plugins": [[
     "incremental-dom", {
       "runtime": "iDOMHelpers"
     }

@@ -8,6 +8,15 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.0.0
+
+- **New Feature**
+  - Upgraded to Babel 6
+  - Common Runtime support
+- **Internal**
+  - Massive internal rewrite to support stateless transforms
+  - Split apart massive single feature tests into multiple small tests
+
 ## 2.2.0
 
 - **New Feature**

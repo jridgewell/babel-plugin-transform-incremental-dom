@@ -18,7 +18,7 @@ function resolve(path) {
 
 function transform(path, options) {
   return transformFileSync(path, {
-    plugins: ["syntax-jsx", [plugin, options]]
+    plugins: [[plugin, options]]
   }).code;
 }
 

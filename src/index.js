@@ -136,12 +136,15 @@ export default function ({ types: t }) {
         const isRoot = isRootJSX(path);
 
         if (isRoot) {
+          const { parentPath } = path;
           const { opts, file } = this;
+          const secondaryTree = !(parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression());
           const replacedElements = new Set();
           const closureVarsStack = [];
+
           const state = {
-            secondaryTree: false,
             root: path,
+            secondaryTree,
             replacedElements,
             closureVarsStack,
             opts,

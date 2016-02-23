@@ -30,11 +30,17 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 function render() {
   var i = 1;
-  var one = (elementOpen("one"), _renderArbitrary(i++), elementClose("one"));
-  var two = _jsxWrapper(function (_ref) {
-    elementOpen("two");
+  var one = _jsxWrapper(function (_ref) {
+    elementOpen("one");
 
     _renderArbitrary(_ref);
+
+    return elementClose("one");
+  }, [i++]);
+  var two = _jsxWrapper(function (_ref2) {
+    elementOpen("two");
+
+    _renderArbitrary(_ref2);
 
     return elementClose("two");
   }, [i++]);

@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  var wrapper = args ? function wrapper() {
+    return func.apply(this, args);
+  } : func;
+  wrapper.__jsxDOMWrapper = true;
+  return wrapper;
+};
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -22,7 +30,13 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 function render() {
   var map2 = [1, 2, 3].map(function (i) {
-    var el = (elementOpen("map2"), _renderArbitrary(i), elementClose("map2"));
+    var el = _jsxWrapper(function (_i) {
+      elementOpen("map2");
+
+      _renderArbitrary(_i);
+
+      return elementClose("map2");
+    }, [i]);
     return el;
   });
 }

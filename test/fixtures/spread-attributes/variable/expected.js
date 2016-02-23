@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  var wrapper = args ? function wrapper() {
+    return func.apply(this, args);
+  } : func;
+  wrapper.__jsxDOMWrapper = true;
+  return wrapper;
+};
+
 var _attr = function _attr(value, name) {
   attr(name, value);
 };
@@ -11,5 +19,12 @@ var _forOwn = function _forOwn(object, iterator) {
 };
 
 function render() {
-  var test = ((elementOpenStart("div"), _forOwn(props, _attr), elementOpenEnd("div")), elementClose("div"));
+  var test = _jsxWrapper(function (_props) {
+    elementOpenStart("div");
+
+    _forOwn(_props, _attr);
+
+    elementOpenEnd("div");
+    return elementClose("div");
+  }, [props]);
 }

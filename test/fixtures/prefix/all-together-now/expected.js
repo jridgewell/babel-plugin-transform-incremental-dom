@@ -7,7 +7,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
     child();
   } else if (Array.isArray(child)) {
     child.forEach(_renderArbitrary);
-  } else {
+  } else if (String(child) === "[object Object]") {
     _forOwn(child, _renderArbitrary);
   }
 };

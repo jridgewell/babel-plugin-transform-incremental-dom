@@ -28,17 +28,31 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-function render() {
-  var mapNested4 = [1, 2, 3].map(function (i) {
-    elementOpen("outer4");
-    elementOpen("inner4", null, null, "attr", _jsxWrapper(function (_i, _i2) {
-      elementOpen("span", null, null, "attr", _i);
+function renderMain() {
+  var renderInput = function renderInput() {
+    return _jsxWrapper(function () {
+      elementOpen("div");
+      elementVoid("input", null, ["type", "text", "id", "testInput"]);
+      return elementClose("div");
+    });
+  };
+  elementOpen("div", null, ["id", "app"]);
 
-      _renderArbitrary(_i2);
+  _renderArbitrary(renderInput());
 
-      return elementClose("span");
-    }, [i, i]));
-    elementClose("inner4");
-    return elementClose("outer4");
-  });
+  return elementClose("div");
+}
+
+var renderInput = function renderInput() {
+  elementOpen("div");
+  elementVoid("input", null, ["type", "text", "id", "testInput"]);
+  return elementClose("div");
+};
+
+function renderMain() {
+  elementOpen("div", null, ["id", "app"]);
+
+  _renderArbitrary(renderInput());
+
+  return elementClose("div");
 }

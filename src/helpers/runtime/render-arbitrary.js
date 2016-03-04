@@ -47,6 +47,19 @@ function isArray(t, value) {
   );
 }
 
+// Isolated AST code to determine if a value an Object.
+function isObject(t, value) {
+  return t.binaryExpression(
+    "===",
+    toFunctionCall(
+      t,
+      t.identifier("String"),
+      [value]
+    ),
+    t.stringLiteral("[object Object]")
+  );
+}
+
 // Renders an arbitrary JSX Expression into the DOM.
 // Valid types are strings, numbers, and DOM closures.
 // It may also be an Array or Object, which will be iterated
@@ -100,9 +113,12 @@ function renderArbitraryAST(t, plugin, ref, deps) {
             t.blockStatement([
               toFunctionCallStatement(t, forEach, [ref])
             ]),
-            t.blockStatement([
-              toFunctionCallStatement(t, forOwn, [child, ref])
-            ])
+            t.ifStatement(
+              isObject(t, child),
+              t.blockStatement([
+                toFunctionCallStatement(t, forOwn, [child, ref])
+              ])
+            )
           )
         )
       )

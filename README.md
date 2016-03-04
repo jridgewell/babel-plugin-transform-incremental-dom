@@ -274,7 +274,7 @@ The runtime's required functions are:
       child();
     } else if (Array.isArray(child)) {
       child.forEach(_renderArbitrary);
-    } else {
+    } else if (String(child) === "[object Object]") {
       runtime.forOwn(child, _renderArbitrary);
     }
   }

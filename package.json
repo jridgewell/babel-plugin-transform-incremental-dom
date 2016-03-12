@@ -16,6 +16,8 @@
     "mocha": "^2.2.5"
   },
   "scripts": {
+    "preversion": "npm test",
+    "version": "npm run build",
     "build": "babel src --out-dir lib --copy-files",
     "test": "mocha --compilers js:babel-register",
     "lint": "eslint src"

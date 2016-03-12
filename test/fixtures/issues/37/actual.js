@@ -20,3 +20,15 @@ function renderMain() {
     {renderInput()}
   </div>;
 }
+
+
+// - - - - - - -
+
+function renderMain(flag) {
+  if (flag) {
+    return <div id="app"></div>;
+  }
+  return <div id="app">
+    {renderInput()}
+  </div>;
+}

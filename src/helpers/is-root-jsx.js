@@ -1,15 +1,23 @@
+function isReturned(path) {
+  const parent = path.parentPath;
+  return parent.isReturnStatement() || parent.isArrowFunctionExpression();
+}
+
 const rootElementFinder = {
   JSXElement(path, state) {
+    const { jsx, crossedFunction } = state;
+
     // No need to traverse our JSX element.
-    if (path.node === state.jsxNode) {
+    if (path === jsx) {
       path.skip();
       return;
     }
 
-    const { parentPath } = path;
-    const returned = parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression();
+    const returned = isReturned(jsx);
+    const otherIsReturned = isReturned(path);
+
     // We're looking for a root element, which must be returned by the function.
-    if (returned) {
+    if (otherIsReturned && (crossedFunction || !returned)) {
       state.root = false;
       path.stop();
     }
@@ -25,13 +33,18 @@ const rootElementFinder = {
 // It is not the root if there is another root element in this
 // or a higher function scope.
 export default function isRootJSX(path) {
-  let state = { root: true, jsxNode: path.node };
+  let state = {
+    root: true,
+    crossedFunction: false,
+    jsx: path
+  };
 
   path.findParent((path) => {
     if (path.isJSXElement()) {
       state.root = false;
     } else if (path.isFunction() || path.isProgram()) {
       path.traverse(rootElementFinder, state);
+      state.crossedFunction = true;
     }
 
     // End early if another JSXElement is found.

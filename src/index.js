@@ -16,7 +16,26 @@ import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 
 
-export default function ({ types: t }) {
+export default function ({ types: t, traverse: _traverse }) {
+  function traverse(path, visitor, state) {
+    _traverse.visitors.explode(visitor);
+
+    const { node } = path;
+    if (!node) {
+      return;
+    }
+
+    const { type } = node;
+    const { enter = [], exit = [] } = visitor[type] || {};
+
+    enter.forEach((fn) => fn.call(state, path, state));
+    if (!path.shouldSkip) {
+      path.traverse(visitor, state);
+      exit.forEach((fn) => fn.call(state, path, state));
+    }
+    path.shouldSkip = false;
+  }
+
   const elementVisitor = {
     JSXNamespacedName(path) {
       throw path.buildCodeFrameError("JSX Namespaces aren't supported.");
@@ -114,6 +133,33 @@ export default function ({ types: t }) {
     }
   };
 
+  const rootElementVisitor = {
+    JSXElement(path) {
+      const isRoot = isRootJSX(path);
+
+      if (isRoot) {
+        const { parentPath } = path;
+        const { opts, file } = this;
+        const secondaryTree = !(parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression());
+        const replacedElements = new Set();
+        const closureVarsStack = [];
+
+        const state = {
+          root: path,
+          secondaryTree,
+          replacedElements,
+          closureVarsStack,
+          opts,
+          file
+        };
+
+        traverse(path, elementVisitor, state);
+      } else {
+        path.skip();
+      }
+    }
+  };
+
   // This visitor first finds the root element, and ignores all the others.
   return {
     manipulateOptions(opts, parserOpts) {
@@ -132,13 +178,12 @@ export default function ({ types: t }) {
         }
       },
 
-      JSXElement(path) {
-        const isRoot = isRootJSX(path);
+      Function: {
+        exit(path) {
+          path.traverse(rootElementVisitor, this);
 
-        if (isRoot) {
-          const { parentPath } = path;
           const { opts, file } = this;
-          const secondaryTree = !(parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression());
+          const secondaryTree = true;
           const replacedElements = new Set();
           const closureVarsStack = [];
 
@@ -151,13 +196,7 @@ export default function ({ types: t }) {
             file
           };
 
-          path.parentPath.traverse(elementVisitor, state);
-
-          state.secondaryTree = true;
-          const parent = path.getFunctionParent();
-          parent.traverse(elementVisitor, state);
-        } else {
-          path.skip();
+          path.traverse(elementVisitor, state);
         }
       }
     }

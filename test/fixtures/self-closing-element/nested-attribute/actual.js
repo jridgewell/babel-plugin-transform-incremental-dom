@@ -1,5 +1,5 @@
 function render() {
-  return <div>;
+  return <div>
     <div attr="value" />
   </div>;
 }

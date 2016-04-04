@@ -24,7 +24,7 @@ export default function buildChildren(t, children, plugin) {
 
       // Clean up the text, so we don't have to have multiple TEXT nodes.
       if (type === "string") {
-        value = cleanText(value);
+        if (!wasInExpressionContainer) { value = cleanText(value); }
         if (!value) { return children; }
       }
 

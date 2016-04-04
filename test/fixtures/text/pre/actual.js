@@ -1,5 +1,5 @@
 function render() {
-  return <div>
+  return <pre>{`
     Hello World!
-  </div>;
+  `}</pre>;
 }

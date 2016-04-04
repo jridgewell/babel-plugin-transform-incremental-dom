@@ -19,7 +19,7 @@
     "preversion": "npm test",
     "version": "npm run build",
     "build": "babel src --out-dir lib --copy-files",
-    "test": "mocha --compilers js:babel-register",
+    "test": "mocha --compilers js:babel-register && npm run lint",
     "lint": "eslint src"
   },
   "keywords": [

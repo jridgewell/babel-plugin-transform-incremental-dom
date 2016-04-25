@@ -18,5 +18,6 @@ export default function elementCloseCall(t, path, plugin, { componentAsReference
     }
   }
 
-  return toFunctionCall(t, iDOMMethod("elementClose", plugin), [toReference(t, node.name, componentAsReference)]);
+  const isComponent = /^[A-Z]/.test(node.name.name);
+  return toFunctionCall(t, iDOMMethod("elementClose", plugin), [toReference(t, node.name, isComponent && componentAsReference)]);
 }

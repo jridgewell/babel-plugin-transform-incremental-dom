@@ -6,7 +6,7 @@ import extractOpenArguments from "./extract-open-arguments";
 
 // Returns the opening element's function call.
 export default function elementOpenCall(t, path, plugin, options) {
-  const tag = toReference(t, path.node.name);
+  const tag = toReference(t, path.node.name, options.componentAsReference);
   const args = [tag];
   const {
     key,

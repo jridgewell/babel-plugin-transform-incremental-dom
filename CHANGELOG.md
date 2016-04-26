@@ -8,6 +8,29 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.0.3
+
+- **Bug Fix**
+  - Fix whitespace cleaning around inline elements
+    - [e7bcb28f](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e7bcb28f719812b51a633762ffad3c243121b523)
+
+## 3.0.2
+
+- **Bug Fix**
+  - Support multiple returned root nodes
+    - [8515f6b0](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/8515f6b00f420a36a2c25f8f1ceca2cacc2bf29e)
+  - Do not try to recursively render arbitrary DOM element
+    - [e5229ed8](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e5229ed8dd55501563f7e9d88e60d75f01e96069)
+- **Internal**
+  - Use a `version` npm script
+    - [0a81e9e0](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/0a81e9e03587f375deca36b481d32711ef4973ae)
+
+## 3.0.1
+
+- **Bug Fix**
+  - Properly wrap non-returned elements that are the "root" of their function
+    - [e2567ff1](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e2567ff143f68e6b86b544b6b6c8acc0fd5b90c9)
+
 ## 3.0.0
 
 - **New Feature**

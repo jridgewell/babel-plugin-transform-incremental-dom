@@ -192,6 +192,38 @@ plugin:
 }
 ```
 
+#### Components
+
+You may enable the experimental `components` option so that JSX tags that start
+with an upper case letter are passed as a reference to incremental DOM calls,
+instead of as a string. This can be useful when your code implements components
+through these kind of calls, though that's not done by incremental DOM
+automatically. Note that this will break unless you have code to handle it.
+
+
+```js
+// Before
+<MyComponent />;
+```
+
+```js
+// After
+elementVoid(MyComponent);
+```
+
+To do this, simply add the `components` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "components": true
+    }
+  ]],
+}
+```
+
 #### Runtime
 
 By deafult, `babel-plugin-incremental-dom` injects several helpers into

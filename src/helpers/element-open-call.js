@@ -2,12 +2,13 @@ import toFunctionCall from "./ast/to-function-call";
 import toReference from "./ast/to-reference";
 
 import iDOMMethod from "./idom-method";
+import isComponent from "./is-component";
 import extractOpenArguments from "./extract-open-arguments";
 
 // Returns the opening element's function call.
 export default function elementOpenCall(t, path, plugin, options) {
-  const isComponent = /^[A-Z]/.test(path.node.name.name);
-  const tag = toReference(t, path.node.name, isComponent && options.components);
+  const useReference = isComponent(path.node.name.name) && options.components;
+  const tag = toReference(t, path.node.name, useReference);
   const args = [tag];
   const {
     key,

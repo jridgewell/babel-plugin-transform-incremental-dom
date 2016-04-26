@@ -67,14 +67,14 @@ export default function ({ types: t, traverse: _traverse }) {
         const isChild = isChildElement(path);
         const needsWrapper = root !== path && !isChild;
         const eager = secondaryTree || needsWrapper;
-        const componentAsReference = this.opts.componentAsReference;
+        const components = this.opts.components;
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
         const implicitReturn = parentPath.isArrowFunctionExpression();
 
-        const openingElement = elementOpenCall(t, path.get("openingElement"), this, { eager, hoist, componentAsReference });
-        const closingElement = elementCloseCall(t, path.get("openingElement"), this, { componentAsReference });
+        const openingElement = elementOpenCall(t, path.get("openingElement"), this, { eager, hoist, components });
+        const closingElement = elementCloseCall(t, path.get("openingElement"), this, { components });
         const children = buildChildren(t, path.get("children"), this);
 
         let elements = [ openingElement, ...children ];

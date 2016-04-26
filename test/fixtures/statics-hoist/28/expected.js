@@ -6,9 +6,9 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var _statics = ["id", "id"],
+var _statics = ["id", "id", "key", ""],
     _wrapper = function _wrapper(_key) {
-  return elementVoid("div", _key, _statics, "key", _key);
+  return elementVoid("div", _key, (_statics[3] = _key, _statics));
 };
 
 var test = function test(key) {

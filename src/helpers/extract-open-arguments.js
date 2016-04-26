@@ -9,7 +9,7 @@ import iDOMMethod from "./idom-method";
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, path, plugin, { eager, hoist }) {
+export default function extractOpenArguments(t, path, plugin, { hoist }) {
   const attributes = path.get("attributes");
   const { scope } = path;
   let attrs = [];
@@ -55,13 +55,11 @@ export default function extractOpenArguments(t, path, plugin, { eager, hoist }) 
       key = node;
 
       // If it's not a literal key, we must assign it in the statics array.
-      // That is, unless this element is being closure wrapped, in which
-      // case we must push the key attribute into the dynamic attributes.
-      if (hoist && !literal && !eager) {
+      if (hoist && !literal) {
         node = t.stringLiteral("");
         keyIndex = staticAttrs.length + 1;
       }
-      literal = literal || !(hoist && eager);
+      literal = true;
     }
 
     if (literal) {

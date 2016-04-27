@@ -44,8 +44,8 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        let { secondaryTree, root, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
+        const { secondaryTree, root, closureVarsStack } = this;
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path, this));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -61,9 +61,9 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
-        const { hoist } = this.opts;
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
+        const { hoist } = this.opts;
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path, this));
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -171,7 +171,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
-          const secondaryTree = !isChildElement(path);
+          const secondaryTree = !isChildElement(path, this);
           const state = Object.assign({}, this, {
             secondaryTree,
             root: path,

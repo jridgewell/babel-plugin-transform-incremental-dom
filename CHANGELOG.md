@@ -8,6 +8,20 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.1.0
+
+- **New Feature**
+  - Pass Components by reference
+    - [#43](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/43)
+- **Bug Fix**
+  - Assign eager variable keys to statics array
+    - [#44](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/44)
+- **Internal**
+  - Test deep prefix support
+    - [#45](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/45)
+  - Cleanup attribute generation code
+    - [ec1b060c](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/ec1b060cfa3b578a45279fb2b7fcaf541cd9196a)
+
 ## 3.0.3
 
 - **Bug Fix**

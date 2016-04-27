@@ -169,6 +169,50 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
 }
 ```
 
+#### Inline JSX Expressions
+
+You may enable the experimental `inlineExpressions` option to attempt to
+inline any variables declared outside the root JSX element. This can
+save you from allocating needless closure wrappers around elements that
+are only referenced inside the root element.
+
+
+```js
+// Disabled (default)
+function render() {
+  var header = _jsxWrapper(function () {
+    return elementVoid("header");
+  });
+  elementOpen("body");
+
+  _renderArbitrary(header);
+
+  return elementClose("body");
+}
+```
+
+```js
+// Enabled
+function render() {
+  elementOpen("body");
+  elementVoid("header");
+  return elementClose("body");
+}
+```
+
+To do this, simply add the `inlineExpressions` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "inlineExpressions": true
+    }
+  ]],
+}
+```
+
 #### Components
 
 You may enable the experimental `components` option so that JSX tags

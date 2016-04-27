@@ -44,11 +44,11 @@ export default function ({ types: t, traverse: _traverse }) {
     JSXElement: {
       enter(path) {
         let { secondaryTree, root, closureVarsStack } = this;
-        const needsWrapper = root !== path && !isChildElement(path);
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
-        if (secondaryTree || needsWrapper) {
+        if (needsWrapper) {
           // If this element needs a closure wrapper, we need a new array of
           // closure parameters.
           closureVarsStack.push([]);
@@ -60,9 +60,9 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
+        const { hoist } = this.opts;
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const isChild = isChildElement(path);
-        const needsWrapper = root !== path && !isChild;
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -77,7 +77,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (isChild) {
+        if (!needsWrapper && parentPath.isJSX()) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
@@ -86,7 +86,7 @@ export default function ({ types: t, traverse: _traverse }) {
           return;
         }
 
-        if (explicitReturn || implicitReturn || secondaryTree || needsWrapper) {
+        if (explicitReturn || implicitReturn || needsWrapper) {
           // Transform (recursively) any sequence expressions into a series of
           // statements.
           elements = flattenExpressions(t, elements);
@@ -95,14 +95,14 @@ export default function ({ types: t, traverse: _traverse }) {
           elements = statementsWithReturnLast(t, elements);
         }
 
-        if (secondaryTree || needsWrapper) {
+        if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
           const params = closureVars.map((e) => e.param);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
-          if (this.opts.hoist) {
+          if (hoist) {
             wrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
           }
 

@@ -213,6 +213,63 @@ plugin:
 }
 ```
 
+#### Fast Root
+
+You may enable the experimental `fastRoot` option so that JSX tags
+inside the root element are never wrapped inside a closure. For code
+with array maps, this should significantly decrease memory usage and
+increase speed.
+
+
+```js
+// Disabled (default)
+function render() {
+  elementOpen("ul");
+
+  _renderArbitrary(items.map(function (item) {
+    return _jsxWrapper(function (_item$name) {
+      elementOpen("li");
+
+      _renderArbitrary(_item$name);
+
+      return elementClose("li");
+    }, [item.name]);
+  }));
+
+  return elementClose("ul");
+}
+```
+
+```js
+// Enabled
+function render() {
+  elementOpen("ul");
+
+  items.map(function (item) {
+    elementOpen("li");
+
+    _renderArbitrary(item.name);
+
+    return elementClose("li");
+  });
+
+  return elementClose("ul");
+}
+```
+
+To do this, simply add the `fastRoot` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "fastRoot": true
+    }
+  ]],
+}
+```
+
 #### Components
 
 You may enable the experimental `components` option so that JSX tags

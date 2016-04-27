@@ -172,7 +172,8 @@ elementClose("div");
 ```
 
 If you are instead including Incremental DOM via a browser script, it
-may be easier to reference the functions from the `IncrementalDOM` object:
+may be easier to reference the functions from the `IncrementalDOM`
+object:
 
 ```js
 IncrementalDOM.elementOpen("div");
@@ -194,11 +195,12 @@ plugin:
 
 #### Components
 
-You may enable the experimental `components` option so that JSX tags that start
-with an upper case letter are passed as a reference to incremental DOM calls,
-instead of as a string. This can be useful when your code implements components
-through these kind of calls, though that's not done by incremental DOM
-automatically. Note that this will break unless you have code to handle it.
+You may enable the experimental `components` option so that JSX tags
+that start with an upper case letter are passed as a reference to
+incremental DOM calls, instead of as a string. This can be useful when
+your code implements components through these kind of calls, though
+that's not done by incremental DOM automatically. Note that this will
+break unless you have code to handle it.
 
 
 ```js

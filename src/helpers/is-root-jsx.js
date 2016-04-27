@@ -1,3 +1,7 @@
+import LimitedMap from "./map";
+
+const rootMap = new LimitedMap(25);
+
 function isReturned(path) {
   const parent = path.parentPath;
   return parent.isReturnStatement() || parent.isArrowFunctionExpression();
@@ -33,7 +37,11 @@ const rootElementFinder = {
 // It is not the root if there is another root element in this
 // or a higher function scope.
 export default function isRootJSX(path) {
-  let state = {
+  if (rootMap.has(path)) {
+    return rootMap.get(path);
+  }
+
+  const state = {
     root: true,
     crossedFunction: false,
     jsx: path
@@ -51,5 +59,6 @@ export default function isRootJSX(path) {
     return !state.root;
   });
 
+  rootMap.set(path, state.root);
   return state.root;
 }

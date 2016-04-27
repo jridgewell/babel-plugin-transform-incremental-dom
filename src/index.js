@@ -1,4 +1,5 @@
 import isRootJSX from "./helpers/is-root-jsx";
+import isReturned from "./helpers/is-returned";
 import isChildElement from "./helpers/is-child-element";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
@@ -14,7 +15,6 @@ import statementsWithReturnLast from "./helpers/ast/statements-with-return-last"
 import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
-
 
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
@@ -43,28 +43,26 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        let { secondaryTree, root, replacedElements, closureVarsStack } = this;
-        const needsWrapper = root !== path && !isChildElement(path);
+        let { secondaryTree, root, closureVarsStack } = this;
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
-        if (secondaryTree || needsWrapper) {
+        if (needsWrapper) {
           // If this element needs a closure wrapper, we need a new array of
-          // closure parameters. Otherwise, use the parent's, since it may need
-          // a closure wrapper.
+          // closure parameters.
           closureVarsStack.push([]);
 
-          const { opts, file } = this;
-          const state = { secondaryTree: false, root: path, replacedElements, closureVarsStack, opts, file };
+          const state = Object.assign({}, this, { secondaryTree: false, root: path });
           path.traverse(expressionExtractor, state);
           path.traverse(elementVisitor, state);
         }
       },
 
       exit(path) {
+        const { hoist } = this.opts;
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const isChild = isChildElement(path);
-        const needsWrapper = root !== path && !isChild;
+        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -79,7 +77,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (isChild) {
+        if (!needsWrapper && parentPath.isJSX()) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
@@ -88,7 +86,7 @@ export default function ({ types: t, traverse: _traverse }) {
           return;
         }
 
-        if (explicitReturn || implicitReturn || secondaryTree || needsWrapper) {
+        if (explicitReturn || implicitReturn || needsWrapper) {
           // Transform (recursively) any sequence expressions into a series of
           // statements.
           elements = flattenExpressions(t, elements);
@@ -97,14 +95,14 @@ export default function ({ types: t, traverse: _traverse }) {
           elements = statementsWithReturnLast(t, elements);
         }
 
-        if (secondaryTree || needsWrapper) {
+        if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
           const params = closureVars.map((e) => e.param);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
-          if (this.opts.hoist) {
+          if (hoist) {
             wrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
           }
 
@@ -136,20 +134,10 @@ export default function ({ types: t, traverse: _traverse }) {
       const isRoot = isRootJSX(path);
 
       if (isRoot) {
-        const { parentPath } = path;
-        const { opts, file } = this;
-        const secondaryTree = !(parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression());
-        const replacedElements = new Set();
-        const closureVarsStack = [];
-
-        const state = {
+        const state = Object.assign({}, this, {
           root: path,
-          secondaryTree,
-          replacedElements,
-          closureVarsStack,
-          opts,
-          file
-        };
+          secondaryTree: !isReturned(path),
+        });
 
         traverse(path, elementVisitor, state);
       } else {
@@ -178,22 +166,14 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
-          path.traverse(rootElementVisitor, this);
-
-          const { opts, file } = this;
-          const secondaryTree = true;
-          const replacedElements = new Set();
-          const closureVarsStack = [];
-
-          const state = {
+          const state = Object.assign({}, this, {
             root: path,
-            secondaryTree,
-            replacedElements,
-            closureVarsStack,
-            opts,
-            file
-          };
+            secondaryTree: !isChildElement(path),
+            replacedElements: new Set(),
+            closureVarsStack: [],
+          });
 
+          path.traverse(rootElementVisitor, state);
           path.traverse(elementVisitor, state);
         }
       }

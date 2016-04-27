@@ -68,16 +68,24 @@ function test(dir) {
 }
 
 function findTests(root) {
-  fs.readdirSync(root).forEach((file) => {
-    const filePath = path.join(root, file);
-    const isDirectory = fs.statSync(filePath).isDirectory();
-    const name = path.basename(isDirectory ? file : root).replace(/-/g, ' ');
+  const files = fs.readdirSync(root);
+  if (files.indexOf("actual.js") > -1) {
+    it(path.basename(root), () => test(root));
+  } else {
+    files.forEach((file) => {
+      const filePath = path.join(root, file);
+      const isDirectory = fs.statSync(filePath).isDirectory();
 
-    if (isDirectory && !resolve(path.join(root, file, "actual.js"))) {
-      return describe(name, () => findTests(filePath));
-    }
-    it(name, () => test(filePath));
-  });
+      if (isDirectory) {
+        if (resolve(path.join(filePath, "actual.js"))) {
+          findTests(filePath);
+        } else {
+          const name = path.basename(file).replace(/-/g, " ");
+          return describe(name, () => findTests(filePath));
+        }
+      }
+    });
+  }
 }
 
 findTests(path.join(__dirname, "fixtures"));

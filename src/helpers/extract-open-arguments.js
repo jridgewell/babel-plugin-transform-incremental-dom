@@ -1,9 +1,5 @@
-import injectAttr from "./runtime/attr";
-import injectForOwn from "./runtime/for-own";
-import toFunctionCall from "./ast/to-function-call";
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
-import iDOMMethod from "./idom-method";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
@@ -19,19 +15,14 @@ export default function extractOpenArguments(t, path, plugin) {
   let keyIndex = -1;
   let statics = t.arrayExpression(staticAttrs);
 
-  const hasSpread = attributes.some((a) => a.isJSXSpreadAttribute());
-  let forOwn, forOwnAttr;
-  if (hasSpread) {
-    forOwn = injectForOwn(t, plugin);
-    forOwnAttr = injectAttr(t, plugin);
-  }
-
   attributes.forEach((attribute) => {
-    if (hasSpread && attribute.isJSXSpreadAttribute()) {
-      return attrs.push(toFunctionCall(t, forOwn, [
-        attribute.get("argument").node,
-        forOwnAttr
-      ]));
+    if (attribute.isJSXSpreadAttribute()) {
+      attrs.push({
+        name: null,
+        value: attribute.get("argument").node,
+        isSpread: true
+      });
+      return;
     }
 
     const name = t.stringLiteral(attribute.node.name.name);
@@ -57,7 +48,8 @@ export default function extractOpenArguments(t, path, plugin) {
 
       // If it's not a literal key, we must assign it in the statics array.
       if (hoist && !literal) {
-        node = t.stringLiteral("");
+        value.replaceWith(t.stringLiteral(""));
+        node = value.node;
         keyIndex = staticAttrs.length + 1;
       }
       literal = true;
@@ -65,10 +57,12 @@ export default function extractOpenArguments(t, path, plugin) {
 
     if (literal) {
       staticAttrs.push(name, node);
-    } else if (hasSpread) {
-      attrs.push(toFunctionCall(t, iDOMMethod("attr", plugin), [name, node]));
     } else {
-      attrs.push(name, node);
+      attrs.push({
+        name,
+        value: node,
+        isSpread: false
+      });
     }
   });
 
@@ -79,6 +73,6 @@ export default function extractOpenArguments(t, path, plugin) {
     statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
   }
 
-  return { key, statics, attrs, hasSpread };
+  return { key, statics, attrs };
 }
 

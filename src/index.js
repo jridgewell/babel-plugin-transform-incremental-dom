@@ -62,19 +62,16 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
-        const hoist = this.opts.hoist;
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
         const isChild = isChildElement(path);
         const needsWrapper = root !== path && !isChild;
-        const eager = secondaryTree || needsWrapper;
-        const components = this.opts.components;
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
         const implicitReturn = parentPath.isArrowFunctionExpression();
 
-        const openingElement = elementOpenCall(t, path.get("openingElement"), this, { eager, hoist, components });
-        const closingElement = elementCloseCall(t, path.get("openingElement"), this, { components });
+        const openingElement = elementOpenCall(t, path.get("openingElement"), this);
+        const closingElement = elementCloseCall(t, path.get("openingElement"), this);
         const children = buildChildren(t, path.get("children"), this);
 
         let elements = [ openingElement, ...children ];
@@ -107,7 +104,7 @@ export default function ({ types: t, traverse: _traverse }) {
           const params = closureVars.map((e) => e.param);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
-          if (hoist) {
+          if (this.opts.hoist) {
             wrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
           }
 

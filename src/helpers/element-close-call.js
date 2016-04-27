@@ -5,7 +5,7 @@ import iDOMMethod from "./idom-method";
 import isComponent from "./is-component";
 
 // Returns the closing element's function call.
-export default function elementCloseCall(t, path, plugin, { components }) {
+export default function elementCloseCall(t, path, plugin) {
   const node = path.node;
 
   // Self closing elements may not need a closing element.
@@ -19,6 +19,6 @@ export default function elementCloseCall(t, path, plugin, { components }) {
     }
   }
 
-  const useReference = isComponent(node.name.name) && components;
+  const useReference = isComponent(node, plugin);
   return toFunctionCall(t, iDOMMethod("elementClose", plugin), [toReference(t, node.name, useReference)]);
 }

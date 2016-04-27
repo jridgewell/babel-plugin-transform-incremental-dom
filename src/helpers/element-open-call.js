@@ -6,8 +6,8 @@ import isComponent from "./is-component";
 import extractOpenArguments from "./extract-open-arguments";
 
 // Returns the opening element's function call.
-export default function elementOpenCall(t, path, plugin, options) {
-  const useReference = isComponent(path.node.name.name) && options.components;
+export default function elementOpenCall(t, path, plugin) {
+  const useReference = isComponent(path.node, plugin);
   const tag = toReference(t, path.node.name, useReference);
   const args = [tag];
   const {
@@ -15,7 +15,7 @@ export default function elementOpenCall(t, path, plugin, options) {
     statics,
     attrs,
     hasSpread
-  } = extractOpenArguments(t, path, plugin, options);
+  } = extractOpenArguments(t, path, plugin);
 
   // Only push arguments if they're needed
   if (key || statics) {

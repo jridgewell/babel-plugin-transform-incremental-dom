@@ -9,9 +9,10 @@ import iDOMMethod from "./idom-method";
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, path, plugin, { hoist }) {
+export default function extractOpenArguments(t, path, plugin) {
   const attributes = path.get("attributes");
   const { scope } = path;
+  const { hoist } = plugin.opts;
   let attrs = [];
   let staticAttrs = [];
   let key = null;

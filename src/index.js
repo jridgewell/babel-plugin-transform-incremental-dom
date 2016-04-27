@@ -1,4 +1,5 @@
 import isRootJSX from "./helpers/is-root-jsx";
+import isReturned from "./helpers/is-returned";
 import isChildElement from "./helpers/is-child-element";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
@@ -136,9 +137,8 @@ export default function ({ types: t, traverse: _traverse }) {
       const isRoot = isRootJSX(path);
 
       if (isRoot) {
-        const { parentPath } = path;
         const { opts, file } = this;
-        const secondaryTree = !(parentPath.isReturnStatement() || parentPath.isArrowFunctionExpression());
+        const secondaryTree = !isReturned(path);
         const replacedElements = new Set();
         const closureVarsStack = [];
 

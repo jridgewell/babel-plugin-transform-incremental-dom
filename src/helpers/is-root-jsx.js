@@ -1,7 +1,4 @@
-function isReturned(path) {
-  const parent = path.parentPath;
-  return parent.isReturnStatement() || parent.isArrowFunctionExpression();
-}
+import isReturned from "./is-returned";
 
 const rootElementFinder = {
   JSXElement(path, state) {

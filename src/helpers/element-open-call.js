@@ -8,8 +8,9 @@ import { hasSpread, toAttrsArray, toAttrsCalls } from "./attributes";
 
 // Returns the opening element's function call.
 export default function elementOpenCall(t, path, plugin) {
-  const useReference = isComponent(path.node, plugin);
-  const tag = toReference(t, path.node.name, useReference);
+  const name = path.get("name");
+  const useReference = isComponent(name, plugin);
+  const tag = toReference(t, name.node, useReference);
   const args = [tag];
   const {
     key,

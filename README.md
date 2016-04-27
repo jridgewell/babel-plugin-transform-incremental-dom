@@ -142,9 +142,17 @@ expensive instance allocations when running the render function multiple
 times.
 
 ```js
+// Disabled (default)
+function render() {
+    return elementVoid("div", null, ["id", "container"]);
+}
+```
+
+```js
+// Enabled
 var _statics = ["id", "container"];
 
-function render(data) {
+function render() {
     return elementVoid("div", null, _statics);
 }
 ```
@@ -161,38 +169,6 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
 }
 ```
 
-#### Function Prefix
-
-By deafult, `babel-plugin-incremental-dom` directly calls Incremental
-DOM functions:
-
-```js
-elementOpen("div");
-elementClose("div");
-```
-
-If you are instead including Incremental DOM via a browser script, it
-may be easier to reference the functions from the `IncrementalDOM`
-object:
-
-```js
-IncrementalDOM.elementOpen("div");
-IncrementalDOM.elementClose("div");
-```
-
-To do this, simply add the `prefix` option to the Incremental DOM
-plugin:
-
-```json
-{
-  "plugins": [[
-    "incremental-dom", {
-      "prefix": "IncrementalDOM"
-    }
-  ]],
-}
-```
-
 #### Components
 
 You may enable the experimental `components` option so that JSX tags
@@ -204,13 +180,17 @@ break unless you have code to handle it.
 
 
 ```js
-// Before
-<MyComponent />;
+// Disabled (default)
+function render() {
+  elementVoid("MyComponent");
+}
 ```
 
 ```js
-// After
-elementVoid(MyComponent);
+// Enabled
+function render() {
+  elementVoid(MyComponent);
+}
 ```
 
 To do this, simply add the `components` option to the Incremental DOM
@@ -221,6 +201,44 @@ plugin:
   "plugins": [[
     "incremental-dom", {
       "components": true
+    }
+  ]],
+}
+```
+
+#### Function Prefix
+
+By deafult, `babel-plugin-incremental-dom` directly calls Incremental
+DOM functions:
+
+```js
+// Disabled (default)
+function render() {
+  elementOpen("div");
+  elementClose("div");
+}
+```
+
+If you are instead including Incremental DOM via a browser script, it
+may be easier to reference the functions from the `IncrementalDOM`
+object:
+
+```js
+// Enabled with `IncrementalDOM`
+function render() {
+  IncrementalDOM.elementOpen("div");
+  IncrementalDOM.elementClose("div");
+}
+```
+
+To do this, simply add the `prefix` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "prefix": "IncrementalDOM"
     }
   ]],
 }

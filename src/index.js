@@ -16,7 +16,6 @@ import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 
-
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
     _traverse.visitors.explode(visitor);
@@ -44,19 +43,17 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        let { secondaryTree, root, replacedElements, closureVarsStack } = this;
+        let { secondaryTree, root, closureVarsStack } = this;
         const needsWrapper = root !== path && !isChildElement(path);
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
         if (secondaryTree || needsWrapper) {
           // If this element needs a closure wrapper, we need a new array of
-          // closure parameters. Otherwise, use the parent's, since it may need
-          // a closure wrapper.
+          // closure parameters.
           closureVarsStack.push([]);
 
-          const { opts, file } = this;
-          const state = { secondaryTree: false, root: path, replacedElements, closureVarsStack, opts, file };
+          const state = Object.assign({}, this, { secondaryTree: false, root: path });
           path.traverse(expressionExtractor, state);
           path.traverse(elementVisitor, state);
         }
@@ -137,19 +134,10 @@ export default function ({ types: t, traverse: _traverse }) {
       const isRoot = isRootJSX(path);
 
       if (isRoot) {
-        const { opts, file } = this;
-        const secondaryTree = !isReturned(path);
-        const replacedElements = new Set();
-        const closureVarsStack = [];
-
-        const state = {
+        const state = Object.assign({}, this, {
           root: path,
-          secondaryTree,
-          replacedElements,
-          closureVarsStack,
-          opts,
-          file
-        };
+          secondaryTree: !isReturned(path),
+        });
 
         traverse(path, elementVisitor, state);
       } else {
@@ -178,22 +166,14 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
-          path.traverse(rootElementVisitor, this);
-
-          const { opts, file } = this;
-          const secondaryTree = true;
-          const replacedElements = new Set();
-          const closureVarsStack = [];
-
-          const state = {
+          const state = Object.assign({}, this, {
             root: path,
-            secondaryTree,
-            replacedElements,
-            closureVarsStack,
-            opts,
-            file
-          };
+            secondaryTree: !isChildElement(path),
+            replacedElements: new Set(),
+            closureVarsStack: [],
+          });
 
+          path.traverse(rootElementVisitor, state);
           path.traverse(elementVisitor, state);
         }
       }

@@ -5,6 +5,7 @@ import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
 import expressionExtractor from "./helpers/extract-expressions";
+import expressionInliner from "./helpers/inline-expressions";
 
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
@@ -165,16 +166,28 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       Function: {
+        enter(path) {
+          const { inlineExpressions } = this.opts;
+          if (!inlineExpressions) {
+            return;
+          }
+          path.traverse(expressionInliner);
+        },
+
         exit(path) {
+          const secondaryTree = !isChildElement(path);
           const state = Object.assign({}, this, {
+            secondaryTree,
             root: path,
-            secondaryTree: !isChildElement(path),
             replacedElements: new Set(),
             closureVarsStack: [],
           });
 
           path.traverse(rootElementVisitor, state);
-          path.traverse(elementVisitor, state);
+          // Useless for now. Wait until fastRoot comes out.
+          if (secondaryTree) {
+            path.traverse(elementVisitor, state);
+          }
         }
       }
     }

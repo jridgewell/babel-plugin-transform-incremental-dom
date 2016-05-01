@@ -1,3 +1,5 @@
+import * as t from "babel-types";
+
 // Take single use variable declarations and move them inside
 // the JSX Expression Container where they are referenced.
 const expressionInliner = {
@@ -15,11 +17,7 @@ const expressionInliner = {
     if (!declarator.isVariableDeclarator()) {
       return;
     }
-    const value = declarator.node.init;
-    if (!value) {
-      return;
-    }
-    expression.replaceWith(value);
+    expression.replaceWith(declarator.node.init || t.unaryExpression("void", t.numericLiteral(0)));
     declarator.remove()
   }
 };

@@ -1,4 +1,4 @@
-import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
+import isLiteralOrUndefined from "./is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
 import * as t from "babel-types";
 

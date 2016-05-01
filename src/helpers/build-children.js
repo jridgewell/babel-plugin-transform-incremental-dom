@@ -2,7 +2,7 @@ import cleanText from "./clean-text";
 import toFunctionCall from "./ast/to-function-call";
 import injectRenderArbitrary from "./runtime/render-arbitrary";
 import iDOMMethod from "./idom-method";
-import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
+import isLiteralOrUndefined from "./is-literal-or-undefined";
 import * as t from "babel-types";
 
 // Transforms the children into an array of iDOM function calls

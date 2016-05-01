@@ -1,4 +1,4 @@
-import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
+import isLiteralOrUndefined from "./is-literal-or-undefined";
 
 function addClosureVar(expression, closureVars) {
   const arg = expression.node;
@@ -16,25 +16,20 @@ function last(array) {
 // so that when the closure is finally evaluated, it will have the correct
 // values.
 const expressionExtractor = {
-  JSXSpreadAttribute: {
-    enter(path) {
-      const { closureVarsStack } = this;
-      addClosureVar(path.get("argument"), last(closureVarsStack));
-    }
+  JSXSpreadAttribute(path) {
+    const { closureVarsStack } = this;
+    addClosureVar(path.get("argument"), last(closureVarsStack));
   },
 
-  JSXExpressionContainer: {
-    enter(path) {
-      const expression = path.get("expression");
-      // If the variable is constant (or will be wrapped), don't extract.
-      if (isLiteralOrUndefined(expression) || expression.isJSXElement()) {
-        return;
-      }
-
-      const { closureVarsStack } = this;
-
-      addClosureVar(expression, last(closureVarsStack));
+  JSXExpressionContainer(path) {
+    const expression = path.get("expression");
+    // If the variable is constant (or will be wrapped), don't extract.
+    if (isLiteralOrUndefined(expression) || expression.isJSXElement()) {
+      return;
     }
+
+    const { closureVarsStack } = this;
+    addClosureVar(expression, last(closureVarsStack));
   }
 };
 

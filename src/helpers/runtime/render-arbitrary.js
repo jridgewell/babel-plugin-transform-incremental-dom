@@ -1,7 +1,6 @@
 import inject from "../inject";
 import injectForOwn from "./for-own";
 import toFunctionCall from "../ast/to-function-call";
-import toFunctionCallStatement from "../ast/to-function-call-statement";
 import iDOMMethod from "../idom-method";
 import * as t from "babel-types";
 
@@ -100,22 +99,22 @@ function renderArbitraryAST(plugin, ref, deps) {
       t.IfStatement(
         isTextual(type, child),
         t.blockStatement([
-          toFunctionCallStatement(iDOMMethod("text", plugin), [child])
+          t.expressionStatement(toFunctionCall(iDOMMethod("text", plugin), [child]))
         ]),
         t.ifStatement(
           isDOMWrapper(type, child),
           t.blockStatement([
-            toFunctionCallStatement(child, [])
+            t.expressionStatement(toFunctionCall(child, []))
           ]),
           t.ifStatement(
             isArray(child),
             t.blockStatement([
-              toFunctionCallStatement(forEach, [ref])
+              t.expressionStatement(toFunctionCall(forEach, [ref]))
             ]),
             t.ifStatement(
               isObject(child),
               t.blockStatement([
-                toFunctionCallStatement(forOwn, [child, ref])
+                t.expressionStatement(toFunctionCall(forOwn, [child, ref]))
               ])
             )
           )

@@ -1,5 +1,5 @@
 import inject from "../inject";
-import toFunctionCallStatement from "../ast/to-function-call-statement";
+import toFunctionCall from "../ast/to-function-call";
 import iDOMMethod from "../idom-method";
 import * as t from "babel-types";
 
@@ -19,7 +19,7 @@ function attrAST(plugin, ref) {
     ref,
     [value, name],
     t.blockStatement([
-      toFunctionCallStatement(iDOMMethod("attr", plugin), [name, value])
+      t.expressionStatement(toFunctionCall(iDOMMethod("attr", plugin), [name, value]))
     ])
   );
 }

@@ -7,17 +7,20 @@ const expressionInliner = {
       return;
     }
     const binding = path.scope.getBinding(expression.node.name);
-    if (!binding || binding.references != 1) {
+    if (!binding || binding.references > 1 || !binding.constant) {
       return;
     }
+
     const declarator = binding.path;
     if (!declarator.isVariableDeclarator()) {
       return;
     }
-    if (declarator.get("id") !== expression) {
-      expression.replaceWith(declarator.node.init);
-      declarator.remove()
+    const value = declarator.node.init;
+    if (!value) {
+      return;
     }
+    expression.replaceWith(value);
+    declarator.remove()
   }
 };
 

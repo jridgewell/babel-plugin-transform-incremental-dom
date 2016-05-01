@@ -1,11 +1,12 @@
 import isLiteralOrUndefined from "./ast/is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
+import * as t from "babel-types";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key
 // are placed into static attributes, and expressions
 // are placed into the variadic attributes.
-export default function extractOpenArguments(t, path, plugin) {
+export default function extractOpenArguments(path, plugin) {
   const attributes = path.get("attributes");
   const { scope } = path;
   const { hoist } = plugin.opts;
@@ -70,7 +71,7 @@ export default function extractOpenArguments(t, path, plugin) {
   if (staticAttrs.length === 0) {
     statics = null;
   } else if (hoist) {
-    statics = addStaticHoist(t, scope, plugin, statics, key, keyIndex);
+    statics = addStaticHoist(scope, plugin, statics, key, keyIndex);
   }
 
   return { key, statics, attrs };

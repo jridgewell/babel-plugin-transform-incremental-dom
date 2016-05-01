@@ -19,16 +19,16 @@ export function toAttrsArray(attrs) {
 }
 
 // Returns an array of iDOM `attr` calls
-export function toAttrsCalls(t, attrs, plugin) {
+export function toAttrsCalls(attrs, plugin) {
   const attrCall = iDOMMethod("attr", plugin);
-  const forOwn = injectForOwn(t, plugin);
-  const forOwnAttr = injectAttr(t, plugin);
+  const forOwn = injectForOwn(plugin);
+  const forOwnAttr = injectAttr(plugin);
 
   return attrs.map(({ name, value, isSpread }) => {
     if (isSpread) {
-      return toFunctionCall(t, forOwn, [ value, forOwnAttr ]);
+      return toFunctionCall(forOwn, [ value, forOwnAttr ]);
     }
 
-    return toFunctionCall(t, attrCall, [ name, value ]);
+    return toFunctionCall(attrCall, [ name, value ]);
   });
 }

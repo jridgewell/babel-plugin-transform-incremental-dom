@@ -6,7 +6,7 @@ import isComponent from "./is-component";
 import { hasSpread } from "./attributes";
 
 // Returns the closing element's function call.
-export default function elementCloseCall(t, path, plugin) {
+export default function elementCloseCall(path, plugin) {
   const node = path.node;
 
   // Self closing elements that do not contain a SpreadAttribute will use `elementVoid`,
@@ -17,5 +17,5 @@ export default function elementCloseCall(t, path, plugin) {
 
   const name = path.get("name");
   const useReference = isComponent(name, plugin);
-  return toFunctionCall(t, iDOMMethod("elementClose", plugin), [toReference(t, name.node, useReference)]);
+  return toFunctionCall(iDOMMethod("elementClose", plugin), [toReference(name.node, useReference)]);
 }

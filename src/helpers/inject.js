@@ -2,10 +2,10 @@ import toReference from "./ast/to-reference";
 
 const namespace = "incremental-dom-helpers";
 
-function getHelperRef(t, { file, opts }, helper) {
+function getHelperRef({ file, opts }, helper) {
   const runtime = opts.runtime;
   if (runtime) {
-    return toReference(t, `${runtime}.${helper}`);
+    return toReference(`${runtime}.${helper}`);
   }
 
   const injectedHelper = file.get(namespace)[helper];
@@ -39,8 +39,8 @@ export function injectHelpers({ file }) {
 
 // Injects a helper function defined by helperAstFn into the current file at
 // the top scope.
-export default function inject(t, plugin, helper, helperAstFn, dependencyInjectors = {}) {
-  let ref = getHelperRef(t, plugin, helper);
+export default function inject(plugin, helper, helperAstFn, dependencyInjectors = {}) {
+  let ref = getHelperRef(plugin, helper);
   if (ref) {
     return ref;
   }
@@ -54,16 +54,16 @@ export default function inject(t, plugin, helper, helperAstFn, dependencyInjecto
   const dependencyRefs = {};
 
   for (let dependency in dependencyInjectors) {
-    let dependencyRef = getHelperRef(t, plugin, dependency);
+    let dependencyRef = getHelperRef(plugin, dependency);
 
     if (!dependencyRef) {
-      dependencyRef = dependencyInjectors[dependency](t, plugin);
+      dependencyRef = dependencyInjectors[dependency](plugin);
     }
 
     dependencyRefs[dependency] = dependencyRef;
   }
 
-  injectedHelper.expression = helperAstFn(t, plugin, injectedHelper.ref, dependencyRefs);
+  injectedHelper.expression = helperAstFn(plugin, injectedHelper.ref, dependencyRefs);
 
   return ref;
 }

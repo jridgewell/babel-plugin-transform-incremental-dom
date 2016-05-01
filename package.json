@@ -5,6 +5,9 @@
   "repository": "jridgewell/babel-plugin-incremental-dom",
   "license": "MIT",
   "main": "lib/index.js",
+  "dependencies": {
+    "babel-types": "^6.0.0"
+  },
   "devDependencies": {
     "babel": "^6.0.0",
     "babel-cli": "^6.0.0",

@@ -1,11 +1,12 @@
 import inject from "../inject";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 import iDOMMethod from "../idom-method";
+import * as t from "babel-types";
 
 // Flip flops the arguments when calling iDOM's
 // `attr`, so that this function may be used
 // as an iterator like an Object#forEach.
-function attrAST(t, plugin, ref) {
+function attrAST(plugin, ref) {
   const name = t.identifier("name");
   const value = t.identifier("value");
 
@@ -18,11 +19,11 @@ function attrAST(t, plugin, ref) {
     ref,
     [value, name],
     t.blockStatement([
-      toFunctionCallStatement(t, iDOMMethod("attr", plugin), [name, value])
+      toFunctionCallStatement(iDOMMethod("attr", plugin), [name, value])
     ])
   );
 }
 
-export default function injectAttr(t, plugin) {
-  return inject(t, plugin, "attr", attrAST);
+export default function injectAttr(plugin) {
+  return inject(plugin, "attr", attrAST);
 }

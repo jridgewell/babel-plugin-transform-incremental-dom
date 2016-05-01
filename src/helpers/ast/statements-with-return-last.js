@@ -1,5 +1,7 @@
+import * as t from "babel-types";
+
 // Ensures the final statement is a return statement.
-export default function statementsWithReturnLast(t, statements) {
+export default function statementsWithReturnLast(statements) {
   const lastIndex = statements.length - 1;
   const last = statements[lastIndex];
 

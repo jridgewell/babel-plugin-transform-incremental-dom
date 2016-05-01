@@ -18,7 +18,7 @@ import buildChildren from "./helpers/build-children";
 
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
-    _traverse.visitors.explode(visitor);
+    _traverse.explode(visitor);
 
     const { node } = path;
     if (!node) {
@@ -68,9 +68,9 @@ export default function ({ types: t, traverse: _traverse }) {
         const explicitReturn = parentPath.isReturnStatement();
         const implicitReturn = parentPath.isArrowFunctionExpression();
 
-        const openingElement = elementOpenCall(t, path.get("openingElement"), this);
-        const closingElement = elementCloseCall(t, path.get("openingElement"), this);
-        const children = buildChildren(t, path.get("children"), this);
+        const openingElement = elementOpenCall(path.get("openingElement"), this);
+        const closingElement = elementCloseCall(path.get("openingElement"), this);
+        const children = buildChildren(path.get("children"), this);
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }
@@ -89,10 +89,10 @@ export default function ({ types: t, traverse: _traverse }) {
         if (explicitReturn || implicitReturn || needsWrapper) {
           // Transform (recursively) any sequence expressions into a series of
           // statements.
-          elements = flattenExpressions(t, elements);
+          elements = flattenExpressions(elements);
 
           // Ensure the last statement returns the DOM element.
-          elements = statementsWithReturnLast(t, elements);
+          elements = statementsWithReturnLast(elements);
         }
 
         if (needsWrapper) {
@@ -103,7 +103,7 @@ export default function ({ types: t, traverse: _traverse }) {
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
           if (hoist) {
-            wrapper = addHoistedDeclarator(t, path.scope, "wrapper", wrapper, this);
+            wrapper = addHoistedDeclarator(path.scope, "wrapper", wrapper, this);
           }
 
           const args = [ wrapper ];
@@ -112,7 +112,7 @@ export default function ({ types: t, traverse: _traverse }) {
             args.push(t.arrayExpression(paramArgs));
           }
 
-          const wrapperCall = toFunctionCall(t, injectJSXWrapper(t, this), args);
+          const wrapperCall = toFunctionCall(injectJSXWrapper(this), args);
           replacedElements.add(wrapperCall);
           path.replaceWith(wrapperCall);
           return;
@@ -159,7 +159,7 @@ export default function ({ types: t, traverse: _traverse }) {
         },
 
         exit(path) {
-          hoist(t, path, this);
+          hoist(path, this);
           injectHelpers(this);
         }
       },

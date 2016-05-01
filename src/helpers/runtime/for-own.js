@@ -2,12 +2,13 @@ import inject from "../inject";
 import injectHasOwn from "./has-own";
 import toFunctionCall from "../ast/to-function-call";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
+import * as t from "babel-types";
 
 // Loops over all own properties, calling
 // the specified iterator function with
 // value and prop name.
 // Depends on the _hasOwn helper.
-function forOwnAST(t, plugin, ref, deps) {
+function forOwnAST(plugin, ref, deps) {
   const hasOwn = deps.hasOwn;
   const object = t.identifier("object");
   const iterator = t.identifier("iterator");
@@ -30,11 +31,11 @@ function forOwnAST(t, plugin, ref, deps) {
         t.variableDeclaration("var", [t.variableDeclarator(prop)]),
         object,
         t.ifStatement(
-          toFunctionCall(t, t.memberExpression(
+          toFunctionCall(t.memberExpression(
             hasOwn,
             t.identifier("call")
           ), [object, prop]),
-          toFunctionCallStatement(t, iterator, [
+          toFunctionCallStatement(iterator, [
             t.memberExpression(object, prop, true),
             prop
           ])
@@ -44,8 +45,8 @@ function forOwnAST(t, plugin, ref, deps) {
   );
 }
 
-export default function injectForOwn(t, plugin) {
-  return inject(t, plugin, "forOwn", forOwnAST, {
+export default function injectForOwn(plugin) {
+  return inject(plugin, "forOwn", forOwnAST, {
     hasOwn: injectHasOwn
   });
 }

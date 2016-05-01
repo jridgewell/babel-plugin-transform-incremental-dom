@@ -3,10 +3,11 @@ import injectForOwn from "./for-own";
 import toFunctionCall from "../ast/to-function-call";
 import toFunctionCallStatement from "../ast/to-function-call-statement";
 import iDOMMethod from "../idom-method";
+import * as t from "babel-types";
 
 // Isolated AST code to determine if a value is textual
 // (strings and numbers).
-function isTextual(t, type, value) {
+function isTextual(type, value) {
   return t.logicalExpression(
     "||",
     t.binaryExpression("===", type, t.stringLiteral("number")),
@@ -24,7 +25,7 @@ function isTextual(t, type, value) {
 
 // Isolated AST code to determine if a value is a wrapped
 // DOM closure.
-function isDOMWrapper(t, type, value) {
+function isDOMWrapper(type, value) {
   return t.logicalExpression(
     "&&",
     t.binaryExpression("===", type, t.stringLiteral("function")),
@@ -36,9 +37,8 @@ function isDOMWrapper(t, type, value) {
 }
 
 // Isolated AST code to determine if a value an Array.
-function isArray(t, value) {
+function isArray(value) {
   return toFunctionCall(
-    t,
     t.memberExpression(
       t.identifier("Array"),
       t.identifier("isArray")
@@ -48,11 +48,10 @@ function isArray(t, value) {
 }
 
 // Isolated AST code to determine if a value an Object.
-function isObject(t, value) {
+function isObject(value) {
   return t.binaryExpression(
     "===",
     toFunctionCall(
-      t,
       t.identifier("String"),
       [value]
     ),
@@ -65,7 +64,7 @@ function isObject(t, value) {
 // It may also be an Array or Object, which will be iterated
 // recursively to find a valid type.
 // Depends on the _forOwn helper.
-function renderArbitraryAST(t, plugin, ref, deps) {
+function renderArbitraryAST(plugin, ref, deps) {
   const forOwn = deps.forOwn;
   const child = t.identifier("child");
   const type = t.identifier("type");
@@ -99,24 +98,24 @@ function renderArbitraryAST(t, plugin, ref, deps) {
         )
       ]),
       t.IfStatement(
-        isTextual(t, type, child),
+        isTextual(type, child),
         t.blockStatement([
-          toFunctionCallStatement(t, iDOMMethod("text", plugin), [child])
+          toFunctionCallStatement(iDOMMethod("text", plugin), [child])
         ]),
         t.ifStatement(
-          isDOMWrapper(t, type, child),
+          isDOMWrapper(type, child),
           t.blockStatement([
-            toFunctionCallStatement(t, child, [])
+            toFunctionCallStatement(child, [])
           ]),
           t.ifStatement(
-            isArray(t, child),
+            isArray(child),
             t.blockStatement([
-              toFunctionCallStatement(t, forEach, [ref])
+              toFunctionCallStatement(forEach, [ref])
             ]),
             t.ifStatement(
-              isObject(t, child),
+              isObject(child),
               t.blockStatement([
-                toFunctionCallStatement(t, forOwn, [child, ref])
+                toFunctionCallStatement(forOwn, [child, ref])
               ])
             )
           )
@@ -126,8 +125,8 @@ function renderArbitraryAST(t, plugin, ref, deps) {
   );
 }
 
-export default function injectRenderArbitrary(t, plugin) {
-  return inject(t, plugin, "renderArbitrary", renderArbitraryAST, {
+export default function injectRenderArbitrary(plugin) {
+  return inject(plugin, "renderArbitrary", renderArbitraryAST, {
     forOwn: injectForOwn
   });
 }

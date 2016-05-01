@@ -1,3 +1,5 @@
+import * as t from "babel-types";
+
 const namespace = "incremental-dom-hoists";
 
 // Sets up the file to hoist all statics
@@ -7,7 +9,7 @@ export function setupHoists({ file }) {
   file.set(namespace, []);
 }
 
-export function hoist(t, program, { file }) {
+export function hoist(program, { file }) {
   const hoists = file.get(namespace);
 
   if (hoists.length) {
@@ -17,7 +19,7 @@ export function hoist(t, program, { file }) {
 }
 
 // Hoists the variable to the top of the file.
-export function addHoistedDeclarator(t, scope, name, value, { file }) {
+export function addHoistedDeclarator(scope, name, value, { file }) {
   const ref = scope.generateUidIdentifier(name);
   const declarator = t.variableDeclarator(ref, value);
   file.get(namespace).push(declarator);

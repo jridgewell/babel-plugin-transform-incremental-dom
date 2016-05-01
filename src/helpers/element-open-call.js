@@ -1,22 +1,22 @@
 import toFunctionCall from "./ast/to-function-call";
 import toReference from "./ast/to-reference";
-
 import iDOMMethod from "./idom-method";
 import isComponent from "./is-component";
 import extractOpenArguments from "./extract-open-arguments";
 import { hasSpread, toAttrsArray, toAttrsCalls } from "./attributes";
+import * as t from "babel-types";
 
 // Returns the opening element's function call.
-export default function elementOpenCall(t, path, plugin) {
+export default function elementOpenCall(path, plugin) {
   const name = path.get("name");
   const useReference = isComponent(name, plugin);
-  const tag = toReference(t, name.node, useReference);
+  const tag = toReference(name.node, useReference);
   const args = [tag];
   const {
     key,
     statics,
     attrs
-  } = extractOpenArguments(t, path, plugin);
+  } = extractOpenArguments(path, plugin);
 
   // Only push arguments if they're needed
   if (key || statics) {
@@ -32,9 +32,9 @@ export default function elementOpenCall(t, path, plugin) {
   // attr(name, value) calls.
   if (hasSpread(path.get("attributes"))) {
     const expressions = [
-      toFunctionCall(t, iDOMMethod("elementOpenStart", plugin), args),
-      ...toAttrsCalls(t, attrs, plugin),
-      toFunctionCall(t, iDOMMethod("elementOpenEnd", plugin), [tag])
+      toFunctionCall(iDOMMethod("elementOpenStart", plugin), args),
+      ...toAttrsCalls(attrs, plugin),
+      toFunctionCall(iDOMMethod("elementOpenEnd", plugin), [tag])
     ];
 
     return t.sequenceExpression(expressions);
@@ -55,5 +55,5 @@ export default function elementOpenCall(t, path, plugin) {
 
   const selfClosing = path.node.selfClosing;
   const elementFunction = (selfClosing) ? "elementVoid" : "elementOpen";
-  return toFunctionCall(t, iDOMMethod(elementFunction, plugin), args);
+  return toFunctionCall(iDOMMethod(elementFunction, plugin), args);
 }

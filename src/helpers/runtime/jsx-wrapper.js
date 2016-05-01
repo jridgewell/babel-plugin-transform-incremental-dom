@@ -1,12 +1,13 @@
 import inject from "../inject";
 import toFunctionCall from "../ast/to-function-call";
+import * as t from "babel-types";
 
 // Wraps a JSX element in a closure, capturing the arguments
 // that it's attributes and children need to render.
 // Also sets `__jsxDOMWrapper` property, so that the closure
 // may be identified as a wrapper that should be called during
 // render.
-function jsxWrapperAST(t, plugin, ref) {
+function jsxWrapperAST(plugin, ref) {
   const func = t.identifier("func");
   const args = t.identifier("args");
   const wrapper = t.identifier("wrapper");
@@ -30,7 +31,6 @@ function jsxWrapperAST(t, plugin, ref) {
           wrapper,
           [],
           t.blockStatement([t.returnStatement(toFunctionCall(
-            t,
             t.memberExpression(func, t.identifier("apply")),
             [t.identifier("this"), args]
           ))])
@@ -46,6 +46,6 @@ function jsxWrapperAST(t, plugin, ref) {
   );
 }
 
-export default function injectJSXWrapper(t, plugin) {
-  return inject(t, plugin, "jsxWrapper", jsxWrapperAST);
+export default function injectJSXWrapper(plugin) {
+  return inject(plugin, "jsxWrapper", jsxWrapperAST);
 }

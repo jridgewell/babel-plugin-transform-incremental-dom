@@ -152,9 +152,13 @@ export default function ({ types: t, traverse: _traverse }) {
     manipulateOptions(opts, parserOpts) {
       parserOpts.plugins.push("jsx");
     },
+
     visitor: {
       Program: {
-        enter() {
+        enter(path) {
+          if (this.opts.inlineExpressions) {
+            path.traverse(expressionInliner);
+          }
           setupInjector(this);
           setupHoists(this);
         },
@@ -166,14 +170,6 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       Function: {
-        enter(path) {
-          const { inlineExpressions } = this.opts;
-          if (!inlineExpressions) {
-            return;
-          }
-          path.traverse(expressionInliner);
-        },
-
         exit(path) {
           const secondaryTree = !isChildElement(path);
           const state = Object.assign({}, this, {

@@ -1,3 +1,4 @@
+import expressionExtractor from "./extract-expressions";
 import * as t from "babel-types";
 
 // Take single use variable declarations and move them inside
@@ -8,6 +9,7 @@ const expressionInliner = {
     if (!expression.isIdentifier()) {
       return;
     }
+
     const binding = path.scope.getBinding(expression.node.name);
     if (!binding || binding.references > 1 || !binding.constant) {
       return;
@@ -17,8 +19,18 @@ const expressionInliner = {
     if (!declarator.isVariableDeclarator()) {
       return;
     }
+
+    const closureVars = [];
+    declarator.traverse(expressionExtractor, { closureVarsStack: [closureVars] });
+
     expression.replaceWith(declarator.node.init || t.unaryExpression("void", t.numericLiteral(0)));
-    declarator.remove()
+    if (closureVars.length) {
+      declarator.replaceWithMultiple(closureVars.map((e) => {
+        return t.variableDeclarator(e.param, e.arg);
+      }));
+    } else {
+      declarator.remove()
+    }
   }
 };
 

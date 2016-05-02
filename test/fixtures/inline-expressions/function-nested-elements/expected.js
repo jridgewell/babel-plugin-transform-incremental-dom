@@ -29,14 +29,15 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 };
 
 function render() {
-  elementOpen("root");
-  elementOpen("ul");
-
-  _renderArbitrary(lis.map(function (li) {
+  var _lis$map = lis.map(function (li) {
     return _jsxWrapper(function () {
       return elementVoid("li");
     });
-  }));
+  });
+  elementOpen("root");
+  elementOpen("ul");
+
+  _renderArbitrary(_lis$map);
 
   elementClose("ul");
   return elementClose("root");

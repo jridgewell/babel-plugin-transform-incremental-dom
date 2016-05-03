@@ -1,11 +1,11 @@
 import isLiteralOrUndefined from "./is-literal-or-undefined";
 
 function addClosureVar(expression, closureVars) {
-  const arg = expression.node;
-  const param = expression.scope.generateUidIdentifierBasedOnNode(arg);
+  const init = expression.node;
+  const id = expression.scope.generateUidIdentifierBasedOnNode(init);
 
-  closureVars.push({ param, arg });
-  expression.replaceWith(param);
+  closureVars.push({ id, init });
+  expression.replaceWith(id);
 }
 
 function last(array) {

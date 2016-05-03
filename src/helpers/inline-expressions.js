@@ -25,8 +25,8 @@ const expressionInliner = {
 
     expression.replaceWith(declarator.node.init || t.unaryExpression("void", t.numericLiteral(0)));
     if (closureVars.length) {
-      declarator.replaceWithMultiple(closureVars.map((e) => {
-        return t.variableDeclarator(e.param, e.arg);
+      declarator.replaceWithMultiple(closureVars.map((cv) => {
+        return t.variableDeclarator(cv.id, cv.init);
       }));
     } else {
       declarator.remove()

@@ -100,7 +100,7 @@ export default function ({ types: t, traverse: _traverse }) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
-          const params = closureVars.map((e) => e.param);
+          const params = closureVars.map((e) => e.id);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
           if (hoist) {
@@ -109,7 +109,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
           const args = [ wrapper ];
           if (closureVars.length) {
-            const paramArgs = closureVars.map((e) => e.arg);
+            const paramArgs = closureVars.map((e) => e.init);
             args.push(t.arrayExpression(paramArgs));
           }
 

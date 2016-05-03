@@ -20,10 +20,15 @@ const expressionInliner = {
       return;
     }
 
+    const init = declarator.get("init");
+    if (!init.isJSXElement()) {
+      return;
+    }
+
     const closureVars = [];
     declarator.traverse(expressionExtractor, { closureVarsStack: [closureVars] });
 
-    expression.replaceWith(declarator.node.init || t.unaryExpression("void", t.numericLiteral(0)));
+    expression.replaceWith(init.node);
     if (closureVars.length) {
       declarator.replaceWithMultiple(closureVars.map((cv) => {
         return t.variableDeclarator(cv.id, cv.init);

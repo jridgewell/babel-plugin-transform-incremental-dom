@@ -21,7 +21,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 function render() {
-  var div;
+  var div = "test" + i++;
   elementOpen("root");
 
   _renderArbitrary(div);

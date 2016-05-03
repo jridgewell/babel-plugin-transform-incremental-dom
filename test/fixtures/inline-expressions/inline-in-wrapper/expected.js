@@ -29,14 +29,15 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 function render(key) {
+  var text = key;
   var div;
-  div = _jsxWrapper(function (_key) {
+  div = _jsxWrapper(function (_text) {
     elementOpen("div");
 
-    _renderArbitrary(_key);
+    _renderArbitrary(_text);
 
     return elementClose("div");
-  }, [key]);
+  }, [text]);
   elementOpen("root");
 
   _renderArbitrary(div);

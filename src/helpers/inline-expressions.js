@@ -26,16 +26,12 @@ const expressionInliner = {
     }
 
     const closureVars = [];
-    declarator.traverse(expressionExtractor, { closureVarsStack: [closureVars] });
+    init.traverse(expressionExtractor, { closureVarsStack: [closureVars] });
 
     expression.replaceWith(init.node);
-    if (closureVars.length) {
-      declarator.replaceWithMultiple(closureVars.map((cv) => {
-        return t.variableDeclarator(cv.id, cv.init);
-      }));
-    } else {
-      declarator.remove()
-    }
+    declarator.replaceWithMultiple(closureVars.map((cv) => {
+      return t.variableDeclarator(cv.id, cv.init);
+    }));
   }
 };
 

@@ -5,6 +5,7 @@ import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
 import expressionExtractor from "./helpers/extract-expressions";
+import expressionInliner from "./helpers/inline-expressions";
 
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
@@ -99,7 +100,7 @@ export default function ({ types: t, traverse: _traverse }) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
-          const params = closureVars.map((e) => e.param);
+          const params = closureVars.map((e) => e.id);
           let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
           if (hoist) {
@@ -108,7 +109,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
           const args = [ wrapper ];
           if (closureVars.length) {
-            const paramArgs = closureVars.map((e) => e.arg);
+            const paramArgs = closureVars.map((e) => e.init);
             args.push(t.arrayExpression(paramArgs));
           }
 
@@ -151,9 +152,13 @@ export default function ({ types: t, traverse: _traverse }) {
     manipulateOptions(opts, parserOpts) {
       parserOpts.plugins.push("jsx");
     },
+
     visitor: {
       Program: {
-        enter() {
+        enter(path) {
+          if (this.opts.inlineExpressions) {
+            path.traverse(expressionInliner);
+          }
           setupInjector(this);
           setupHoists(this);
         },
@@ -166,15 +171,19 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
+          const secondaryTree = !isChildElement(path);
           const state = Object.assign({}, this, {
+            secondaryTree,
             root: path,
-            secondaryTree: !isChildElement(path),
             replacedElements: new Set(),
             closureVarsStack: [],
           });
 
           path.traverse(rootElementVisitor, state);
-          path.traverse(elementVisitor, state);
+          // Useless for now. Wait until fastRoot comes out.
+          if (secondaryTree) {
+            path.traverse(elementVisitor, state);
+          }
         }
       }
     }

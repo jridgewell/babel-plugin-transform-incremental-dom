@@ -88,4 +88,4 @@ function findTests(root) {
   }
 }
 
-findTests(path.join(__dirname, "fixtures", "fast-root"));
+findTests(path.join(__dirname, "fixtures"));

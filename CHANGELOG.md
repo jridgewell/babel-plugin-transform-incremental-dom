@@ -8,6 +8,17 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.1.0
+
+- **New Feature**
+  - Pass Components by reference
+    - [#43](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/43)
+  - Inline JSX Expressions
+    - [#46](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/46)
+- **Bug Fix**
+  - Assign eager variable keys to statics array
+    - [#44](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/44)
+
 ## 3.0.3
 
 - **Bug Fix**

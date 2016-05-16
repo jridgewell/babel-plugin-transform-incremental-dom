@@ -1,5 +1,5 @@
 function render() {
   elementOpen("div");
-  elementVoid("div", null, ["attr", "value"]);
+  elementVoid("div", null, null, "attr", "value");
   return elementClose("div");
 }

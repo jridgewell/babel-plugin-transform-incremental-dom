@@ -32,11 +32,11 @@ function renderMain() {
   var renderInput = function renderInput() {
     return _jsxWrapper(function () {
       elementOpen("div");
-      elementVoid("input", null, ["type", "text", "id", "testInput"]);
+      elementVoid("input", null, null, "type", "text", "id", "testInput");
       return elementClose("div");
     });
   };
-  elementOpen("div", null, ["id", "app"]);
+  elementOpen("div", null, null, "id", "app");
 
   _renderArbitrary(renderInput());
 
@@ -45,12 +45,12 @@ function renderMain() {
 
 var renderInput = function renderInput() {
   elementOpen("div");
-  elementVoid("input", null, ["type", "text", "id", "testInput"]);
+  elementVoid("input", null, null, "type", "text", "id", "testInput");
   return elementClose("div");
 };
 
 function renderMain() {
-  elementOpen("div", null, ["id", "app"]);
+  elementOpen("div", null, null, "id", "app");
 
   _renderArbitrary(renderInput());
 
@@ -61,10 +61,10 @@ function renderMain() {
 
 function renderMain(flag) {
   if (flag) {
-    elementOpen("div", null, ["id", "app"]);
+    elementOpen("div", null, null, "id", "app");
     return elementClose("div");
   }
-  elementOpen("div", null, ["id", "app"]);
+  elementOpen("div", null, null, "id", "app");
 
   _renderArbitrary(renderInput());
 

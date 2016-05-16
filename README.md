@@ -169,6 +169,24 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
 }
 ```
 
+#### Force statics
+
+Incremental DOM [recommends](http://google.github.io/incremental-dom/#rendering-dom/statics-array)
+only using statics when a key is set. For that reason this plugin avoids using
+statics at all unless there is a key. If you wish you can override this behavior
+though, forcing statics to always be used for literal attributes, by setting
+`forceStatics` to true:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "forceStatics": true
+    }
+  ]],
+}
+```
+
 #### Inline JSX Expressions
 
 You may enable the experimental `inlineExpressions` option to attempt to

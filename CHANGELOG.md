@@ -8,6 +8,15 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.2.0
+
+- **New Feature**
+  - Allow forcing the use of statics when there are constant attributes.
+    - [#49](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/49)
+- **Bug Fix**
+  - Only use `statics` when there is a `key`
+    - [#49](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/49)
+
 ## 3.1.0
 
 - **New Feature**

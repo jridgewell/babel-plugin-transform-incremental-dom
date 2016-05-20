@@ -1,4 +1,13 @@
-export default function iDOMMethod(method, plugin) {
-  const prefix = plugin.opts.prefix || "";
-  return prefix ? `${prefix}.${method}` : method;
+export default function iDOMMethod(method, { opts, file }) {
+  const prefix = opts.prefix || "";
+  if (prefix) {
+    return `${prefix}.${method}`;
+  }
+
+  const binding = file.scope.getBinding(method);
+  if (binding) {
+    return binding.identifier;
+  }
+
+  return method;
 }

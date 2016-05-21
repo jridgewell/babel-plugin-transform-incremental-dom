@@ -1,7 +1,10 @@
+import toReference from "./ast/to-reference";
+
+// Returns a reference to an iDOM method.
 export default function iDOMMethod(method, { opts, file }) {
   const prefix = opts.prefix || "";
   if (prefix) {
-    return `${prefix}.${method}`;
+    return toReference(`${prefix}.${method}`);
   }
 
   const binding = file.scope.getBinding(method);
@@ -9,5 +12,5 @@ export default function iDOMMethod(method, { opts, file }) {
     return binding.identifier;
   }
 
-  return method;
+  return toReference(method);
 }

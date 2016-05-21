@@ -1,18 +1,12 @@
 import * as t from "babel-types";
 
-const memberExpressionSplitter = /\./g;
-
 // Helper to transform a JSX identifier into a normal reference.
 export default function toReference(node, identifier = false) {
   if (typeof node === "string") {
-    if (memberExpressionSplitter.test(node)) {
-      return node.
-        split(memberExpressionSplitter).
-        map((s) => t.identifier(s)).
-        reduce((obj, prop) => t.memberExpression(obj, prop));
-    }
-
-    return t.identifier(node);
+    return node.
+      split(".").
+      map((s) => t.identifier(s)).
+      reduce((obj, prop) => t.memberExpression(obj, prop));
   }
 
   if (t.isJSXIdentifier(node)) {

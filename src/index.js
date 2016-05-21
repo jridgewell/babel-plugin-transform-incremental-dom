@@ -1,6 +1,6 @@
 import isRootJSX from "./helpers/is-root-jsx";
 import isReturned from "./helpers/is-returned";
-import isChildElement from "./helpers/is-child-element";
+import childAncestor from "./helpers/is-child-element";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
@@ -44,8 +44,8 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        let { secondaryTree, root, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
+        const { secondaryTree, root, closureVarsStack } = this;
+        const needsWrapper = secondaryTree || (root !== path && !childAncestor(path, this));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -61,9 +61,10 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
-        const { hoist } = this.opts;
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !isChildElement(path));
+        const { hoist } = this.opts;
+        const childAncestorPath = childAncestor(path, this);
+        const needsWrapper = secondaryTree || (root !== path && !childAncestorPath);
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -119,6 +120,10 @@ export default function ({ types: t, traverse: _traverse }) {
           return;
         }
 
+        if (childAncestorPath) {
+          replacedElements.add(childAncestorPath.node);
+        }
+
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (explicitReturn) {
@@ -171,7 +176,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
-          const secondaryTree = !isChildElement(path);
+          const secondaryTree = !childAncestor(path, this);
           const state = Object.assign({}, this, {
             secondaryTree,
             root: path,

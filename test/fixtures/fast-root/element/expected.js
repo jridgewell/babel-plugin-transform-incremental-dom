@@ -22,8 +22,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 function render() {
   elementOpen("ul");
-
-  _renderArbitrary(files.map(function (file) {
+  files.map(function (file) {
     elementOpen("li", file.name, ["key", file.name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
@@ -31,7 +30,6 @@ function render() {
     _renderArbitrary(file.name);
 
     return elementClose("li");
-  }));
-
+  });
   return elementClose("ul");
 }

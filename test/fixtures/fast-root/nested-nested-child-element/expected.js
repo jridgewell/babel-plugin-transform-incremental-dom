@@ -24,12 +24,14 @@ function render() {
   elementOpen("root");
   elementOpen("ul");
   files.map(function (file) {
-    elementOpen("li", file.name, ["key", file.name], "file", file, "onclick", function (e) {
+    elementOpen("li");
+    elementOpen("span", file.name, ["key", file.name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 
     _renderArbitrary(file.name);
 
+    elementClose("span");
     return elementClose("li");
   });
   elementClose("ul");

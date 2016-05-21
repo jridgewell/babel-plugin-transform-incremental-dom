@@ -8,6 +8,12 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.2.1
+
+- **Bug Fix**
+  - Support `import`ing iDOM methods
+    - [#51](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/51)
+
 ## 3.2.0
 
 - **New Feature**

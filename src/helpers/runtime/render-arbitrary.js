@@ -15,7 +15,7 @@ function isTextual(type, value) {
       t.binaryExpression("===", type, t.stringLiteral("string")),
       t.logicalExpression(
         "&&",
-        value,
+        t.binaryExpression("===", type, t.stringLiteral("object")),
         t.binaryExpression("instanceof", value, t.identifier("String"))
       )
     )
@@ -47,14 +47,15 @@ function isArray(value) {
 }
 
 // Isolated AST code to determine if a value an Object.
-function isObject(value) {
-  return t.binaryExpression(
-    "===",
-    toFunctionCall(
-      t.identifier("String"),
-      [value]
-    ),
-    t.stringLiteral("[object Object]")
+function isObject(type, value) {
+  return t.logicalExpression(
+    "&&",
+    t.binaryExpression("===", type, t.stringLiteral("object")),
+    t.binaryExpression(
+      "===",
+      toFunctionCall(t.identifier("String"), [value]),
+      t.stringLiteral("[object Object]")
+    )
   );
 }
 
@@ -75,13 +76,13 @@ function renderArbitraryAST(plugin, ref, deps) {
   /**
    * function _renderArbitrary(child) {
    *   var type = typeof child;
-   *   if (type === "number" || (type === string || child && child instanceof String)) {
+   *   if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
    *     text(child);
    *   } else if (type === "function" && child.__jsxDOMWrapper) {
    *     child();
    *   } else if (Array.isArray(child)) {
    *     child.forEach(_renderArbitrary);
-   *   } else {
+   *   } else if (type === 'object' && String(child) === '[object Object]') {
    *     _forOwn(child, _renderArbitrary);
    *   }
    * }
@@ -112,7 +113,7 @@ function renderArbitraryAST(plugin, ref, deps) {
               t.expressionStatement(toFunctionCall(forEach, [ref]))
             ]),
             t.ifStatement(
-              isObject(child),
+              isObject(type, child),
               t.blockStatement([
                 t.expressionStatement(toFunctionCall(forOwn, [child, ref]))
               ])

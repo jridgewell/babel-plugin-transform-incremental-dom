@@ -1,13 +1,13 @@
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
-  if (type === "number" || type === "string" || child && child instanceof String) {
+  if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     IncrementalDOM.virtual.elements.text(child);
   } else if (type === "function" && child.__jsxDOMWrapper) {
     child();
   } else if (Array.isArray(child)) {
     child.forEach(_renderArbitrary);
-  } else if (String(child) === "[object Object]") {
+  } else if (type === "object" && String(child) === "[object Object]") {
     _forOwn(child, _renderArbitrary);
   }
 };

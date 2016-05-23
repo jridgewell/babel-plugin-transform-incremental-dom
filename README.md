@@ -165,7 +165,7 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
     "incremental-dom", {
       "hoist": true
     }
-  ]],
+  ]]
 }
 ```
 
@@ -183,7 +183,7 @@ though, forcing statics to always be used for literal attributes, by setting
     "incremental-dom", {
       "forceStatics": true
     }
-  ]],
+  ]]
 }
 ```
 
@@ -227,7 +227,7 @@ plugin:
     "incremental-dom", {
       "inlineExpressions": true
     }
-  ]],
+  ]]
 }
 ```
 
@@ -284,7 +284,7 @@ plugin:
     "incremental-dom", {
       "fastRoot": true
     }
-  ]],
+  ]]
 }
 ```
 
@@ -321,7 +321,7 @@ plugin:
     "incremental-dom", {
       "components": true
     }
-  ]],
+  ]]
 }
 ```
 
@@ -359,7 +359,7 @@ plugin:
     "incremental-dom", {
       "prefix": "IncrementalDOM"
     }
-  ]],
+  ]]
 }
 ```
 
@@ -460,6 +460,6 @@ plugin:
     "incremental-dom", {
       "runtime": "iDOMHelpers"
     }
-  ]],
+  ]]
 }
 ```

@@ -27,7 +27,13 @@ export default function extractOpenArguments(path, plugin) {
       return;
     }
 
-    const name = t.stringLiteral(attribute.node.name.name);
+    const namePath = attribute.get("name");
+    let name;
+    if (namePath.isJSXIdentifier()) {
+      name = t.stringLiteral(namePath.node.name);
+    } else {
+      name = t.stringLiteral(`${namePath.node.namespace.name}:${namePath.node.name.name}`);
+    }
     let value = attribute.get("value");
     let node = value.node;
 

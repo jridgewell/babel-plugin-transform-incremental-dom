@@ -9,7 +9,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 var _statics = ["id", "id2", "key", ""],
     _statics2 = ["id", "id"],
     _wrapper = function _wrapper(_key) {
-  elementOpen("div", null, _statics2);
+  elementOpen("div", "__uuid__0__", _statics2);
   elementVoid("div", _key, (_statics[3] = _key, _statics));
   return elementClose("div");
 };

@@ -144,7 +144,7 @@ times.
 ```js
 // Disabled (default)
 function render() {
-    return elementVoid("div", null, ["id", "container"]);
+    return elementVoid("div", "key", ["id", "container"]);
 }
 ```
 
@@ -153,7 +153,7 @@ function render() {
 var _statics = ["id", "container"];
 
 function render() {
-    return elementVoid("div", null, _statics);
+    return elementVoid("div", "key", _statics);
 }
 ```
 
@@ -169,13 +169,42 @@ To do this, simply add the `hoist` option to the Incremental DOM plugin:
 }
 ```
 
-#### Force statics
+#### Force Statics Key
 
 Incremental DOM [recommends](http://google.github.io/incremental-dom/#rendering-dom/statics-array)
-only using statics when a key is set. For that reason this plugin avoids using
-statics at all unless there is a key. If you wish you can override this behavior
-though, forcing statics to always be used for literal attributes, by setting
-`forceStatics` to true:
+only using static attribute arrays when a `key` is specified. For that
+reason this plugin will deoptimize static attributes into dynamic unless
+there is a key.
+
+Another option is to generate a cryptographically secure v4 UUID `key`,
+since the chance of collisions is so infinitesimal.
+
+```js
+// Disabled (default)
+function render(condition) {
+  elementVoid("a", "key", ["href", "http://key/specified"]);
+  if (condition)
+    elementVoid("a", null, null, "href", "http://example.com");
+  } else {
+    elementVoid("a", null, null, "href", "http://other.com");
+  }
+}
+```
+
+```js
+// Enabled
+function render() {
+  elementVoid("a", "key", ["href", "http://key/specified"]);
+  if (condition)
+    elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", ["href", "http://example.com"]);
+  } else {
+    elementVoid("a", "adbe4414-e6ad-41c0-aae2-1ca578653119", ["href", "http://other.com"]);
+  }
+}
+```
+
+To do this, simply add the `forceStatics` option to the Incremental DOM
+plugin:
 
 ```json
 {
@@ -446,7 +475,7 @@ The runtime's required functions are:
     } else if (Array.isArray(child)) {
       child.forEach(_renderArbitrary);
     } else if (type === 'object' && String(child) === '[object Object]') {
-      _forOwn(child, _renderArbitrary);
+      runtime.forOwn(child, _renderArbitrary);
     }
   }
   ```

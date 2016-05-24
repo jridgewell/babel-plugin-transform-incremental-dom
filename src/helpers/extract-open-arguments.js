@@ -1,5 +1,6 @@
 import isLiteralOrUndefined from "./is-literal-or-undefined";
 import addStaticHoist from "./hoist-statics";
+import uuid from "./uuid";
 import * as t from "babel-types";
 
 // Extracts attributes into the appropriate
@@ -67,18 +68,23 @@ export default function extractOpenArguments(path, plugin) {
     }
   });
 
-  if (!key && !forceStatics) {
-    // Don't use statics if no "key" is passed, as recommended by the
-    // incremental dom documentation:
-    // http://google.github.io/incremental-dom/#rendering-dom/statics-array.
-    for (let i = 0; i < staticAttrs.length; i += 2) {
-      attrs.push({
-        name: staticAttrs[i],
-        value: staticAttrs[i + 1],
-        isSpread: false
-      });
+  if (staticAttrs.length > 0 && !key) {
+    if (forceStatics) {
+      // Generate a uuid to be used as the key.
+      key = t.stringLiteral(uuid());
+    } else {
+      // Don't use statics if no "key" is passed, as recommended by the
+      // incremental dom documentation:
+      // http://google.github.io/incremental-dom/#rendering-dom/statics-array.
+      for (let i = 0; i < staticAttrs.length; i += 2) {
+        attrs.push({
+          name: staticAttrs[i],
+          value: staticAttrs[i + 1],
+          isSpread: false
+        });
+      }
+      staticAttrs = [];
     }
-    staticAttrs = [];
   }
 
   if (attrs.length === 0) { attrs = null; }

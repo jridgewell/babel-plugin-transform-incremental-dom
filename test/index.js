@@ -34,6 +34,17 @@ function stripUseStrict(str) {
   return str.replace(/^"use strict";\n+/, "");
 }
 
+function uuidReplacer(str) {
+  const UUIDv4 = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/g;
+  const matches = str.match(UUIDv4);
+  if (!matches) {
+    return str;
+  }
+  return matches.reduce(function(str, uuid, i) {
+    return str.replace(new RegExp(uuid, 'g'), `__uuid__${i}__`);
+  }, str);
+}
+
 function test(dir) {
   const expected = resolve(path.join(dir, "expected.js"));
   const opts = parse(resolve(path.join(dir, "options.json")));
@@ -59,7 +70,7 @@ function test(dir) {
     throw new Error("Expected error message: " + throwMsg + ". But parsing succeeded.");
   }
 
-  actual = stripUseStrict(trim(actual));
+  actual = uuidReplacer(stripUseStrict(trim(actual)));
   if (expected) {
     assert.equal(actual, trim(expected));
   } else {

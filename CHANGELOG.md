@@ -8,6 +8,16 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.3.0
+
+- **New Feature**
+  - Add a Fast path for JSX under the Root node
+    - [#47](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/47)
+  - Add support for Attribute Namespaces
+    - [#55](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/55)
+  - `forceStatics` option now generates a UUID `key` for key-less nodes
+    - [9db682c7](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/9db682c78732682c022a32077dc499a98c9f4bb7)
+
 ## 3.2.1
 
 - **Bug Fix**
@@ -17,7 +27,7 @@ Changelog
 ## 3.2.0
 
 - **New Feature**
-  - Allow forcing the use of statics when there are constant attributes.
+  - Allow forcing the use of statics when there are constant attributes
     - [#49](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/49)
 - **Bug Fix**
   - Only use `statics` when there is a `key`

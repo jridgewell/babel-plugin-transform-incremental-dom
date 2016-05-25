@@ -39,7 +39,9 @@ export default function ({ types: t, traverse: _traverse }) {
 
   const elementVisitor = {
     JSXNamespacedName(path) {
-      throw path.buildCodeFrameError("JSX Namespaces aren't supported.");
+      if (!this.opts.namespaceAttributes || path.parentPath.isJSXOpeningElement()) {
+        throw path.buildCodeFrameError("JSX Namespaces aren't supported.");
+      }
     },
 
     JSXElement: {

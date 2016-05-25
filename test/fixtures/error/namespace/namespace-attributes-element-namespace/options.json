@@ -1,0 +1,6 @@
+{
+  "throws": "JSX Namespaces aren't supported.",
+  "options": {
+    "namespaceAttributes": true
+  }
+}

@@ -216,6 +216,32 @@ plugin:
 }
 ```
 
+#### Namspaced Attributes
+
+Incremental DOM supports a few Attribute Namespaces, but those are
+foreign to JSX. You can enabled them with the `namespaceAttributes`
+option. Note that this does not enable Namespaced Elements.
+
+```js
+// Enabled
+function render() {
+    return elementVoid("a", null, ["xml:static", true], "xlink:href", "https");
+}
+```
+
+To do this, simply add the `namespaceAttributes` option to the
+Incremental DOM plugin:
+
+```json
+{
+  "plugins": [[
+    "incremental-dom", {
+      "namespaceAttributes": true
+    }
+  ]]
+}
+```
+
 #### Inline JSX Expressions
 
 You may enable the experimental `inlineExpressions` option to attempt to

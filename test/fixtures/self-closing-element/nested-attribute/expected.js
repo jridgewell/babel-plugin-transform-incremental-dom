@@ -1,5 +1,6 @@
+var _statics = ["attr", "value"];
 function render() {
   elementOpen("div");
-  elementVoid("div", null, null, "attr", "value");
+  elementVoid("div", "__uuid__0__", _statics);
   return elementClose("div");
 }

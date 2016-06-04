@@ -28,11 +28,13 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper() {
+  return elementVoid("div");
+};
+
 function render() {
   function div() {
-    return _jsxWrapper(function () {
-      return elementVoid("div");
-    });
+    return _jsxWrapper(_wrapper);
   }
   elementOpen("root");
 

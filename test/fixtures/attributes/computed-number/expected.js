@@ -1,6 +1,7 @@
+var _statics = ["class", "0"];
 function render() {
   elementOpen("root");
-  elementOpen("div", null, null, "class", "0");
+  elementOpen("div", "__uuid__0__", _statics);
   elementClose("div");
   return elementClose("root");
 }

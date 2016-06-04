@@ -66,7 +66,6 @@ export default function ({ types: t, traverse: _traverse }) {
 
       exit(path) {
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const { hoist } = this.opts;
         const childAncestorPath = childAncestor(path, this);
         const needsWrapper = secondaryTree || (root !== path && !childAncestorPath);
 
@@ -106,11 +105,12 @@ export default function ({ types: t, traverse: _traverse }) {
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
           const params = closureVars.map((e) => e.id);
-          let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
-
-          if (hoist) {
-            wrapper = addHoistedDeclarator(path.scope, "wrapper", wrapper, this);
-          }
+          let wrapper = addHoistedDeclarator(
+            path.scope,
+            "wrapper",
+            t.functionExpression(null, params, t.blockStatement(elements)),
+            this
+          );
 
           const args = [ wrapper ];
           if (closureVars.length) {

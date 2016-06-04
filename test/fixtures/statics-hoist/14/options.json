@@ -1,6 +1,0 @@
-{
-  "options": {
-    "forceStatics": true,
-    "hoist": true
-  }
-}

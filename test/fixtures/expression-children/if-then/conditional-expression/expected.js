@@ -28,6 +28,8 @@ function getDiv() {
 
 function render() {
   elementOpen("div");
-  true ? (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) : elementVoid("other");
+
+  _renderArbitrary(true ? (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) : elementVoid("other"));
+
   return elementClose("div");
 }

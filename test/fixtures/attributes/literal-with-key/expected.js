@@ -1,6 +1,7 @@
+var _statics = ["class", "my-class", "key", "key"];
 function render() {
   elementOpen("root");
-  elementOpen("div", "key", ["class", "my-class", "key", "key"]);
+  elementOpen("div", "key", _statics);
   elementClose("div");
   return elementClose("root");
 }

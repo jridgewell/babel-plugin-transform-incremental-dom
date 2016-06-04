@@ -28,13 +28,15 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
+var _wrapper = function _wrapper() {
+  return elementVoid("div");
+};
+
 function render() {
   elementOpen("root");
 
   _renderArbitrary(function div() {
-    return _jsxWrapper(function () {
-      return elementVoid("div");
-    });
+    return _jsxWrapper(_wrapper);
   }());
 
   return elementClose("root");

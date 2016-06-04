@@ -1,5 +1,6 @@
+var _statics = ["disabled", false];
 function render() {
   elementOpen("div");
-  elementVoid("input", null, null, "disabled", false);
+  elementVoid("input", "__uuid__0__", _statics);
   return elementClose("div");
 }

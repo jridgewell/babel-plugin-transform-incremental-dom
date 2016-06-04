@@ -28,15 +28,17 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_ref) {
+  elementOpen("span");
+
+  _renderArbitrary(_ref);
+
+  return elementClose("span");
+};
+
 function render() {
   elementOpen("root");
-  elementOpen("div", null, null, "prop", _jsxWrapper(function (_ref) {
-    elementOpen("span");
-
-    _renderArbitrary(_ref);
-
-    return elementClose("span");
-  }, [i++]));
+  elementOpen("div", null, null, "prop", _jsxWrapper(_wrapper, [i++]));
   elementClose("div");
   return elementClose("root");
 }

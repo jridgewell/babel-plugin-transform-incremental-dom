@@ -10,8 +10,9 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
+var _statics = ["class", "test", "key", "test"];
 function render() {
-  elementOpenStart("div", "test", ["class", "test", "key", "test"]);
+  elementOpenStart("div", "test", _statics);
   attr("id", id);
 
   _forOwn(props, _attr);

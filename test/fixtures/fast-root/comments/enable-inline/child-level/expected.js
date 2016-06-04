@@ -20,6 +20,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _statics = ["key", ""];
 function render() {
   elementOpen("ul");
 
@@ -27,7 +28,7 @@ function render() {
   files.map(function (file) {
     var _file$name;
 
-    elementOpen("li", _file$name = file.name, ["key", _file$name], "file", file, "onclick", function (e) {
+    elementOpen("li", _file$name = file.name, (_statics[1] = _file$name, _statics), "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

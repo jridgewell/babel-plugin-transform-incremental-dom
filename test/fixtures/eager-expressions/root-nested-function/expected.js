@@ -28,28 +28,31 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_i) {
+  elementOpen("map");
+
+  _renderArbitrary(_i);
+
+  return elementClose("map");
+},
+    _wrapper2 = function _wrapper2(_ref, _ref2) {
+  elementOpen("div", null, null, "first", _ref);
+
+  _renderArbitrary(_ref2);
+
+  return elementClose("div");
+};
+
 function render() {
   elementOpen("root");
   elementOpen("div", null, null, "attr", i++);
 
   _renderArbitrary([1, 2, 3].map(function (i) {
-    return _jsxWrapper(function (_i) {
-      elementOpen("map");
-
-      _renderArbitrary(_i);
-
-      return elementClose("map");
-    }, [i]);
+    return _jsxWrapper(_wrapper, [i]);
   }));
 
   _renderArbitrary(function () {
-    _jsxWrapper(function (_ref, _ref2) {
-      elementOpen("div", null, null, "first", _ref);
-
-      _renderArbitrary(_ref2);
-
-      return elementClose("div");
-    }, [i++, i++]);
+    _jsxWrapper(_wrapper2, [i++, i++]);
   }());
 
   _renderArbitrary(i++);

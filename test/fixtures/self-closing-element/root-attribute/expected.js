@@ -1,3 +1,4 @@
+var _statics = ["attr", "value"];
 function render() {
-  return elementVoid("div", null, null, "attr", "value");
+  return elementVoid("div", "__uuid__0__", _statics);
 }

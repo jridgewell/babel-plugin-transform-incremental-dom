@@ -28,16 +28,18 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_i, _i2) {
+  elementOpen("span", null, null, "attr", _i);
+
+  _renderArbitrary(_i2);
+
+  return elementClose("span");
+};
+
 function render() {
   var mapNested4 = [1, 2, 3].map(function (i) {
     elementOpen("outer4");
-    elementOpen("inner4", null, null, "attr", _jsxWrapper(function (_i, _i2) {
-      elementOpen("span", null, null, "attr", _i);
-
-      _renderArbitrary(_i2);
-
-      return elementClose("span");
-    }, [i, i]));
+    elementOpen("inner4", null, null, "attr", _jsxWrapper(_wrapper, [i, i]));
     elementClose("inner4");
     return elementClose("outer4");
   });

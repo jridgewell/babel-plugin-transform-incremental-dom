@@ -1,4 +1,4 @@
-var _attr = function _attr(value, name) {
+var _flipAttr = function _flipAttr(value, name) {
   attr(name, value);
 };
 
@@ -10,10 +10,14 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
+var _spreadAttribute = function _spreadAttribute(spread) {
+  _forOwn(spread, _flipAttr);
+};
+
 function render() {
   elementOpenStart("div");
 
-  _forOwn(props, _attr);
+  _spreadAttribute(props);
 
   elementOpenEnd("div");
   return elementClose("div");

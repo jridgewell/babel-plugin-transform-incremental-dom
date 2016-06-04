@@ -479,36 +479,6 @@ instead.
 
 The runtime's required functions are:
 
-- `attr`
-
-  Not to be confused with IncrementalDOM's own `#attr` function, the
-  runtime's `attr` must take in a `value` and `attrName` and call
-  IncrementalDOM's `#attr`. Basically, it flip flops its parameters so
-  that `IncrementalDOM#attr` can be used in a `Array#forEach` like
-  method signature.
-
-  ```js
-  runtime.attr = function(value, attrName) {
-    IncrementalDOM.attr(attrName, value);
-  };
-  ```
-
-- `forOwn`
-
-  No surprises here, this iterates over every enumerable-own property of
-  `object`, calling `iterator` with the property's value and name.
-
-  ```js
-  runtime.forOwn = function(object, iterator) {
-    var hasOwn = Object.prototype.hasOwnProperty;
-    for (var prop in object) {
-      if (hasOwn.call(object, prop)) {
-        iterator(object[prop], prop);
-      }
-    }
-  };
-  ```
-
 - `jsxWrapper`
 
   To prevent iDOM's incremental nature from screwing up our beautiful
@@ -525,7 +495,7 @@ The runtime's required functions are:
   runtime.jsxWrapper = function(elementClosure, args) {
     var wrapper = args ? function() {
       return elementClosure.apply(this, args);
-    } : jsxClosure;
+    } : elementClosure;
     wrapper.__jsxDOMWrapper = true;
     return wrapper;
   }
@@ -547,13 +517,33 @@ The runtime's required functions are:
   runtime.renderArbitrary = function _renderArbitrary(child) {
     var type = typeof child;
     if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
-      text(child);
+      iDOM.text(child);
     } else if (type === "function" && child.__jsxDOMWrapper) {
       child();
     } else if (Array.isArray(child)) {
       child.forEach(_renderArbitrary);
     } else if (type === 'object' && String(child) === '[object Object]') {
-      runtime.forOwn(child, _renderArbitrary);
+      for (var prop in child) {
+        if (Object.prototype.hasOwn.call(child, prop)) {
+          _renderArbitrary(child[prop]);
+        }
+      }
+    }
+  }
+  ```
+
+- `spreadAttribute`
+
+  To set every attribute inside a SpreadAttribute, we'll need to iterate
+  over every property and determine if it's an _own_ property. If so,
+  call `IncrementalDOM#attr` to set it.
+
+  ```js
+  runtime.spreadAttribute = function _spreadAttribute(spread) {
+    for (var prop in spread) {
+      if (Object.prototype.hasOwn.call(spread, prop)) {
+        iDOM.attr(prop, spread[prop]);
+      }
     }
   }
   ```

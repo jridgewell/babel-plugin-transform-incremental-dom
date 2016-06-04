@@ -40,6 +40,7 @@ function descendant(path) {
 function directChild(path) {
   let isChild = false;
   let child = path;
+  let hadNonJSX = false;
 
   path.findParent((path) => {
     if (path.isJSXElement()) {
@@ -49,11 +50,21 @@ function directChild(path) {
 
     if (path.isJSXExpressionContainer()) {
       // Defer to what the parent is.
-      return false;
+      if (!hadNonJSX) {
+        return false;
+      }
+      // We've crossed over a non-JSX node. For now, we're only optimizing
+      // expressions that are similar to if-then logic.
+      const expression = path.get("expression");
+      return !(expression.isConditionalExpression() || expression.isLogicalExpression());
     }
 
+    if (path.isJSXAttribute() || path.isFunction()) {
+      return true;
+    }
+
+    hadNonJSX = true;
     child = path;
-    return true;
   });
 
   return isChild ? child : null;

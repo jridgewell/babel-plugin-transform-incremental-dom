@@ -10,7 +10,7 @@ import * as t from "babel-types";
 export default function extractOpenArguments(path, plugin) {
   const attributes = path.get("attributes");
   const { scope } = path;
-  const { hoist, forceStatics } = plugin.opts;
+  const { requireStaticsKey } = plugin.opts;
   let attrs = [];
   let staticAttrs = [];
   let key = null;
@@ -78,10 +78,7 @@ export default function extractOpenArguments(path, plugin) {
   });
 
   if (staticAttrs.length > 0 && !key) {
-    if (forceStatics) {
-      // Generate a uuid to be used as the key.
-      key = t.stringLiteral(uuid());
-    } else {
+    if (requireStaticsKey) {
       // Don't use statics if a "key" isn't passed, as recommended by the
       // incremental dom documentation:
       // http://google.github.io/incremental-dom/#rendering-dom/statics-array.
@@ -93,13 +90,16 @@ export default function extractOpenArguments(path, plugin) {
         });
       }
       staticAttrs = [];
+    } else {
+      // Generate a UUID to be used as the key.
+      key = t.stringLiteral(uuid());
     }
   }
 
   if (attrs.length === 0) { attrs = null; }
   if (staticAttrs.length === 0) {
     statics = null;
-  } else if (hoist) {
+  } else {
     statics = addStaticHoist(scope, plugin, statics, keyIndex);
   }
 

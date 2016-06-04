@@ -111,8 +111,7 @@ $ npm install babel-plugin-incremental-dom
 }
 ```
 
-An optional [function prefix](#function-prefix), [runtime](#runtime),
-and [hoist boolean](#hoist) may be passed.
+Any of the [configuration options](#options) may also be passed.
 
 ### Via CLI
 
@@ -129,60 +128,42 @@ require("babel-core").transform("code", {
 });
 ```
 
-An optional [function prefix](#function-prefix), [runtime](#runtime),
-and [hoist boolean](#hoist) may be passed.
+Any of the [configuration options](#options) may also be passed.
 
 ### Options
 
-#### Hoist
+#### Require Statics Key
 
-You may enable the experimental `hoist` option to hoist static attribute
-arrays and element wrappers to the highest available scope. This avoids
-expensive instance allocations when running the render function multiple
-times.
+Incremental DOM [recommends](http://google.github.io/incremental-dom/#rendering-dom/statics-array)
+only using static attribute arrays when a `key` is specified. For that
+reason this plugin will automatically generate a UUID key if there is
+not one and there are static attributes.
+
+Alternatively, you may disable the automatic generation. In this case,
+static attributes will be deoptimized into the dynamic attributes list.
 
 ```js
 // Disabled (default)
+var _statics = ["key", "key", "href", "http://key/specified"];
+var _statics2 = ["key", "8ad02822-f391-48fb-a277-8065f7f92a99", "href", "http://example.com"];
+var _statics3 = ["key", "adbe4414-e6ad-41c0-aae2-1ca578653119", "href", "http://other.com"];
+
 function render() {
-    return elementVoid("div", "key", ["id", "container"]);
+  elementVoid("a", "key", _statics);
+  if (condition)
+    elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", _statics2);
+  } else {
+    elementVoid("a", "adbe4414-e6ad-41c0-aae2-1ca578653119", _statics3);
+  }
 }
 ```
 
 ```js
 // Enabled
-var _statics = ["id", "container"];
+var _statics = ["key", "key", "href", "http://key/specified"];
 
-function render() {
-    return elementVoid("div", "key", _statics);
-}
-```
-
-To do this, simply add the `hoist` option to the Incremental DOM plugin:
-
-```json
-{
-  "plugins": [[
-    "incremental-dom", {
-      "hoist": true
-    }
-  ]]
-}
-```
-
-#### Force Statics Key
-
-Incremental DOM [recommends](http://google.github.io/incremental-dom/#rendering-dom/statics-array)
-only using static attribute arrays when a `key` is specified. For that
-reason this plugin will deoptimize static attributes into dynamic unless
-there is a key.
-
-Another option is to generate a cryptographically secure v4 UUID `key`,
-since the chance of collisions is so infinitesimal.
-
-```js
-// Disabled (default)
 function render(condition) {
-  elementVoid("a", "key", ["href", "http://key/specified"]);
+  elementVoid("a", "key", _statics);
   if (condition)
     elementVoid("a", null, null, "href", "http://example.com");
   } else {
@@ -191,26 +172,14 @@ function render(condition) {
 }
 ```
 
-```js
-// Enabled
-function render() {
-  elementVoid("a", "key", ["href", "http://key/specified"]);
-  if (condition)
-    elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", ["href", "http://example.com"]);
-  } else {
-    elementVoid("a", "adbe4414-e6ad-41c0-aae2-1ca578653119", ["href", "http://other.com"]);
-  }
-}
-```
-
-To do this, simply add the `forceStatics` option to the Incremental DOM
+To do this, simply add the `requireStaticsKey` option to the Incremental DOM
 plugin:
 
 ```json
 {
   "plugins": [[
     "incremental-dom", {
-      "forceStatics": true
+      "requireStaticsKey": true
     }
   ]]
 }

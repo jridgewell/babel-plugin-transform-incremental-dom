@@ -52,25 +52,17 @@ function directChild(path) {
       return false;
     }
 
-    if (path.isJSXAttribute()) {
-      return true;
-    } else if (path.isFunction() || path.isCallExpression()) {
-      return true;
-    } else if (path.isAssignmentExpression() || path.isVariableDeclarator()) {
-      return true;
-    } else if (path.isArrayExpression() || path.isObjectExpression()) {
-      return true;
-    } else if (path.isUnaryExpression() || path.isBinaryExpression()) {
-      return true;
-    } else if (path.isSequenceExpression()) {
+    if (path.isSequenceExpression()) {
       const expressions = path.get("expressions");
-      // If we didn't traverse up from the last expression, we'll not really
+      // If we didn't traverse up from the last expression, we're not really
       // a child.
       return expressions[expressions.length - 1] !== child
     } else if (path.isConditionalExpression()) {
       return false;
     } else if (path.isLogicalExpression()) {
       return false;
+    } else if (!path.isJSXExpressionContainer()) {
+      return true;
     }
 
     child = path;

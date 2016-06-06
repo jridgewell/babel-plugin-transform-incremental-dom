@@ -56,7 +56,9 @@ function directChild(path) {
       const expressions = path.get("expressions");
       // If we didn't traverse up from the last expression, we're not really
       // a child.
-      return expressions[expressions.length - 1] !== child
+      if (expressions[expressions.length - 1] !== child) {
+        return true;
+      }
     } else if (path.isConditionalExpression()) {
       return false;
     } else if (path.isLogicalExpression()) {

@@ -20,10 +20,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-function render(condition) {
-  elementOpen("root");
+function render() {
+  elementOpen("div");
 
-  _renderArbitrary(condition ? (elementOpen("div", "__uuid__0__", ["class", "my-class"]), elementClose("div")) : (elementOpen("div", "__uuid__1__", ["class", "other-class"]), elementClose("div")));
+  _renderArbitrary(true && (1, 2, elementVoid("div")));
 
-  return elementClose("root");
+  return elementClose("div");
 }

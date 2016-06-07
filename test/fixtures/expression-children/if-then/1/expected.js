@@ -20,10 +20,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-function render(condition) {
+function renderMany(count) {
+  return elementVoid("WowSoMany");
+}
+
+function render(data) {
   elementOpen("root");
 
-  _renderArbitrary(condition ? (elementOpen("div", "__uuid__0__", ["class", "my-class"]), elementClose("div")) : (elementOpen("div", "__uuid__1__", ["class", "other-class"]), elementClose("div")));
+  _renderArbitrary(data.count > 5 && renderMany(data.count));
 
   return elementClose("root");
 }

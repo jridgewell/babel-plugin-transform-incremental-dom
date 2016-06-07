@@ -20,10 +20,16 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-function render(condition) {
-  elementOpen("root");
+function getDiv() {
+  elementOpen("div");
+  text("Bottom");
+  return elementClose("div");
+}
 
-  _renderArbitrary(condition ? (elementOpen("div", "__uuid__0__", ["class", "my-class"]), elementClose("div")) : (elementOpen("div", "__uuid__1__", ["class", "other-class"]), elementClose("div")));
+function render() {
+  elementOpen("div");
 
-  return elementClose("root");
+  _renderArbitrary(true ? (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) : elementVoid("other"));
+
+  return elementClose("div");
 }

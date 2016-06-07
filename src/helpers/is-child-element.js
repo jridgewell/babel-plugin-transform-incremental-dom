@@ -76,8 +76,7 @@ function directChild(path) {
   return isChild ? child : null;
 }
 
-function pragma(path) {
-  let pragma = false;
+function useFastRoot(path, { fastRoot = false }) {
   path.find((path) => {
     const comments = path.node.leadingComments;
 
@@ -85,23 +84,16 @@ function pragma(path) {
       const match = /@fastRoot\s+(true|false)/.exec(comment.value);
 
       if (match) {
-        pragma = match[1] === "true";
+        fastRoot = match[1] === "true";
         return true;
       }
     });
   });
 
-  return pragma;
+  return fastRoot;
 }
 
 // Detects if this element is not a child of another JSX element
 export default function childAncestor(path, { opts }) {
-  let { fastRoot } = opts;
-  if (fastRoot === "comments") {
-    return (pragma(path) ? descendant : directChild)(path);
-  } else if (fastRoot) {
-    return descendant(path);
-  }
-
-  return directChild(path);
+  return (useFastRoot(path, opts) ? descendant : directChild)(path);
 }

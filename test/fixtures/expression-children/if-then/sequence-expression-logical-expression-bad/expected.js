@@ -31,7 +31,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 function render() {
   elementOpen("div");
 
-  _renderArbitrary((1, _jsxWrapper(function () {
+  _renderArbitrary((1, true && _jsxWrapper(function () {
     return elementVoid("div");
   }), 2));
 

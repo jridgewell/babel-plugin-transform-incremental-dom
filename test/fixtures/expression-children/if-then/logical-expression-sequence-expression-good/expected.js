@@ -20,20 +20,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
-};
-
 function render() {
   elementOpen("div");
 
-  _renderArbitrary((1, _jsxWrapper(function () {
-    return elementVoid("div");
-  }), 2));
+  _renderArbitrary(true && (1, 2, elementVoid("div")));
 
   return elementClose("div");
 }

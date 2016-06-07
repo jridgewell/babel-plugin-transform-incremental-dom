@@ -40,35 +40,38 @@ function descendant(path) {
 function directChild(path) {
   let isChild = false;
   let child = path;
+  let last = path;
 
-  path.findParent((path) => {
+  while ((path = path.parentPath)) {
     if (path.isJSXElement()) {
       isChild = true;
-      return true;
+      break;
     }
 
     if (path.isJSXExpressionContainer()) {
       // Defer to what the parent is.
-      return false;
+      continue;
     }
 
     if (path.isSequenceExpression()) {
       const expressions = path.get("expressions");
       // If we didn't traverse up from the last expression, we're not really
       // a child.
-      if (expressions[expressions.length - 1] !== child) {
-        return true;
+      if (expressions[expressions.length - 1] !== last) {
+        break;
       }
-    } else if (path.isConditionalExpression()) {
-      return false;
-    } else if (path.isLogicalExpression()) {
-      return false;
-    } else if (!path.isJSXExpressionContainer()) {
-      return true;
+
+      // Sequence expressions can be considered a child JSX element if the element
+      // was the last expression.
+      if (last.isJSXElement()) {
+        child = path;
+      }
+    } else if (!(path.isConditionalExpression() || path.isLogicalExpression())) {
+      break;
     }
 
-    child = path;
-  });
+    last = path;
+  }
 
   return isChild ? child : null;
 }

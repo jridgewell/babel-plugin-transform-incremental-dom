@@ -1,5 +1,5 @@
 function render() {
   return <div>
-  {1, <div />, 2}
+  {1, 2, (true && <div />)}
   </div>;
 }

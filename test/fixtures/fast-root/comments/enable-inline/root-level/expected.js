@@ -20,7 +20,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-// @fastRoot true
+// @incremental-dom enable-fastRoot
 function render() {
   elementOpen("ul");
   files.map(function (file) {

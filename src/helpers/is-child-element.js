@@ -81,10 +81,10 @@ function useFastRoot(path, { fastRoot = false }) {
     const comments = path.node.leadingComments;
 
     return comments && comments.find((comment) => {
-      const match = /@fastRoot\s+(true|false)/.exec(comment.value);
+      const match = /@incremental-dom.+(enable|disable)-fastRoot/.exec(comment.value);
 
       if (match) {
-        fastRoot = match[1] === "true";
+        fastRoot = match[1] === "enable";
         return true;
       }
     });

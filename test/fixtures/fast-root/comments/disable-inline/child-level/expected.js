@@ -32,7 +32,7 @@ function render() {
   elementOpen("ul");
 
   _renderArbitrary(
-  // @fastRoot false
+  // @incremental-dom disable-fastRoot
   files.map(function (file) {
     return _jsxWrapper(function (_file$name, _file, _ref, _file$name2) {
       elementOpen("li", _file$name, ["key", _file$name], "file", _file, "onclick", _ref);

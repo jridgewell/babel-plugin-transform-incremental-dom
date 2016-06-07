@@ -28,7 +28,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-// @fastRoot false
+// @incremental-dom disable-fastRoot
 function render() {
   elementOpen("ul");
 

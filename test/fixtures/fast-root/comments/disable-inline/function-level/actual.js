@@ -1,5 +1,5 @@
 function render() {
-  // @fastRoot false
+  // @incremental-dom disable-fastRoot
   return <ul>
   {
     files.map((file) => {

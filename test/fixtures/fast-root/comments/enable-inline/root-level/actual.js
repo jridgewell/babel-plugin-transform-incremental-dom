@@ -1,4 +1,4 @@
-// @fastRoot true
+// @incremental-dom enable-fastRoot
 function render() {
   return <ul>
   {

@@ -29,7 +29,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 function render() {
-  // @fastRoot false
+  // @incremental-dom disable-fastRoot
   elementOpen("ul");
 
   _renderArbitrary(files.map(function (file) {

@@ -23,7 +23,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 function render() {
   elementOpen("ul");
   files.map(function (file) {
-    // @fastRoot true
+    // @incremental-dom enable-fastRoot
     elementOpen("li", file.name, ["key", file.name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });

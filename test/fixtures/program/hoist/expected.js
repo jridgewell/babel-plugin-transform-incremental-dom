@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _statics = ["key", ""],
@@ -12,4 +15,4 @@ var _statics = ["key", ""],
   return elementClose("div");
 };
 
-var div = _jsxWrapper(_wrapper, [i++]);
+var div = _jsxWrapper(_jsxClosure(_wrapper, [i++]));

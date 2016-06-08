@@ -8,6 +8,7 @@ import expressionExtractor from "./helpers/extract-expressions";
 import expressionInliner from "./helpers/inline-expressions";
 
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
+import injectJSXClosure from "./helpers/runtime/jsx-closure";
 
 import toFunctionCall from "./helpers/ast/to-function-call";
 import flattenExpressions from "./helpers/ast/flatten-expressions";
@@ -105,22 +106,31 @@ export default function ({ types: t, traverse: _traverse }) {
           // child expressions can identify and "render" it.
           const closureVars = closureVarsStack.pop();
           const params = closureVars.map((e) => e.id);
-          let wrapper = addHoistedDeclarator(
-            path.scope,
-            "wrapper",
-            t.functionExpression(null, params, t.blockStatement(elements)),
-            this
-          );
+          let wrapper = t.functionExpression(null, params, t.blockStatement(elements));
 
-          const args = [ wrapper ];
           if (closureVars.length) {
-            const paramArgs = closureVars.map((e) => e.init);
-            args.push(t.arrayExpression(paramArgs));
+            wrapper = addHoistedDeclarator(path.scope, "wrapper", wrapper, this);
+
+            const args = [ wrapper ];
+            if (closureVars.length) {
+              const paramArgs = closureVars.map((e) => e.init);
+              args.push(t.arrayExpression(paramArgs));
+            }
+
+            wrapper = toFunctionCall(injectJSXWrapper(this), [
+              toFunctionCall(injectJSXClosure(this), args)
+            ]);
+          } else {
+            wrapper = addHoistedDeclarator(
+              path.scope,
+              "wrapper",
+              toFunctionCall(injectJSXWrapper(this), [wrapper]),
+              this
+            );
           }
 
-          const wrapperCall = toFunctionCall(injectJSXWrapper(this), args);
-          replacedElements.add(wrapperCall);
-          path.replaceWith(wrapperCall);
+          replacedElements.add(wrapper);
+          path.replaceWith(wrapper);
           return;
         }
 

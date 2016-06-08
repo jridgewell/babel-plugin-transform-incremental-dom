@@ -20,25 +20,22 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
-var _wrapper = function _wrapper() {
+var _wrapper = _jsxWrapper(function () {
   elementOpen("span");
   text("·");
   return elementClose("span");
-};
+});
 
 function render() {
   elementOpen("div");
   elementOpen("div");
 
-  _renderArbitrary(["First ", _jsxWrapper(_wrapper), " Second"]);
+  _renderArbitrary(["First ", _wrapper, " Second"]);
 
   elementClose("div");
   return elementClose("div");

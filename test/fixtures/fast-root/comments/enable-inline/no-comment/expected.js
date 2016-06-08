@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -41,9 +44,9 @@ function render() {
   elementOpen("ul");
 
   _renderArbitrary(files.map(function (file) {
-    return _jsxWrapper(_wrapper, [file.name, file, function (e) {
+    return _jsxWrapper(_jsxClosure(_wrapper, [file.name, file, function (e) {
       return fileClicked(e, file);
-    }, file.name]);
+    }, file.name]));
   }));
 
   return elementClose("ul");

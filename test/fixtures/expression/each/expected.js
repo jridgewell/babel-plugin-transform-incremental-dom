@@ -20,12 +20,15 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _statics = ["key", ""],
@@ -38,7 +41,7 @@ function render() {
   elementOpen("div");
 
   _renderArbitrary(queries.forEach(function (query) {
-    return _jsxWrapper(_wrapper, [query.id]);
+    return _jsxWrapper(_jsxClosure(_wrapper, [query.id]));
   }));
 
   return elementClose("div");

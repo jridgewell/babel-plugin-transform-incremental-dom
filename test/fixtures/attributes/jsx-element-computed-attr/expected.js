@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _wrapper = function _wrapper(_ref) {
@@ -12,7 +15,7 @@ var _wrapper = function _wrapper(_ref) {
 
 function render() {
   elementOpen("root");
-  elementOpen("div", null, null, "prop", _jsxWrapper(_wrapper, [i++]));
+  elementOpen("div", null, null, "prop", _jsxWrapper(_jsxClosure(_wrapper, [i++])));
   elementClose("div");
   return elementClose("root");
 }

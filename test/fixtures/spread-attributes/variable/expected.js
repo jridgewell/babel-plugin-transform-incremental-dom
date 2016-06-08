@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _attr = function _attr(value, name) {
@@ -28,5 +31,5 @@ var _wrapper = function _wrapper(_props) {
 };
 
 function render() {
-  var test = _jsxWrapper(_wrapper, [props]);
+  var test = _jsxWrapper(_jsxClosure(_wrapper, [props]));
 }

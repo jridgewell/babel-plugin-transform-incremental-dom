@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -37,15 +40,15 @@ var _statics = ["key", ""],
   return elementClose("span");
 },
     _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", null, null, "attr", _jsxWrapper(_wrapper, [_file$name, _file, _ref, _file$name2]));
+  elementOpen("li", null, null, "attr", _jsxWrapper(_jsxClosure(_wrapper, [_file$name, _file, _ref, _file$name2])));
   return elementClose("li");
 };
 
 function render() {
   elementOpen("ul", null, null, "files", files.map(function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
+    return _jsxWrapper(_jsxClosure(_wrapper2, [file.name, file, function (e) {
       return fileClicked(e, file);
-    }, file.name]);
+    }, file.name]));
   }));
   return elementClose("ul");
 }

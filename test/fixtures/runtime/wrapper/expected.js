@@ -1,8 +1,8 @@
-var _wrapper = function _wrapper() {
+var _wrapper = iDOM.jsxWrapper(function () {
   return elementVoid("div");
-};
+});
 
 function render() {
-  var div = iDOM.jsxWrapper(_wrapper);
+  var div = _wrapper;
   return elementVoid("div");
 }

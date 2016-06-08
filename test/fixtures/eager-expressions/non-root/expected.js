@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -47,7 +50,7 @@ var _wrapper = function _wrapper(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
 };
 
 function render() {
-  var test = _jsxWrapper(_wrapper, [i++, i++, i++, i++, i++, i++]);
+  var test = _jsxWrapper(_jsxClosure(_wrapper, [i++, i++, i++, i++, i++, i++]));
   elementOpen("root");
 
   _renderArbitrary(test);

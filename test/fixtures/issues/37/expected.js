@@ -1,9 +1,6 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -30,11 +27,11 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 var _statics = ["id", "app"],
     _statics2 = ["type", "text", "id", "testInput"],
-    _wrapper = function _wrapper() {
+    _wrapper = _jsxWrapper(function () {
   elementOpen("div");
   elementVoid("input", "__uuid__0__", _statics2);
   return elementClose("div");
-},
+}),
     _statics3 = ["type", "text", "id", "testInput"],
     _statics4 = ["id", "app"],
     _statics5 = ["id", "app"],
@@ -42,7 +39,7 @@ var _statics = ["id", "app"],
 
 function renderMain() {
   var renderInput = function renderInput() {
-    return _jsxWrapper(_wrapper);
+    return _wrapper;
   };
   elementOpen("div", "__uuid__1__", _statics);
 

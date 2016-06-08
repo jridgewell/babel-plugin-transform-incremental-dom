@@ -1,9 +1,12 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
+var _jsxClosure = function _jsxClosure(func, args) {
+  return function jsxClosure() {
     return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  };
+};
+
+var _jsxWrapper = function _jsxWrapper(func) {
+  func.__jsxDOMWrapper = true;
+  return func;
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -41,7 +44,7 @@ var _wrapper = function _wrapper(_i, _ref, _i2) {
 function render() {
   var mapNested5 = [1, 2, 3].map(function (i) {
     elementOpen("outer5");
-    elementOpen("inner5", null, null, "attr", _jsxWrapper(_wrapper, [i, i++, i]));
+    elementOpen("inner5", null, null, "attr", _jsxWrapper(_jsxClosure(_wrapper, [i, i++, i])));
     elementClose("inner5");
     return elementClose("outer5");
   });

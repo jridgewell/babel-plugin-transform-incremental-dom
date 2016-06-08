@@ -3,6 +3,6 @@ var _wrapper = function _wrapper(_ref) {
 };
 
 function render() {
-  var div = iDOM.jsxWrapper(_wrapper, [i++]);
+  var div = iDOM.jsxWrapper(iDOM.jsxClosure(_wrapper, [i++]));
   return elementVoid("div");
 }

@@ -17,6 +17,8 @@ import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 
+import JSX from "babel-plugin-syntax-jsx";
+
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
     _traverse.explode(visitor);
@@ -159,9 +161,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
   // This visitor first finds the root element, and ignores all the others.
   return {
-    manipulateOptions(opts, parserOpts) {
-      parserOpts.plugins.push("jsx");
-    },
+    inherits: JSX,
 
     visitor: {
       Program: {

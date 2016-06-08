@@ -12,7 +12,8 @@ export function hasSpread(attributes) {
 export function toAttrsArray(attrs) {
   const pairsArray = [];
   attrs.forEach(({ name, value }) => {
-    pairsArray.push(name, value);
+    pairsArray.push(name)
+    pairsArray.push(value);
   });
 
   return pairsArray;

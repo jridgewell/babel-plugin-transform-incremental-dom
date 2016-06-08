@@ -23,8 +23,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
 function render() {
   elementOpen("root");
   files.map(function (file) {
+    var _file$name;
+
     elementOpen("li");
-    elementOpen("span", file.name, ["key", file.name], "file", file, "onclick", function (e) {
+    elementOpen("span", _file$name = file.name, ["key", _file$name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

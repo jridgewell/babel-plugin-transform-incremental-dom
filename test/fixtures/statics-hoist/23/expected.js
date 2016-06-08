@@ -1,4 +1,6 @@
 var _statics = ["id", "id", "key", ""];
 function test() {
-  return elementVoid("div", props.key, (_statics[3] = props.key, _statics));
+  var _props$key;
+
+  return elementVoid("div", _props$key = props.key, (_statics[3] = _props$key, _statics));
 }

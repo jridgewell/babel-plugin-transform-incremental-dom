@@ -55,12 +55,15 @@ export default function extractOpenArguments(path, plugin) {
       key = node;
 
       // If it's not a literal key, we must assign it in the statics array.
-      if (hoist && !literal) {
-        value.replaceWith(t.stringLiteral(""));
-        node = value.node;
+      if (!literal) {
+        if (!value.isIdentifier()) {
+          node = value.scope.maybeGenerateMemoised(node);
+          key = t.assignmentExpression("=", node, key);
+        }
+
         keyIndex = staticAttrs.length + 1;
+        literal = true;
       }
-      literal = true;
     }
 
     if (literal) {
@@ -79,7 +82,7 @@ export default function extractOpenArguments(path, plugin) {
       // Generate a uuid to be used as the key.
       key = t.stringLiteral(uuid());
     } else {
-      // Don't use statics if no "key" is passed, as recommended by the
+      // Don't use statics if a "key" isn't passed, as recommended by the
       // incremental dom documentation:
       // http://google.github.io/incremental-dom/#rendering-dom/statics-array.
       for (let i = 0; i < staticAttrs.length; i += 2) {
@@ -97,7 +100,7 @@ export default function extractOpenArguments(path, plugin) {
   if (staticAttrs.length === 0) {
     statics = null;
   } else if (hoist) {
-    statics = addStaticHoist(scope, plugin, statics, key, keyIndex);
+    statics = addStaticHoist(scope, plugin, statics, keyIndex);
   }
 
   return { key, statics, attrs };

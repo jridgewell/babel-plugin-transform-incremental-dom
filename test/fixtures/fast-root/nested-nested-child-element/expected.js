@@ -24,8 +24,10 @@ function render() {
   elementOpen("root");
   elementOpen("ul");
   files.map(function (file) {
+    var _file$name;
+
     elementOpen("li");
-    elementOpen("span", file.name, ["key", file.name], "file", file, "onclick", function (e) {
+    elementOpen("span", _file$name = file.name, ["key", _file$name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

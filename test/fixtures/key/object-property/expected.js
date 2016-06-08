@@ -1,3 +1,5 @@
 function render() {
-  return elementVoid("div", props.key, ["key", props.key]);
+  var _props$key;
+
+  return elementVoid("div", _props$key = props.key, ["key", _props$key]);
 }

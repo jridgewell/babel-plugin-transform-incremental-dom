@@ -1,6 +1,5 @@
 function render() {
   elementOpen("div");
-  elementOpen("div", "1", ["key", "1"]);
-  elementClose("div");
+  elementVoid("input", null, null, "disabled", "true");
   return elementClose("div");
 }

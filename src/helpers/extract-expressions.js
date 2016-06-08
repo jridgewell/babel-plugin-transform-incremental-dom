@@ -1,4 +1,4 @@
-import isLiteralOrUndefined from "./is-literal-or-undefined";
+import isLiteralOrSpecial from "./is-literal-or-special";
 
 function addClosureVar(expression, closureVars) {
   const init = expression.node;
@@ -24,7 +24,7 @@ const expressionExtractor = {
   JSXExpressionContainer(path) {
     const expression = path.get("expression");
     // If the variable is constant (or will be wrapped), don't extract.
-    if (isLiteralOrUndefined(expression) || expression.isJSXElement()) {
+    if (isLiteralOrSpecial(expression) || expression.isJSXElement()) {
       return;
     }
 

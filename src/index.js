@@ -171,6 +171,13 @@ export default function ({ types: t, traverse: _traverse }) {
         },
 
         exit(path) {
+          path.traverse(elementVisitor, Object.assign({}, this, {
+            secondaryTree: true,
+            root: null,
+            replacedElements: new Set(),
+            closureVarsStack: [],
+          }));
+
           hoist(path, this);
           injectHelpers(this);
         }

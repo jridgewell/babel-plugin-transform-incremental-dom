@@ -139,18 +139,21 @@ export default function ({ types: t, traverse: _traverse }) {
 
   const rootElementVisitor = {
     JSXElement(path) {
-      const isRoot = isRootJSX(path);
+      const previousRoot = this.root;
+      const sameLevel = !previousRoot || previousRoot.getFunctionParent() === path.getFunctionParent();
 
-      if (isRoot) {
+      if (sameLevel && isRootJSX(path)) {
+        this.root = path;
         const state = Object.assign({}, this, {
-          root: path,
           secondaryTree: !isReturned(path),
         });
 
         traverse(path, elementVisitor, state);
-      } else {
-        path.skip();
+        return;
       }
+
+      this.elements++;
+      path.skip();
     }
   };
 
@@ -185,17 +188,20 @@ export default function ({ types: t, traverse: _traverse }) {
 
       Function: {
         exit(path) {
-          const secondaryTree = !childAncestor(path, this);
-          const state = Object.assign({}, this, {
-            secondaryTree,
-            root: path,
+          const state = {
+            elements: 0,
+            secondaryTree: false,
+            root: null,
             replacedElements: new Set(),
             closureVarsStack: [],
-          });
+            file: this.file,
+            opts: this.opts,
+          };
 
           path.traverse(rootElementVisitor, state);
-          // Useless for now. Wait until fastRoot comes out.
-          if (secondaryTree) {
+
+          if (state.elements > 0 && state.root) {
+            state.secondaryTree = true;
             path.traverse(elementVisitor, state);
           }
         }

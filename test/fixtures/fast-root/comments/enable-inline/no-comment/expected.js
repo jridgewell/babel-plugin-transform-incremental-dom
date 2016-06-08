@@ -29,16 +29,19 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 function render() {
-  var _lis$map = lis.map(function (li) {
-    return _jsxWrapper(function () {
-      return elementVoid("li");
-    });
-  });
-  elementOpen("root");
   elementOpen("ul");
 
-  _renderArbitrary(_lis$map);
+  _renderArbitrary(files.map(function (file) {
+    return _jsxWrapper(function (_file$name, _file, _ref, _file$name2) {
+      elementOpen("li", _file$name, ["key", _file$name], "file", _file, "onclick", _ref);
 
-  elementClose("ul");
-  return elementClose("root");
+      _renderArbitrary(_file$name2);
+
+      return elementClose("li");
+    }, [file.name, file, function (e) {
+      return fileClicked(e, file);
+    }, file.name]);
+  }));
+
+  return elementClose("ul");
 }

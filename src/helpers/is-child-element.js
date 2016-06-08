@@ -76,7 +76,24 @@ function directChild(path) {
   return isChild ? child : null;
 }
 
+function useFastRoot(path, { fastRoot = false }) {
+  path.find((path) => {
+    const comments = path.node.leadingComments;
+
+    return comments && comments.find((comment) => {
+      const match = /@incremental-dom.+(enable|disable)-fastRoot/.exec(comment.value);
+
+      if (match) {
+        fastRoot = match[1] === "enable";
+        return true;
+      }
+    });
+  });
+
+  return fastRoot;
+}
+
 // Detects if this element is not a child of another JSX element
 export default function childAncestor(path, { opts }) {
-  return (opts.fastRoot ? descendant : directChild)(path);
+  return (useFastRoot(path, opts) ? descendant : directChild)(path);
 }

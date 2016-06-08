@@ -174,12 +174,14 @@ export default function ({ types: t, traverse: _traverse }) {
         },
 
         exit(path) {
-          path.traverse(elementVisitor, Object.assign({}, this, {
+          path.traverse(elementVisitor, {
             secondaryTree: true,
             root: null,
             replacedElements: new Set(),
             closureVarsStack: [],
-          }));
+            file: this.file,
+            opts: this.opts,
+          });
 
           hoist(path, this);
           injectHelpers(this);

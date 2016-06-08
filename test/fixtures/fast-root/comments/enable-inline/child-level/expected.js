@@ -25,7 +25,9 @@ function render() {
 
   // @incremental-dom enable-fastRoot
   files.map(function (file) {
-    elementOpen("li", file.name, ["key", file.name], "file", file, "onclick", function (e) {
+    var _file$name;
+
+    elementOpen("li", _file$name = file.name, ["key", _file$name], "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

@@ -8,6 +8,22 @@ Changelog
 > - [Internal]
 > - [Polish]
 
+## 3.4.0
+
+- **New Feature**
+  - Optimize conditional children expressions
+    - [#58](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/58)
+  - Enable `fastRoot` option in inline comments
+    - [#61](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/61)
+- **Bug Fix**
+  - Transpile JSX Elements outside functions
+    - [#62](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/62)
+  - Memoize key expressions
+    - [#63](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/63)
+- **Internal**
+  - Add `babel-plugin-syntax-jsx` dependency
+    - [bf426fca](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/bf426fcafc60bab64964104bd041487b278ec905)
+
 ## 3.3.0
 
 - **New Feature**

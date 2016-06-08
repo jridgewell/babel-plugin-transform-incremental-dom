@@ -343,6 +343,39 @@ plugin:
 }
 ```
 
+
+Alternatively, you may enable and disable this with inline comments:
+
+```jsx
+function render() {
+    /**
+     * Enable for this tree
+     * @incremental-dom enable-fastRoot
+     */
+    return <div>{
+      items.map(function(item) {
+        return <li>{item.name}</li>;
+      })
+    }</div>;
+}
+
+/**
+ * Enable for everything under this function
+ * @incremental-dom enable-fastRoot
+ */
+function render() {
+    /**
+     * Disable fastroot for this tree
+     * @incremental-dom disable-fastRoot
+     */
+    return <div>{
+      items.map(function(item) {
+        return <li>{item.name}</li>;
+      })
+    }</div>;
+}
+```
+
 #### Components
 
 You may enable the experimental `components` option so that JSX tags

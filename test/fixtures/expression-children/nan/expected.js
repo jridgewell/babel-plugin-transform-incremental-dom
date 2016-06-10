@@ -1,5 +1,5 @@
 function render() {
   elementOpen("div");
-  elementVoid("input", null, null, "disabled", false);
+  text("NaN");
   return elementClose("div");
 }

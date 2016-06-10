@@ -1,6 +1,5 @@
 function render() {
   elementOpen("div");
-  elementOpen("div", "1", ["key", "1"]);
-  elementClose("div");
+  text("Infinity");
   return elementClose("div");
 }

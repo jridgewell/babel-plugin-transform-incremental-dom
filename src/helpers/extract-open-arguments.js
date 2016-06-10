@@ -1,6 +1,7 @@
-import isLiteralOrUndefined from "./is-literal-or-undefined";
+import isLiteralOrSpecial from "./is-literal-or-special";
 import addStaticHoist from "./hoist-statics";
 import uuid from "./uuid";
+import toString from "./ast/to-string";
 import * as t from "babel-types";
 
 // Extracts attributes into the appropriate
@@ -48,7 +49,11 @@ export default function extractOpenArguments(path, plugin) {
       node = value.node;
     }
 
-    let literal = isLiteralOrUndefined(value);
+    let literal = isLiteralOrSpecial(value);
+
+    if (literal) {
+      node = toString(value);
+    }
 
     // The key attribute must be passed to the `elementOpen` call.
     if (name.value === "key") {

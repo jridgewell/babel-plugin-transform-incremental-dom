@@ -2,6 +2,8 @@
 // children.
 export default function isLiteralOrUndefined(path) {
   return path.isLiteral() ||
+    path.isUnaryExpression({ operator: "void" }) ||
     path.isIdentifier({ name: "undefined" }) ||
-    path.isUnaryExpression({ operator: "void" });
+    path.isIdentifier({ name: "NaN" }) ||
+    path.isIdentifier({ name: "Infinity" });
 }

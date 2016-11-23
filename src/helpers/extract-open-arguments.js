@@ -61,6 +61,10 @@ export default function extractOpenArguments(path, plugin) {
 
       // If it's not a literal key, we must assign it in the statics array.
       if (!literal) {
+        if (attrs.length) {
+          throw attribute.buildCodeFrameError("Key should always be the first computed attribute.");
+        }
+
         if (!value.isIdentifier()) {
           node = value.scope.maybeGenerateMemoised(node);
           key = t.assignmentExpression("=", node, key);

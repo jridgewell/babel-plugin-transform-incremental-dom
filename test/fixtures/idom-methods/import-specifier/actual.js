@@ -1,5 +1,9 @@
-import { elementOpen, elementClose, text } from "incremental-dom";
+import { elementOpen as eo, elementClose, text } from "incremental-dom";
 
-function render() {
-  return <div>test</div>;
+function scope() {
+  var eo = other;
+  var elementClose = other;
+  function render() {
+    return <div>test</div>;
+  }
 }

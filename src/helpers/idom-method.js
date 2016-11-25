@@ -1,5 +1,10 @@
 import toReference from "./ast/to-reference";
 import path from "path";
+import { deprecate } from "util";
+
+const prefixedMethod = deprecate(function prefixedMethod(prefix, method) {
+  return toReference(`${prefix}.${method}`);
+}, "babel-plugin-incremental-dom: `prefix` option has been deprecated. Please use `moduleSource` instead.");
 
 // Returns a reference to an iDOM method.
 export default function iDOMMethod(method, plugin) {
@@ -7,7 +12,7 @@ export default function iDOMMethod(method, plugin) {
   const prefix = opts.prefix || "";
 
   if (prefix) {
-    return toReference(`${prefix}.${method}`);
+    return prefixedMethod(prefix, method);
   }
 
   let moduleSource = opts.moduleSource;

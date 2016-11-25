@@ -28,15 +28,17 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_i) {
+  elementOpen("map2");
+
+  _renderArbitrary(_i);
+
+  return elementClose("map2");
+};
+
 function render() {
   var map2 = [1, 2, 3].map(function (i) {
-    var el = _jsxWrapper(function (_i) {
-      elementOpen("map2");
-
-      _renderArbitrary(_i);
-
-      return elementClose("map2");
-    }, [i]);
+    var el = _jsxWrapper(_wrapper, [i]);
     return el;
   });
 }

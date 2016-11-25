@@ -28,12 +28,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
+var _wrapper = function _wrapper() {
+  return elementVoid("div");
+};
+
 function render() {
   elementOpen("div");
 
-  _renderArbitrary(true && (1, _jsxWrapper(function () {
-    return elementVoid("div");
-  }), 2));
+  _renderArbitrary(true && (1, _jsxWrapper(_wrapper), 2));
 
   return elementClose("div");
 }

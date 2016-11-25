@@ -28,14 +28,17 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
+var _statics = ["key", ""],
+    _wrapper = function _wrapper(_query$id) {
+  elementOpen("div", _query$id, (_statics[1] = _query$id, _statics));
+  return elementClose("div");
+};
+
 function render() {
   elementOpen("div");
 
   _renderArbitrary(queries.forEach(function (query) {
-    return _jsxWrapper(function (_query$id) {
-      elementOpen("div", _query$id, ["key", _query$id]);
-      return elementClose("div");
-    }, [query.id]);
+    return _jsxWrapper(_wrapper, [query.id]);
   }));
 
   return elementClose("div");

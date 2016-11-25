@@ -28,20 +28,24 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _statics = ["key", ""],
+    _wrapper = function _wrapper(_file$name3, _file2, _ref2, _file$name4) {
+  elementOpen("span");
+  elementOpen("span", _file$name3, (_statics[1] = _file$name3, _statics), "file", _file2, "onclick", _ref2);
+
+  _renderArbitrary(_file$name4);
+
+  elementClose("span");
+  return elementClose("span");
+},
+    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
+  elementOpen("li", null, null, "attr", _jsxWrapper(_wrapper, [_file$name, _file, _ref, _file$name2]));
+  return elementClose("li");
+};
+
 function render() {
   elementOpen("ul", null, null, "files", files.map(function (file) {
-    return _jsxWrapper(function (_file$name, _file, _ref, _file$name2) {
-      elementOpen("li", null, null, "attr", _jsxWrapper(function (_file$name3, _file2, _ref2, _file$name4) {
-        elementOpen("span");
-        elementOpen("span", _file$name3, ["key", _file$name3], "file", _file2, "onclick", _ref2);
-
-        _renderArbitrary(_file$name4);
-
-        elementClose("span");
-        return elementClose("span");
-      }, [_file$name, _file, _ref, _file$name2]));
-      return elementClose("li");
-    }, [file.name, file, function (e) {
+    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
       return fileClicked(e, file);
     }, file.name]);
   }));

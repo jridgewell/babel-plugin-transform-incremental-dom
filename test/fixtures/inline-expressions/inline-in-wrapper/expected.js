@@ -28,16 +28,18 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_text) {
+  elementOpen("div");
+
+  _renderArbitrary(_text);
+
+  return elementClose("div");
+};
+
 function render(key) {
   var text = key;
   var div;
-  div = _jsxWrapper(function (_text) {
-    elementOpen("div");
-
-    _renderArbitrary(_text);
-
-    return elementClose("div");
-  }, [text]);
+  div = _jsxWrapper(_wrapper, [text]);
   elementOpen("root");
 
   _renderArbitrary(div);

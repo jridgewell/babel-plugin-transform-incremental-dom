@@ -6,7 +6,10 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var div = _jsxWrapper(function (_ref) {
-  elementOpen("div", _ref, ["key", _ref]);
+var _statics = ["key", ""],
+    _wrapper = function _wrapper(_ref) {
+  elementOpen("div", _ref, (_statics[1] = _ref, _statics));
   return elementClose("div");
-}, [i++]);
+};
+
+var div = _jsxWrapper(_wrapper, [i++]);

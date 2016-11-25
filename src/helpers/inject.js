@@ -1,21 +1,9 @@
-import toReference from "./ast/to-reference";
 import resolvePath from "./resolve-path";
-import { deprecate } from "util";
 
 const namespace = "incremental-dom-helpers";
 
-const runtimeMethod = deprecate(function runtimeMethod(runtime, helper) {
-  return toReference(`${runtime}.${helper}`);
-}, "babel-plugin-incremental-dom: `runtime` option has been deprecated. Please use `runtimeModuleSource` instead.");
-
 function getHelperRef({ file, opts }, helper) {
-  const { runtime } = opts;
-  if (runtime) {
-    return runtimeMethod(runtime, helper);
-  }
-
-  let { runtimeModuleSource } = opts;
-
+  const { runtimeModuleSource } = opts;
   if (runtimeModuleSource) {
     return file.addImport(
       resolvePath(file.opts.filename, runtimeModuleSource),

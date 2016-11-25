@@ -28,20 +28,23 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper(_ref) {
+  elementOpen("one");
+
+  _renderArbitrary(_ref);
+
+  return elementClose("one");
+},
+    _wrapper2 = function _wrapper2(_ref2) {
+  elementOpen("two");
+
+  _renderArbitrary(_ref2);
+
+  return elementClose("two");
+};
+
 function render() {
   var i = 1;
-  var one = _jsxWrapper(function (_ref) {
-    elementOpen("one");
-
-    _renderArbitrary(_ref);
-
-    return elementClose("one");
-  }, [i++]);
-  var two = _jsxWrapper(function (_ref2) {
-    elementOpen("two");
-
-    _renderArbitrary(_ref2);
-
-    return elementClose("two");
-  }, [i++]);
+  var one = _jsxWrapper(_wrapper, [i++]);
+  var two = _jsxWrapper(_wrapper2, [i++]);
 }

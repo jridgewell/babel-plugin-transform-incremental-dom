@@ -22,13 +22,15 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   _forOwn(spread, _flipAttr);
 };
 
+var _wrapper = function _wrapper(_props) {
+  elementOpenStart("div");
+
+  _spreadAttribute(_props);
+
+  elementOpenEnd("div");
+  return elementClose("div");
+};
+
 function render() {
-  var test = _jsxWrapper(function (_props) {
-    elementOpenStart("div");
-
-    _spreadAttribute(_props);
-
-    elementOpenEnd("div");
-    return elementClose("div");
-  }, [props]);
+  var test = _jsxWrapper(_wrapper, [props]);
 }

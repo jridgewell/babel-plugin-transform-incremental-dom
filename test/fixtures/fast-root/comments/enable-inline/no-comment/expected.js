@@ -28,17 +28,20 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _statics = ["key", ""],
+    _wrapper = function _wrapper(_file$name, _file, _ref, _file$name2) {
+  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+
+  _renderArbitrary(_file$name2);
+
+  return elementClose("li");
+};
+
 function render() {
   elementOpen("ul");
 
   _renderArbitrary(files.map(function (file) {
-    return _jsxWrapper(function (_file$name, _file, _ref, _file$name2) {
-      elementOpen("li", _file$name, ["key", _file$name], "file", _file, "onclick", _ref);
-
-      _renderArbitrary(_file$name2);
-
-      return elementClose("li");
-    }, [file.name, file, function (e) {
+    return _jsxWrapper(_wrapper, [file.name, file, function (e) {
       return fileClicked(e, file);
     }, file.name]);
   }));

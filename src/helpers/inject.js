@@ -1,11 +1,21 @@
 import toReference from "./ast/to-reference";
+import resolvePath from "./resolve-path";
 
 const namespace = "incremental-dom-helpers";
 
 function getHelperRef({ file, opts }, helper) {
-  const runtime = opts.runtime;
+  const { runtime } = opts;
   if (runtime) {
     return toReference(`${runtime}.${helper}`);
+  }
+
+  let { runtimeModuleSource } = opts;
+
+  if (runtimeModuleSource) {
+    return file.addImport(
+      resolvePath(file.opts.filename, runtimeModuleSource),
+      helper
+    );
   }
 
   const injectedHelper = file.get(namespace)[helper];

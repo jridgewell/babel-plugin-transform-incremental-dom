@@ -8,7 +8,7 @@ import * as t from "babel-types";
 // value and prop name.
 // Depends on the _hasOwn helper.
 function forOwnAST(plugin, ref, deps) {
-  const hasOwn = deps.hasOwn;
+  const { hasOwn } = deps;
   const object = t.identifier("object");
   const iterator = t.identifier("iterator");
   const prop = t.identifier("prop");

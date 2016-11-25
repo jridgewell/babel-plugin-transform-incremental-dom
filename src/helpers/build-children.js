@@ -20,7 +20,7 @@ export default function buildChildren(children, plugin) {
       return children;
     }
 
-    let node = child.node;
+    let { node } = child;
 
     if (child.isJSXText() || isLiteralOrSpecial(child)) {
       let value;

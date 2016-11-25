@@ -53,7 +53,7 @@ export default function elementOpenCall(path, plugin) {
     args.push(...toAttrsArray(attrs));
   }
 
-  const selfClosing = path.node.selfClosing;
+  const { selfClosing } = path.node;
   const elementFunction = (selfClosing) ? "elementVoid" : "elementOpen";
   return toFunctionCall(iDOMMethod(elementFunction, plugin), args);
 }

@@ -49,7 +49,7 @@ function test(dir) {
   const expected = resolve(path.join(dir, "expected.js"));
   const opts = parse(resolve(path.join(dir, "options.json")));
   const throwMsg = opts.throws;
-  const options = opts.options;
+  const { options } = opts;
   let actual;
 
   try {

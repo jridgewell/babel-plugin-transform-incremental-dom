@@ -36,7 +36,7 @@ export default function extractOpenArguments(path, plugin) {
       name = t.stringLiteral(`${namePath.node.namespace.name}:${namePath.node.name.name}`);
     }
     let value = attribute.get("value");
-    let node = value.node;
+    let  { node } = value;
 
     // Attributes without a value are interpreted as `true`.
     if (!node) {

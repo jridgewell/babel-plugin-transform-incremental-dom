@@ -65,7 +65,7 @@ function isObject(type, value) {
 // recursively to find a valid type.
 // Depends on the _forOwn helper.
 function renderArbitraryAST(plugin, ref, deps) {
-  const forOwn = deps.forOwn;
+  const { forOwn } = deps;
   const child = t.identifier("child");
   const type = t.identifier("type");
   const forEach = t.memberExpression(

@@ -25,20 +25,12 @@ export default function render(data) {
 
 ```javascript
 export default function render(data) {
-    var header = data.conditional ? _jsxWrapper(function () {
-        return elementVoid("div");
-    }) : null;
+    var header = data.conditional ? _jsxWrapper(_wrapper) : null;
     var collection = data.items.map(function (item) {
-        return _jsxWrapper(function (_item$id, _item$className, _item$name) {
-            elementOpen("li", _item$id, ["key", _item$id], "class", _item$className);
-
-            _renderArbitrary(_item$name);
-
-            return elementClose("li");
-        }, [item.id, item.className, item.name]);
+        return _jsxWrapper(_wrapper2, [item.id, item.className, item.name]);
     });
 
-    elementOpen("div", null, ["id", "container"]);
+    elementOpen("div", "bb2c39da-ab6a-4ebf-8c93-6bcfd2592ad8", _statics);
 
     _renderArbitrary(header);
 
@@ -49,13 +41,26 @@ export default function render(data) {
     elementClose("ul");
     elementOpenStart("p");
 
-    _forOwn(data.props, _attr);
+    _spreadAttribute(data.props);
 
     elementOpenEnd("p");
     text("Some features");
     elementClose("p");
     return elementClose("div");
 }
+
+var _statics = ["id", "container"],
+    _wrapper = function _wrapper() {
+    return elementVoid("div");
+},
+    _statics2 = ["key", ""],
+    _wrapper2 = function _wrapper2(_item$id, _item$className, _item$name) {
+    elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
+
+    _renderArbitrary(_item$name);
+
+    return elementClose("li");
+};
 
 var _jsxWrapper = function _jsxWrapper(func, args) {
     var wrapper = args ? function wrapper() {
@@ -65,8 +70,12 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
     return wrapper;
 };
 
-var _attr = function _attr(value, name) {
+var _flipAttr = function _flipAttr(value, name) {
     attr(name, value);
+};
+
+var _spreadAttribute = function _spreadAttribute(spread) {
+    _forOwn(spread, _flipAttr);
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
@@ -80,16 +89,17 @@ var _forOwn = function _forOwn(object, iterator) {
 var _renderArbitrary = function _renderArbitrary(child) {
     var type = typeof child;
 
-    if (type === "number" || type === "string" || child && child instanceof String) {
+    if (type === "number" || type === "string" || type === "object" && child instanceof String) {
         text(child);
     } else if (type === "function" && child.__jsxDOMWrapper) {
         child();
     } else if (Array.isArray(child)) {
         child.forEach(_renderArbitrary);
-    } else {
+    } else if (type === "object" && String(child) === "[object Object]") {
         _forOwn(child, _renderArbitrary);
     }
 };
+
 ```
 
 ## Installation

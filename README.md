@@ -413,43 +413,62 @@ plugin:
 }
 ```
 
-#### Function Prefix
+#### Auto Importing Incremental DOM
 
-By deafult, `babel-plugin-incremental-dom` directly calls Incremental
-DOM functions:
+By deafult, `babel-plugin-incremental-dom` expects any necessary
+Incremental DOM methods to already imported and in-scope:
 
 ```js
 // Disabled (default)
+
+// Manually managed imports
+import { elementOpen, elementClose, text } from "incremental-dom";
+
 function render() {
   elementOpen("div");
+  text("Hello World.");
   elementClose("div");
 }
 ```
 
-If you are instead including Incremental DOM via a browser script, it
-may be easier to reference the functions from the `IncrementalDOM`
-object:
+This is a hassle if you suddenly use a spread attribute and don't
+remember to import `elementOpenStart`, `elementOpenEnd`, and `attr`
+methods. And, `attr` and `text` are very generic names, leading to
+issues where you might redefine the variable in the rendering function,
+breaking it.
+
+This can be fixed entirely by auto-importing everything necessary from
+Incremental DOM module:
 
 ```js
-// Enabled with `IncrementalDOM`
+// Enabled with `incremental-dom`
+
+// Auto generated import
+var _incrementalDOM = require("incremental-dom");
+
 function render() {
-  IncrementalDOM.elementOpen("div");
-  IncrementalDOM.elementClose("div");
+  (0, _incrementalDOM.elementOpen)("div");
+  (0, _incrementalDOM.text)("Hello World.");
+  (0, _incrementalDOM.elementClose)("div");
 }
 ```
 
-To do this, simply add the `prefix` option to the Incremental DOM
+To do this, simply add the `moduleSource` option to the Incremental DOM
 plugin:
 
 ```json
 {
   "plugins": [[
     "incremental-dom", {
-      "prefix": "IncrementalDOM"
+      "moduleSource": "incremental-dom"
     }
   ]]
 }
 ```
+
+Additionally, the module source can be an absolute or relative path to
+the module. If a relative path is used, it will be resolve relative to
+the `process.cwd()` of the babel process.
 
 #### Runtime
 

@@ -34,7 +34,7 @@ function render() {
 
   _renderArbitrary(["First ", _jsxWrapper(function () {
     elementOpen("span");
-    text("·");
+    text("\xB7");
     return elementClose("span");
   }), " Second"]);
 

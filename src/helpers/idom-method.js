@@ -1,5 +1,5 @@
 import toReference from "./ast/to-reference";
-import path from "path";
+import resolvePath from "./resolve-path";
 import { deprecate } from "util";
 
 const prefixedMethod = deprecate(function prefixedMethod(prefix, method) {
@@ -15,15 +15,10 @@ export default function iDOMMethod(method, plugin) {
     return prefixedMethod(prefix, method);
   }
 
-  let moduleSource = opts.moduleSource;
+  let { moduleSource } = opts;
 
   if (moduleSource) {
-    if (moduleSource.startsWith(".")) {
-      moduleSource = path.relative(
-        path.dirname(file.opts.filename),
-        path.join(process.cwd(), moduleSource)
-      );
-    }
+    moduleSource = resolvePath(file.opts.filename, moduleSource);
   } else {
     // See if we can find the incremental-dom import.
     const { imports } = file.metadata.modules;

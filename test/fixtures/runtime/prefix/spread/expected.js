@@ -1,6 +1,6 @@
 function render() {
   elementOpenStart("div");
-  iDOM.forOwn(props, iDOM.attr);
+  iDOM.spreadAttribute(props);
   elementOpenEnd("div");
   return elementClose("div");
 }

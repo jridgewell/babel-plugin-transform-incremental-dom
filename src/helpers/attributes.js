@@ -1,5 +1,4 @@
-import injectAttr from "./runtime/attr";
-import injectForOwn from "./runtime/for-own";
+import injectSpreadAttribute from "./runtime/spread-attribute";
 import toFunctionCall from "./ast/to-function-call";
 import iDOMMethod from "./idom-method";
 
@@ -21,15 +20,14 @@ export function toAttrsArray(attrs) {
 
 // Returns an array of iDOM `attr` calls
 export function toAttrsCalls(attrs, plugin) {
-  const attrCall = iDOMMethod("attr", plugin);
-  const forOwn = injectForOwn(plugin);
-  const forOwnAttr = injectAttr(plugin);
+  const attr = iDOMMethod("attr", plugin);
+  const spreadAttr = injectSpreadAttribute(plugin);
 
   return attrs.map(({ name, value, isSpread }) => {
     if (isSpread) {
-      return toFunctionCall(forOwn, [ value, forOwnAttr ]);
+      return toFunctionCall(spreadAttr, [value]);
     }
 
-    return toFunctionCall(attrCall, [ name, value ]);
+    return toFunctionCall(attr, [ name, value ]);
   });
 }

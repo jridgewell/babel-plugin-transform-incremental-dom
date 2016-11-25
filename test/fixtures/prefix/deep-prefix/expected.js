@@ -12,7 +12,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _attr = function _attr(value, name) {
+var _flipAttr = function _flipAttr(value, name) {
   IncrementalDOM.virtual.elements.attr(name, value);
 };
 
@@ -24,17 +24,21 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
+var _spreadAttribute = function _spreadAttribute(spread) {
+  _forOwn(spread, _flipAttr);
+};
+
 function render() {
   IncrementalDOM.virtual.elements.elementOpen("div");
   IncrementalDOM.virtual.elements.elementOpenStart("div");
 
-  _forOwn(props, _attr);
+  _spreadAttribute(props);
 
   IncrementalDOM.virtual.elements.elementOpenEnd("div");
   IncrementalDOM.virtual.elements.elementClose("div");
   IncrementalDOM.virtual.elements.elementOpenStart("div");
 
-  _forOwn(props, _attr);
+  _spreadAttribute(props);
 
   IncrementalDOM.virtual.elements.elementOpenEnd("div");
   IncrementalDOM.virtual.elements.elementClose("div");

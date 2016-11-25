@@ -6,7 +6,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-var _attr = function _attr(value, name) {
+var _flipAttr = function _flipAttr(value, name) {
   attr(name, value);
 };
 
@@ -18,11 +18,15 @@ var _forOwn = function _forOwn(object, iterator) {
   }
 };
 
+var _spreadAttribute = function _spreadAttribute(spread) {
+  _forOwn(spread, _flipAttr);
+};
+
 function render() {
   var test = _jsxWrapper(function (_props) {
     elementOpenStart("div");
 
-    _forOwn(_props, _attr);
+    _spreadAttribute(_props);
 
     elementOpenEnd("div");
     return elementClose("div");

@@ -565,8 +565,13 @@ plugin:
 {
   "plugins": [[
     "incremental-dom", {
-      "runtime": "iDOMHelpers"
+      "runtimeModuleSource": "iDOMHelpers"
     }
   ]]
 }
 ```
+
+Additionally, the runtime module source can be an absolute or relative
+path to the module. If a relative path is used, it will be resolve
+relative to the `process.cwd()` of the babel process.
+

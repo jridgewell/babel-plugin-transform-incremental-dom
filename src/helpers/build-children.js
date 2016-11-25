@@ -5,6 +5,22 @@ import iDOMMethod from "./idom-method";
 import isLiteralOrSpecial from "./is-literal-or-special";
 import toString from "./ast/to-string";
 
+
+// String concatenations are special cased, so template literals don't
+// require a call to renderArbitrary.
+function isStringConcatenation(path) {
+  if (!(path.isBinaryExpression() && path.node.operator === '+')) {
+    return false;
+  }
+
+  const left = path.get("left");
+  const right = path.get("right");
+  return left.isStringLiteral() ||
+    right.isStringLiteral() ||
+    isStringConcatenation(left) ||
+    isStringConcatenation(right);
+}
+
 // Transforms the children into an array of iDOM function calls
 export default function buildChildren(children, plugin) {
   let renderArbitraryRef;
@@ -38,6 +54,8 @@ export default function buildChildren(children, plugin) {
       }
 
       node = toFunctionCall(iDOMMethod("text", plugin), [value]);
+    } else if (isStringConcatenation(child)) {
+      node = toFunctionCall(iDOMMethod("text", plugin), [child.node]);
     } else if (wasInExpressionContainer && !replacedElements.has(node)) {
       // Arbitrary expressions, e.g. variables, need to be inspected at runtime
       // to determine how to render them.

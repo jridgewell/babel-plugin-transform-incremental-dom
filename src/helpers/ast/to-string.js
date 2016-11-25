@@ -3,7 +3,7 @@ import * as t from "babel-types";
 // Helper to transform a literal into an string literal.
 export default function toString(literal, restricted = false) {
   let string;
-  if (literal.isStringLiteral()) {
+  if (literal.isStringLiteral() || literal.isTemplateLiteral()) {
     return literal.node;
   }
 

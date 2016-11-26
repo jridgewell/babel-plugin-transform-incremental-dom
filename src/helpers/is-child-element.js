@@ -1,81 +1,3 @@
-import isRootJSX from "./is-root-jsx";
-
-// It is only a child if it is a descendant of a JSX element but not a
-// JSX Attribute.
-function descendant(path) {
-  let isChild = false;
-
-  const direct = directChild(path);
-  if (direct) {
-    return direct;
-  }
-
-  path.findParent((path) => {
-    if (path.isJSXAttribute()) {
-      // Stop traversing, we are not a child.
-      return true;
-    }
-
-    if (path.isJSXElement()) {
-      if (!directChild(path)) {
-        // This element is the top of a tree of JSX elements
-        // If it's the root tree, we are a child.
-        isChild = isRootJSX(path);
-        return true;
-      }
-    }
-  });
-
-  if (!isChild) {
-    return null;
-  }
-
-  return path.findParent((path) => {
-    return !path.parentPath || path.parentPath.isJSX();
-  });
-}
-
-// It is only a child if it's immediate parent is a JSX element,
-// or it is an ExpressionContainer who's parent is.
-function directChild(path) {
-  let isChild = false;
-  let child = path;
-  let last = path;
-
-  while ((path = path.parentPath)) {
-    if (path.isJSXElement()) {
-      isChild = true;
-      break;
-    }
-
-    if (path.isJSXExpressionContainer()) {
-      // Defer to what the parent is.
-      continue;
-    }
-
-    if (path.isSequenceExpression()) {
-      const expressions = path.get("expressions");
-      // If we didn't traverse up from the last expression, we're not really
-      // a child.
-      if (expressions[expressions.length - 1] !== last) {
-        break;
-      }
-
-      // Sequence expressions can be considered a child JSX element if the element
-      // was the last expression.
-      if (last.isJSXElement()) {
-        child = path;
-      }
-    } else if (!(path.isConditionalExpression() || path.isLogicalExpression())) {
-      break;
-    }
-
-    last = path;
-  }
-
-  return isChild ? child : null;
-}
-
 function useFastRoot(path, { fastRoot = false }) {
   path.find((path) => {
     const comments = path.node.leadingComments;
@@ -93,7 +15,54 @@ function useFastRoot(path, { fastRoot = false }) {
   return fastRoot;
 }
 
-// Detects if this element is not a child of another JSX element
+// Detects if this element is a child of another JSX element,
+// returning the topmost child expression in the path to get there.
 export default function childAncestor(path, { opts }) {
-  return (useFastRoot(path, opts) ? descendant : directChild)(path);
+  const fast = useFastRoot(path, opts);
+  let child = path;
+  let last = path;
+
+  while ((last = path, path = path.parentPath)) {
+    // We've found our path to a parent.
+    if (path.isJSXElement()) {
+      return child
+    }
+
+    // JSX Attributes may never extend the search path.
+    if (path.isJSXAttribute()) {
+      return;
+    }
+
+    // We're interested in the expression container's child, not the expression
+    // container itself.
+    if (path.isJSXExpressionContainer()) {
+      continue;
+    }
+
+    if (path.isSequenceExpression()) {
+      const expressions = path.get("expressions");
+      // If we didn't traverse up from the last expression, we're not really
+      // a child.
+      if (expressions[expressions.length - 1] !== last) {
+        return;
+      }
+
+      // Sequence Expressions extend the search only when the direct child is the expression.
+      // Ie, we can't extend the search if we've already stopped due to some
+      // conditional or logical expression.
+      if (last !== child) {
+        continue;
+      }
+    } else if (path.isConditionalExpression() || path.isLogicalExpression()) {
+      // These expressions "extend" the search, but they do not count as direct children.
+      // That's because the expression could resolve to something other than a JSX element.
+      continue;
+    } else if (!fast) {
+      // In normal mode, nothing else keeps a JSX search going.
+      return;
+    }
+
+    // Record this path as the topmost child so far.
+    child = path;
+  }
 }

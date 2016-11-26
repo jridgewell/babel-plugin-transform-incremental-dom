@@ -1,8 +1,8 @@
 import isReturned from "./is-returned";
 
 const rootElementFinder = {
-  JSXElement(path, state) {
-    const { jsx, crossedFunction } = state;
+  JSXElement(path) {
+    const { jsx, crossedFunction } = this;
 
     // No need to traverse our JSX element.
     if (path === jsx) {
@@ -15,7 +15,7 @@ const rootElementFinder = {
 
     // We're looking for a root element, which must be returned by the function.
     if (otherIsReturned && (crossedFunction || !returned)) {
-      state.root = false;
+      this.root = false;
       path.stop();
     }
   },

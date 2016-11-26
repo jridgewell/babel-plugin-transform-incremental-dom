@@ -1,5 +1,7 @@
 import isReturned from "./is-returned";
 
+const map = new WeakMap();
+
 const rootElementFinder = {
   JSXElement(path) {
     const { jsx, crossedFunction } = this;
@@ -15,7 +17,7 @@ const rootElementFinder = {
 
     // We're looking for a root element, which must be returned by the function.
     if (otherIsReturned && (crossedFunction || !returned)) {
-      this.root = false;
+      this.root = path;
       path.stop();
     }
   },
@@ -31,22 +33,28 @@ const rootElementFinder = {
 // or a higher function scope.
 export default function isRootJSX(path) {
   let state = {
-    root: true,
+    root: null,
     crossedFunction: false,
     jsx: path
   };
 
   path.findParent((path) => {
     if (path.isJSXElement()) {
-      state.root = false;
+      state.root = path;
     } else if (path.isFunction() || path.isProgram()) {
-      path.traverse(rootElementFinder, state);
+      if (map.has(path)) {
+        state.root = map.get(path);
+      } else {
+        path.traverse(rootElementFinder, state);
+        map.set(path, state.root);
+      }
+
       state.crossedFunction = true;
     }
 
     // End early if another JSXElement is found.
-    return !state.root;
+    return state.root;
   });
 
-  return state.root;
+  return !state.root || state.root === path;
 }

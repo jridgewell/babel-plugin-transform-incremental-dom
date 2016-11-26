@@ -1,3 +1,5 @@
+const map = new WeakMap();
+
 function useFastRoot(path, { fastRoot = false }) {
   path.find((path) => {
     const comments = path.node.leadingComments;
@@ -15,10 +17,7 @@ function useFastRoot(path, { fastRoot = false }) {
   return fastRoot;
 }
 
-// Detects if this element is a child of another JSX element,
-// returning the topmost child expression in the path to get there.
-export default function childAncestor(path, { opts }) {
-  const fast = useFastRoot(path, opts);
+function ancestorPath(path, useFastRoot) {
   let child = path;
   let last = path;
 
@@ -57,7 +56,7 @@ export default function childAncestor(path, { opts }) {
       // These expressions "extend" the search, but they do not count as direct children.
       // That's because the expression could resolve to something other than a JSX element.
       continue;
-    } else if (!fast) {
+    } else if (!useFastRoot) {
       // In normal mode, nothing else keeps a JSX search going.
       return;
     }
@@ -65,4 +64,16 @@ export default function childAncestor(path, { opts }) {
     // Record this path as the topmost child so far.
     child = path;
   }
+}
+
+// Detects if this element is a child of another JSX element,
+// returning the topmost child expression in the path to get there.
+export default function childAncestor(path, { opts }) {
+  if (map.has(path)) {
+    return map.get(path);
+  }
+
+  const ancestor = ancestorPath(path, useFastRoot(path, opts));
+  map.set(path, ancestor);
+  return ancestor;
 }

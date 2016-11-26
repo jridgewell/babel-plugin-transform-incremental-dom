@@ -9,7 +9,7 @@ import toString from "./ast/to-string";
 // String concatenations are special cased, so template literals don't
 // require a call to renderArbitrary.
 function isStringConcatenation(path) {
-  if (!(path.isBinaryExpression() && path.node.operator === '+')) {
+  if (!(path.isBinaryExpression() && path.node.operator === "+")) {
     return false;
   }
 

@@ -3,41 +3,25 @@ import assert from "assert";
 import plugin from "../../../src/index";
 
 const cases = [
-  [ false, false, false, false ],
-  [ false, false, false, true ],
-  [ false, false, true, false ],
-  [ false, false, true, true ],
-  [ false, true, false, false ],
-  [ false, true, false, true ],
-  [ false, true, true, false ],
-  [ false, true, true, true ],
-  [ true, false, false, false ],
-  [ true, false, false, true ],
-  [ true, false, true, false ],
-  [ true, false, true, true ],
-  [ true, true, false, false ],
-  [ true, true, false, true ],
-  [ true, true, true, false ],
-  [ true, true, true, true ],
+  [ false, false, false ],
+  [ false, false, true ],
+  [ false, true, false ],
+  [ false, true, true ],
+  [ true, false, false ],
+  [ true, false, true ],
+  [ true, true, false ],
+  [ true, true, true ],
 ];
 const operations = [
-  ['||', '||', '||'],
-  ['||', '||', '&&'],
-  ['||', '&&', '||'],
-  ['||', '&&', '&&'],
-  ['&&', '||', '||'],
-  ['&&', '||', '&&'],
-  ['&&', '&&', '||'],
-  ['&&', '&&', '&&'],
+  ['||', '||'],
+  ['||', '&&'],
+  ['&&', '||'],
+  ['&&', '&&'],
 ];
 const groupings = [
-  [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-  [' ', ' ', ' ', ' ', '(', ' ', ' ', ')'],
-  [' ', ' ', '(', ' ', ' ', ')', ' ', ' '],
-  ['(', ' ', ' ', ')', ' ', ' ', ' ', ' '],
-  ['(', ' ', ' ', ')', '(', ' ', ' ', ')'],
-  [' ', ' ', '(', ' ', ' ', ' ', ' ', ')'],
-  ['(', ' ', ' ', ' ', ' ', ')', ' ', ' '],
+  [' ', ' ', ' ', ' ', ' ', ' '],
+  [' ', ' ', '(', ' ', ' ', ')'],
+  ['(', ' ', ' ', ')', ' ', ' '],
 ];
 
 
@@ -81,8 +65,8 @@ for (let i = 0; i < cases.length; i++) {
 }
 
 function test(bool, jsx, operation, grouping) {
-  const boolCode = `${grouping[0]}${bool[0]}${grouping[1]} ${operation[0]} ${grouping[2]}${bool[1]}${grouping[3]} ${operation[1]} ${grouping[4]}${bool[2]}${grouping[5]} ${operation[2]} ${grouping[6]}${bool[3]}${grouping[7]}`;
-  const jsxCode =  `${grouping[0]}${ jsx[0]}${grouping[1]} ${operation[0]} ${grouping[2]}${ jsx[1]}${grouping[3]} ${operation[1]} ${grouping[4]}${ jsx[2]}${grouping[5]} ${operation[2]} ${grouping[6]}${ jsx[3]}${grouping[7]}`;
+  const boolCode = `${grouping[0]}${bool[0]}${grouping[1]} ${operation[0]} ${grouping[2]}${bool[1]}${grouping[3]} ${operation[1]} ${grouping[4]}${bool[2]}${grouping[5]}`;
+  const jsxCode =  `${grouping[0]}${ jsx[0]}${grouping[1]} ${operation[0]} ${grouping[2]}${ jsx[1]}${grouping[3]} ${operation[1]} ${grouping[4]}${ jsx[2]}${grouping[5]}`;
 
   it(jsxCode, () => {
     wrappers = 0;

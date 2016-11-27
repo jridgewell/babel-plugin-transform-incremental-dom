@@ -1,8 +1,9 @@
 import isRootJSX from "./helpers/is-root-jsx";
 import isReturned from "./helpers/is-returned";
-import childAncestor from "./helpers/is-child-element";
+import { jsxAncestorChild } from "./helpers/ancestory";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
+import { collectJSXCalls, wrapJSXCalls } from "./helpers/wrap-jsx-calls";
 
 import expressionExtractor from "./helpers/extract-expressions";
 import expressionInliner from "./helpers/inline-expressions";
@@ -49,7 +50,7 @@ export default function ({ types: t, traverse: _traverse }) {
     JSXElement: {
       enter(path) {
         const { secondaryTree, root, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !childAncestor(path, this));
+        const needsWrapper = secondaryTree || (root !== path && !jsxAncestorChild(path, this));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -66,7 +67,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
       exit(path) {
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const childAncestorPath = childAncestor(path, this);
+        const childAncestorPath = jsxAncestorChild(path, this);
         const needsWrapper = secondaryTree || (root !== path && !childAncestorPath);
 
         const { parentPath } = path;
@@ -177,12 +178,13 @@ export default function ({ types: t, traverse: _traverse }) {
           path.traverse(elementVisitor, {
             secondaryTree: true,
             root: null,
-            replacedElements: new Set(),
+            replacedElements: new WeakSet(),
             closureVarsStack: [],
             file: this.file,
             opts: this.opts,
           });
 
+          wrapJSXCalls(this);
           hoist(path, this);
           injectHelpers(this);
         }
@@ -194,7 +196,7 @@ export default function ({ types: t, traverse: _traverse }) {
             elements: 0,
             secondaryTree: false,
             root: null,
-            replacedElements: new Set(),
+            replacedElements: new WeakSet(),
             closureVarsStack: [],
             file: this.file,
             opts: this.opts,
@@ -202,9 +204,13 @@ export default function ({ types: t, traverse: _traverse }) {
 
           path.traverse(rootElementVisitor, state);
 
-          if (state.elements > 0 && state.root) {
-            state.secondaryTree = true;
-            path.traverse(elementVisitor, state);
+          if (state.root) {
+            collectJSXCalls(path, this);
+
+            if (state.elements > 0) {
+              state.secondaryTree = true;
+              path.traverse(elementVisitor, state);
+            }
           }
         }
       }

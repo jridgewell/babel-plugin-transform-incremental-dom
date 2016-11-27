@@ -1,4 +1,5 @@
 import isLiteralOrSpecial from "./is-literal-or-special";
+import { wrappedJSXCalls } from "./wrap-jsx-calls";
 
 function addClosureVar(expression, closureVars) {
   const init = expression.node;
@@ -29,7 +30,26 @@ const expressionExtractor = {
     }
 
     const { closureVarsStack } = this;
-    addClosureVar(expression, last(closureVarsStack));
+    const closureVars = last(closureVarsStack);
+
+    if (expression.isCallExpression()) {
+      const callee = expression.get("callee");
+      if (wrappedJSXCalls.has(callee)) {
+        wrappedJSXCalls.delete(callee)
+        const args = expression.get("arguments");
+
+        args.forEach((arg) => {
+          if (isLiteralOrSpecial(arg) || arg.isJSXElement()) {
+            return;
+          }
+
+          addClosureVar(arg, closureVars);
+        });
+        return;
+      }
+    }
+
+    addClosureVar(expression, closureVars);
   }
 };
 

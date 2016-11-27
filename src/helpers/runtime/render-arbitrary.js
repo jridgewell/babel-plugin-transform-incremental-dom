@@ -22,19 +22,6 @@ function isTextual(type, value) {
   );
 }
 
-// Isolated AST code to determine if a value is a wrapped
-// DOM closure.
-function isDOMWrapper(type, value) {
-  return t.logicalExpression(
-    "&&",
-    t.binaryExpression("===", type, t.stringLiteral("function")),
-    t.memberExpression(
-      value,
-      t.identifier("__jsxDOMWrapper")
-    )
-  );
-}
-
 // Isolated AST code to determine if a value an Array.
 function isArray(value) {
   return toFunctionCall(
@@ -47,17 +34,27 @@ function isArray(value) {
 }
 
 // Isolated AST code to determine if a value an Object.
-function isObject(type, value) {
-  return t.logicalExpression(
-    "&&",
-    t.binaryExpression("===", type, t.stringLiteral("object")),
-    t.binaryExpression(
-      "===",
-      toFunctionCall(t.identifier("String"), [value]),
-      t.stringLiteral("[object Object]")
-    )
+function isObject(type) {
+  return t.binaryExpression("===", type, t.stringLiteral("object"));
+}
+
+// Isolated AST code to determine if a value is a wrapped
+// DOM closure.
+function isDOMWrapper(value) {
+  return t.memberExpression(
+    value,
+    t.identifier("__jsxDOMWrapper")
   );
 }
+
+function isPlainObject(value) {
+  return t.binaryExpression(
+    "===",
+    toFunctionCall(t.identifier("String"), [value]),
+    t.stringLiteral("[object Object]")
+  );
+}
+
 
 // Renders an arbitrary JSX Expression into the DOM.
 // Valid types are strings, numbers, and DOM closures.
@@ -68,6 +65,8 @@ function renderArbitraryAST(plugin, ref, deps) {
   const { forOwn } = deps;
   const child = t.identifier("child");
   const type = t.identifier("type");
+  const func = t.identifier("func");
+  const args = t.identifier("args");
   const forEach = t.memberExpression(
     child,
     t.identifier("forEach")
@@ -78,12 +77,19 @@ function renderArbitraryAST(plugin, ref, deps) {
    *   var type = typeof child;
    *   if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
    *     text(child);
-   *   } else if (type === "function" && child.__jsxDOMWrapper) {
-   *     child();
    *   } else if (Array.isArray(child)) {
    *     child.forEach(_renderArbitrary);
-   *   } else if (type === 'object' && String(child) === '[object Object]') {
-   *     _forOwn(child, _renderArbitrary);
+   *   } else if (type === "object") {
+   *     if (child.__jsxDOMWrapper) {
+   *       var func = child.func, args = child.args;
+   *       if (args) {
+   *         func.apply(this, args);
+   *       } else {
+   *         func();
+   *       }
+   *     } else if (String(child) === "[object Object]") {
+   *       _forOwn(child, _renderArbitrary);
+   *     }
    *   }
    * }
    */
@@ -103,21 +109,40 @@ function renderArbitraryAST(plugin, ref, deps) {
           t.expressionStatement(toFunctionCall(iDOMMethod("text", plugin), [child]))
         ]),
         t.ifStatement(
-          isDOMWrapper(type, child),
+          isArray(child),
           t.blockStatement([
-            t.expressionStatement(toFunctionCall(child, []))
+            t.expressionStatement(toFunctionCall(forEach, [ref]))
           ]),
           t.ifStatement(
-            isArray(child),
+            isObject(type),
             t.blockStatement([
-              t.expressionStatement(toFunctionCall(forEach, [ref]))
-            ]),
-            t.ifStatement(
-              isObject(type, child),
-              t.blockStatement([
-                t.expressionStatement(toFunctionCall(forOwn, [child, ref]))
-              ])
-            )
+              t.ifStatement(
+                isDOMWrapper(child),
+                t.blockStatement([
+                  t.variableDeclaration("var", [
+                    t.variableDeclarator(func, t.memberExpression(child, func)),
+                    t.variableDeclarator(args, t.memberExpression(child, args))
+                  ]),
+                  t.ifStatement(
+                    args,
+                    t.blockStatement([
+                      t.expressionStatement(
+                        toFunctionCall(t.memberExpression(func, t.identifier("apply")), [t.thisExpression(), args]),
+                      )
+                    ]),
+                    t.blockStatement([
+                      t.expressionStatement(toFunctionCall(func, [])),
+                    ]),
+                  )
+                ]),
+                t.ifStatement(
+                  isPlainObject(child),
+                  t.blockStatement([
+                    t.expressionStatement(toFunctionCall(forOwn, [child, ref]))
+                  ])
+                )
+              )
+            ])
           )
         )
       )

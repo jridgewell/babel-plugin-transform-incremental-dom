@@ -24,9 +24,8 @@ function ancestorPath(path, fastRoot) {
   while ((last = path, path = path.parentPath)) {
     // We've found our path to a parent.
     if (path.isJSXElement()) {
-      if (path.parentPath.isJSXElement()) {
-        continue;
-      }
+      // Keep going up parent JSX elements.
+      for (let parent = path.parentPath; parent.isJSX() && !parent.isJSXAttribute(); parent = parent.parentPath);
 
       return {
         ancestor: path,

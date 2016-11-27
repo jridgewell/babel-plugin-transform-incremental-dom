@@ -461,22 +461,23 @@ The runtime's required functions are:
 - `jsxWrapper`
 
   To prevent iDOM's incremental nature from screwing up our beautiful
-  JSX syntax, certain elements must be wrapped in a function closure
-  that will be later evaluated. That closure will be passed into
-  `jsxWrapper`, along with an array of any (if any) arguments
-  needed to render the contained JSX element.
+  JSX syntax, certain elements rendering functions must be wrapped
+  evaluated at a later time. The element will be passed into
+  `jsxWrapper`, along with an array of any (if any) arguments needed to
+  render the contained JSX element.
 
   Note it is not `jsxWrapper`'s responsibility to create the JSX
-  closure, merely to help identify the passed in closure later. Here, we
-  set the `__jsxDOMWrapper` property of the returned closure.
+  rendering function, merely to mark the passed in function as a lazy
+  evaluation. Here, we return a special `__jsxDOMWrapper` struct with
+  the needed information.
 
   ```js
-  runtime.jsxWrapper = function(elementClosure, args) {
-    var wrapper = args ? function() {
-      return elementClosure.apply(this, args);
-    } : elementClosure;
-    wrapper.__jsxDOMWrapper = true;
-    return wrapper;
+  runtime.jsxWrapper = function(elementFn, args) {
+    return {
+      __jsxDOMWrapper: true,
+      func: elementFn,
+      args: args
+    };
   }
   ```
 
@@ -485,27 +486,30 @@ The runtime's required functions are:
   To render child elements correctly, we'll need to be able to identify
   them. `renderArbitrary` receives a `child`, and must call the
   appropriate action. For string and numbers, that's to call
-  `IncrementalDOM#text`. For wrapped JSX Closures, that's to invoke the
-  closure. For arrays, that's to render every element. And for objects,
-  that's to render every property.
+  `IncrementalDOM#text`. For lazy evaluation JSX functions, that's to
+  invoke the closure. For arrays, that's to render every element. And
+  for objects, that's to render every property.
 
-  Note that we identify JSX Closures by the `__jsxDOMWrapper` property
-  we set inside the `jsxWrapper` runtime function.
+  Note that we identify lazy JSX functions by the `__jsxDOMWrapper`
+  struct we created inside the `jsxWrapper` runtime function.
 
   ```js
   runtime.renderArbitrary = function _renderArbitrary(child) {
     var type = typeof child;
     if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
       iDOM.text(child);
-    } else if (type === "function" && child.__jsxDOMWrapper) {
-      child();
     } else if (Array.isArray(child)) {
       child.forEach(_renderArbitrary);
-    } else if (type === 'object' && String(child) === '[object Object]') {
-      for (var prop in child) {
-        if (Object.prototype.hasOwn.call(child, prop)) {
-          _renderArbitrary(child[prop]);
+    } else if (type === "object") {
+      if (child.__jsxDOMWrapper) {
+        var func = child.func, args = child.args;
+        if (args) {
+          func.apply(this, args);
+        } else {
+          func();
         }
+      } else if (String(child) === "[object Object]") {
+        _forOwn(child, _renderArbitrary);
       }
     }
   }

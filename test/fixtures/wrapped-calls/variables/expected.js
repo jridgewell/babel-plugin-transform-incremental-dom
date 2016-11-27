@@ -28,18 +28,34 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
-function renderMany(count) {
-  return elementVoid("WowSoMany");
+function renderMessage(i) {
+  elementOpen("em");
+  text("my message " + i);
+  return elementClose("em");
 }
 
-function render(data) {
+function intermediate(i) {
+  return renderMessage(i);
+}
+
+function render() {
+  var a = _jsxWrapper(renderMessage, [1]);
+  var b = _jsxWrapper(intermediate, [1]);
+  var c = _jsxWrapper(renderMessage2, [1]);
+
   elementOpen("root");
 
-  _renderArbitrary(data.count > 5 && renderMany(data.count));
+  _renderArbitrary(a);
 
-  _renderArbitrary(data.count > 5 && _jsxWrapper(renderMany, [data.count]) && 1);
+  _renderArbitrary(b);
 
-  _renderArbitrary(data.count > 5 && elementVoid("WowSoMany"));
+  _renderArbitrary(c);
 
   return elementClose("root");
+}
+
+function renderMessage2(i) {
+  elementOpen("em");
+  text("my message " + i);
+  return elementClose("em");
 }

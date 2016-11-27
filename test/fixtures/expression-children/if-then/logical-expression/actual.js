@@ -13,3 +13,9 @@ function render() {
   }
   </div>;
 }
+
+function render2() {
+  return <div>
+  { true && <div /> }
+  </div>;
+}

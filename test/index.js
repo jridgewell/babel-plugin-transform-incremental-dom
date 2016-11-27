@@ -80,7 +80,9 @@ function test(dir) {
 
 function findTests(root) {
   const files = fs.readdirSync(root);
-  if (files.indexOf("actual.js") > -1) {
+  if (files.indexOf("eval.js") > -1) {
+    require(path.join(root, "eval.js"));
+  } else if (files.indexOf("actual.js") > -1) {
     it(path.basename(root), () => test(root));
   } else {
     files.forEach((file) => {

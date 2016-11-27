@@ -52,10 +52,16 @@ function ancestorPath(path, useFastRoot) {
       if (last !== child) {
         continue;
       }
-    } else if (path.isConditionalExpression() || path.isLogicalExpression()) {
-      // These expressions "extend" the search, but they do not count as direct children.
-      // That's because the expression could resolve to something other than a JSX element.
+    } else if (path.isConditionalExpression()) {
       continue;
+    } else if (path.isLogicalExpression()) {
+      if (path.get("right") === last || path.node.operator === "||") {
+        // These expressions "extend" the search, but they do not count as direct children.
+        // That's because the expression could resolve to something other than a JSX element.
+        continue;
+      }
+
+      break;
     } else if (!useFastRoot) {
       // In normal mode, nothing else keeps a JSX search going.
       return;

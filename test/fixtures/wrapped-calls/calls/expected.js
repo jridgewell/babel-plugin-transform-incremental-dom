@@ -28,24 +28,46 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-function getDiv() {
-  elementOpen("div");
-  text("Bottom");
-  return elementClose("div");
+var _wrapper = function _wrapper(_i, _jsxWrapper2) {
+  elementOpen("li");
+
+  _renderArbitrary(renderMessage(_i, _jsxWrapper2));
+
+  return elementClose("li");
+},
+    _wrapper2 = function _wrapper2(_i2, _jsxWrapper3) {
+  elementOpen("li");
+
+  _renderArbitrary(renderMessage(_i2, _jsxWrapper3));
+
+  return elementClose("li");
+};
+
+function message(txt) {
+  elementOpen("span");
+
+  _renderArbitrary(txt);
+
+  return elementClose("span");
+}
+function renderMessage(i, msg) {
+  elementOpen("em");
+
+  _renderArbitrary(msg);
+
+  _renderArbitrary(i);
+
+  return elementClose("em");
 }
 
 function render() {
-  elementOpen("div");
+  elementOpen("ul");
 
-  _renderArbitrary(true && (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) || elementVoid("other"));
+  _renderArbitrary([0, 1, 2, 3, 4].map(function (i) {
+    return _jsxWrapper(_wrapper, [i, _jsxWrapper(renderMessage, ["hello", i + 1])]);
+  }, function (i) {
+    return _jsxWrapper(_wrapper2, [i, _jsxWrapper(message, ["hello"])]);
+  }));
 
-  return elementClose("div");
-}
-
-function render2() {
-  elementOpen("div");
-
-  _renderArbitrary(true && elementVoid("div"));
-
-  return elementClose("div");
+  return elementClose("ul");
 }

@@ -20,26 +20,19 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
-};
+var _statics = ["key", ""];
+function render() {
+  elementOpen("ul");
+  files.map(function (file) {
+    var _file$name;
 
-function renderMany(count) {
-  return elementVoid("WowSoMany");
-}
+    elementOpen("li", _file$name = file.name, (_statics[1] = _file$name, _statics), "file", file, "onclick", function (e) {
+      return fileClicked(e, file);
+    });
 
-function render(data) {
-  elementOpen("root");
+    _renderArbitrary(file.name);
 
-  _renderArbitrary(data.count > 5 && renderMany(data.count));
-
-  _renderArbitrary(data.count > 5 && _jsxWrapper(renderMany, [data.count]) && 1);
-
-  _renderArbitrary(data.count > 5 && elementVoid("WowSoMany"));
-
-  return elementClose("root");
+    return elementClose("li");
+  });
+  return elementClose("ul");
 }

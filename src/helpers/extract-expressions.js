@@ -1,4 +1,5 @@
 import isLiteralOrSpecial from "./is-literal-or-special";
+import { wrappedJSXCalls } from "./wrap-jsx-calls";
 
 function addClosureVar(expression, closureVars) {
   const init = expression.node;
@@ -29,7 +30,29 @@ const expressionExtractor = {
     }
 
     const { closureVarsStack } = this;
-    addClosureVar(expression, last(closureVarsStack));
+    const closureVars = last(closureVarsStack);
+
+    // Certain calls are actually JSX returning functions. If we find one,
+    // let's not create a closure for it here, but let it get wrapped in the
+    // closure we're already creating.
+    if (expression.isCallExpression()) {
+      const callee = expression.get("callee");
+      if (wrappedJSXCalls.has(callee)) {
+        wrappedJSXCalls.delete(callee)
+        const args = expression.get("arguments");
+
+        args.forEach((arg) => {
+          if (isLiteralOrSpecial(arg) || arg.isJSXElement()) {
+            return;
+          }
+
+          addClosureVar(arg, closureVars);
+        });
+        return;
+      }
+    }
+
+    addClosureVar(expression, closureVars);
   }
 };
 

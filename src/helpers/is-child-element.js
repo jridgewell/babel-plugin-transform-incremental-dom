@@ -53,7 +53,7 @@ function ancestorPath(path, useFastRoot) {
         continue;
       }
     } else if (path.isConditionalExpression()) {
-      if (last.key === 'test') {
+      if (last.key === "test") {
         break;
       }
 

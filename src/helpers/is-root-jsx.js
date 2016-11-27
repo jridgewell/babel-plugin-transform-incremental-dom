@@ -38,6 +38,14 @@ export default function isRootJSX(path) {
     jsx: path
   };
 
+  if (!path.isJSX() && path.getFunctionParent().isProgram()) {
+    return true;
+  }
+
+  if (!isReturned(path)) {
+    return false;
+  }
+
   path.findParent((path) => {
     if (path.isJSXElement()) {
       state.root = path;

@@ -32,6 +32,9 @@ const expressionExtractor = {
     const { closureVarsStack } = this;
     const closureVars = last(closureVarsStack);
 
+    // Certain calls are actually JSX returning functions. If we find one,
+    // let's not create a closure for it here, but let it get wrapped in the
+    // closure we're already creating.
     if (expression.isCallExpression()) {
       const callee = expression.get("callee");
       if (wrappedJSXCalls.has(callee)) {

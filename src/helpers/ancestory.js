@@ -83,6 +83,8 @@ function ancestorPath(path, fastRoot) {
   };
 }
 
+// Detects if this element is a child of another JSX element,
+// returning the topmost element.
 export function jsxAncestor(path, { opts }) {
   if (map.has(path)) {
     return map.get(path).ancestor;

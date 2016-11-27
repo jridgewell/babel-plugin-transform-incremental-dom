@@ -11,5 +11,6 @@ function render() {
     </div> :
     <other />
   }
+  {<div /> ? 1 : 2}
   </div>;
 }

@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  var wrapper = args ? function wrapper() {
+    return func.apply(this, args);
+  } : func;
+  wrapper.__jsxDOMWrapper = true;
+  return wrapper;
+};
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -20,6 +28,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
+var _wrapper = function _wrapper() {
+  return elementVoid("div");
+};
+
 function getDiv() {
   elementOpen("div");
   text("Bottom");
@@ -30,6 +42,8 @@ function render() {
   elementOpen("div");
 
   _renderArbitrary(true ? (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) : elementVoid("other"));
+
+  _renderArbitrary(_jsxWrapper(_wrapper) ? 1 : 2);
 
   return elementClose("div");
 }

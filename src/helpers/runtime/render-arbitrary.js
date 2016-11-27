@@ -39,7 +39,7 @@ function isObject(type) {
 }
 
 // Isolated AST code to determine if a value is a wrapped
-// DOM closure.
+// JSX element closure.
 function isDOMWrapper(value) {
   return t.memberExpression(
     value,
@@ -47,6 +47,7 @@ function isDOMWrapper(value) {
   );
 }
 
+// Isolated AST to determine if the value is a "plain" object.
 function isPlainObject(value) {
   return t.binaryExpression(
     "===",
@@ -57,7 +58,7 @@ function isPlainObject(value) {
 
 
 // Renders an arbitrary JSX Expression into the DOM.
-// Valid types are strings, numbers, and DOM closures.
+// Valid types are strings, numbers, and JSX element closures.
 // It may also be an Array or Object, which will be iterated
 // recursively to find a valid type.
 // Depends on the _forOwn helper.

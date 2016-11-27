@@ -1,11 +1,9 @@
 import inject from "../inject";
 import * as t from "babel-types";
 
-// Wraps a JSX element in a closure, capturing the arguments
-// that it's attributes and children need to render.
-// Also sets `__jsxDOMWrapper` property, so that the closure
-// may be identified as a wrapper that should be called during
-// render.
+// Wraps a JSX element in a lazy evaluation struct, capturing the arguments
+// that its attributes and children need to render.
+// We identify the struct by the __jsxDOMWrapper property.
 function jsxWrapperAST(plugin, ref) {
   const func = t.identifier("func");
   const args = t.identifier("args");

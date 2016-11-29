@@ -82,7 +82,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (!needsWrapper && parentPath.isJSX()) {
+        if (!needsWrapper && parentPath.isJSXExpressionContainer()) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.

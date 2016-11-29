@@ -1,3 +1,5 @@
+import * as t from "babel-types";
+
 const map = new WeakMap();
 
 function useFastRoot(path, { fastRoot = false }) {
@@ -43,6 +45,7 @@ function ancestorPath(path, useFastRoot) {
       // If we didn't traverse up from the last expression, we're not really
       // a child.
       if (expressions[expressions.length - 1] !== last) {
+        child.remove();
         return;
       }
 
@@ -54,19 +57,28 @@ function ancestorPath(path, useFastRoot) {
       }
     } else if (path.isConditionalExpression()) {
       if (last.key === "test") {
-        break;
+        child.replaceWith(t.booleanLiteral(true));
+        return;
       }
 
       continue;
     } else if (path.isLogicalExpression()) {
-      if (path.get("right") === last || path.node.operator === "||") {
-        // These expressions "extend" the search, but they do not count as direct children.
-        // That's because the expression could resolve to something other than a JSX element.
-        continue;
+      const { operator } = path.node;
+      if (path.get("left") === last && operator === "&&") {
+        child.replaceWith(t.booleanLiteral(true));
+        return;
       }
 
-      break;
-    } else if (!useFastRoot) {
+      if (path.get("left") === child && operator === "||") {
+        path.get("right").remove();
+      }
+
+      // These expressions "extend" the search, but they do not count as direct children.
+      // That's because the expression could resolve to something other than a JSX element.
+      continue;
+    } else if (useFastRoot) {
+      continue;
+    } else {
       // In normal mode, nothing else keeps a JSX search going.
       return;
     }

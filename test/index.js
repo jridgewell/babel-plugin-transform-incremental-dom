@@ -72,7 +72,14 @@ function test(dir) {
 
   actual = uuidReplacer(stripUseStrict(trim(actual)));
   if (expected) {
-    assert.equal(actual, trim(expected));
+    try {
+      assert.equal(actual, trim(expected));
+    } catch (e) {
+      if (process.env.OVERWRITE) {
+        fs.writeFileSync(path.join(dir, "expected.js"), actual);
+      }
+      throw e;
+    }
   } else {
     fs.writeFileSync(path.join(dir, "expected.js"), actual);
   }

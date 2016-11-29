@@ -50,6 +50,9 @@ export default function ({ types: t, traverse: _traverse }) {
       enter(path) {
         const { secondaryTree, root, closureVarsStack } = this;
         const needsWrapper = secondaryTree || (root !== path && !childAncestor(path, this));
+        if (!path.isJSXElement()) {
+          return;
+        }
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -68,6 +71,10 @@ export default function ({ types: t, traverse: _traverse }) {
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
         const childAncestorPath = childAncestor(path, this);
         const needsWrapper = secondaryTree || (root !== path && !childAncestorPath);
+
+        if (!path.isJSXElement()) {
+          return;
+        }
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();

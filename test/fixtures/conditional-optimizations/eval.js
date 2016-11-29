@@ -72,13 +72,11 @@ function test(bool, jsx, operation, grouping) {
     wrappers = 0;
     passes = 0;
 
-    // When evaluating the case, the return value tells us two things.
-    // If the return value is 1
-    //   - one elementVoid should have been called
-    //   - the evaluation of the jsx code should return "undefined" and not a jsx wrapper
+    // When evaluating the case, the return value tells us:
+    // If the return value is "pass"
+    //   - one elementVoid call
     // If the return value is false
-    //   - No elementVoid calls
-    //   - the evaluation of the jsx code should return "false"
+    //   - no elementVoid calls, maybe a wrapper call
     const expected = eval(boolCode);
     const transformed = transform(`function render() { return <div>{${jsxCode}}</div>; }; render()`, {
       plugins: [
@@ -91,9 +89,9 @@ function test(bool, jsx, operation, grouping) {
     const result = eval(transformed);
 
     if (expected === 'pass') {
-      assert.equal(wrappers, 0, 'wrapper was created');
+      assert.equal(wrappers, 0, 'too many wrappers created');
     } else {
-      assert.equal(wrappers, passes, passes === 1 ? 'wrapper was not created' : 'wrapper was created');
+      assert.ok(wrappers <= passes, 'too many wrappers created');
     }
   });
 }

@@ -31,9 +31,11 @@ function render() {
     return elementVoid("span");
   }) : 1);
 
-  _renderArbitrary((1, true ? files.map(function (file) {
+  1;
+
+  _renderArbitrary(true ? files.map(function (file) {
     return elementVoid("span");
-  }) : 1));
+  }) : 1);
 
   _renderArbitrary(true && (1, files.map(function (file) {
     return elementVoid("span");

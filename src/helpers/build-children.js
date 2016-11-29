@@ -36,6 +36,15 @@ export default function buildChildren(children, plugin) {
       return children;
     }
 
+    while (child.isSequenceExpression() && !replacedElements.has(child)) {
+      const expressions = child.get("expressions");
+      let i;
+      for (i = 0; i < expressions.length - 1; i++) {
+        children.push(expressions[i].node);
+      }
+      child = expressions[i];
+    }
+
     let { node } = child;
 
     if (child.isJSXText() || isLiteralOrSpecial(child)) {

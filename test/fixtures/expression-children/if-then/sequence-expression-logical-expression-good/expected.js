@@ -22,8 +22,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 function render() {
   elementOpen("div");
+  1;
+  2;
 
-  _renderArbitrary((1, 2, true && elementVoid("div")));
+  _renderArbitrary(true && elementVoid("div"));
 
   return elementClose("div");
 }

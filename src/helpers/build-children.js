@@ -56,7 +56,7 @@ export default function buildChildren(children, plugin) {
       node = toFunctionCall(iDOMMethod("text", plugin), [value]);
     } else if (isStringConcatenation(child)) {
       node = toFunctionCall(iDOMMethod("text", plugin), [child.node]);
-    } else if (wasInExpressionContainer && !replacedElements.has(node)) {
+    } else if (wasInExpressionContainer && !replacedElements.has(child)) {
       // Arbitrary expressions, e.g. variables, need to be inspected at runtime
       // to determine how to render them.
       renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(plugin);

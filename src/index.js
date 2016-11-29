@@ -86,7 +86,7 @@ export default function ({ types: t, traverse: _traverse }) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.
-          replacedElements.add(sequence);
+          replacedElements.add(path);
           path.replaceWith(sequence);
           return;
         }
@@ -119,13 +119,13 @@ export default function ({ types: t, traverse: _traverse }) {
           }
 
           const wrapperCall = toFunctionCall(injectJSXWrapper(this), args);
-          replacedElements.add(wrapperCall);
+          replacedElements.add(path);
           path.replaceWith(wrapperCall);
           return;
         }
 
         if (childAncestorPath) {
-          replacedElements.add(childAncestorPath.node);
+          replacedElements.add(childAncestorPath);
         }
 
         // This is the main JSX element. Replace the return statement

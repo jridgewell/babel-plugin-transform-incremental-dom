@@ -32,10 +32,10 @@ var _wrapper = function _wrapper(_props) {
 };
 
 function render() {
-  var test = _jsxWrapper(_wrapper, [props]);
+  var test = _jsxWrapper(_wrapper, [props()]);
   elementOpenStart("div");
 
-  _spreadAttribute(props);
+  _spreadAttribute(props());
 
   elementOpenEnd("div");
   return elementClose("div");

@@ -42,7 +42,7 @@ function render() {
   var _b = 0,
       _b2 = 0;
 
-  var div = _jsxWrapper(_wrapper, [true ? (_b = 1, fn) : (_b = 2, fn2), _b == 0 ? null : _b == 1 ? [a++] : [b++, c++], _b, fn(i++) ? (_b2 = 1, fn) : (_b2 = 2, fn2), _b2 == 0 ? null : _b2 == 1 ? [a++] : [b++, c++], _b2]);
+  var div = _jsxWrapper(_wrapper, [true ? (_b = 1, fn) : (_b = 2, fn2), _b == 1 ? [a++] : [b++, c++], _b, fn(i++) ? (_b2 = 1, fn) : (_b2 = 2, fn2), _b2 == 1 ? [a++] : [b++, c++], _b2]);
   elementOpen("root");
 
   _renderArbitrary(div);

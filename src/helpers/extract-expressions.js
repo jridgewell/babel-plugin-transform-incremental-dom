@@ -20,9 +20,7 @@ const collectDeferrables = {
 
       this.deferred.push(path);
       this.deferredArgs.push(args);
-      if (args.length) {
-        this.hasDeferredArgs = true;
-      }
+      this.deferredArgsLength += args.length;
     }
   },
 
@@ -94,12 +92,13 @@ const expressionExtractor = {
 
     // Grab all our deferrable calls
     const state = Object.assign({}, this, {
+      branches: 0,
       deferred: [],
       deferredArgs: [],
-      branches: 0,
+      deferredArgsLength: 0,
     });
     path.traverse(collectDeferrables, state);
-    const { deferred, deferredArgs, hasDeferredArgs, branches } = state;
+    const { deferred, deferredArgs, deferredArgsLength, branches } = state;
 
     // Exit early if there's nothing to defer.
     if (deferred.length === 0) {
@@ -108,12 +107,12 @@ const expressionExtractor = {
     }
 
     const everyBranchHasCall = deferred.length >= branches;
-    const onlyOneArg = deferredArgs.length === 1 && deferredArgs[0].length === 1;
+    const onlyOneArg = deferredArgsLength === 1;
     let deferredId = path.scope.generateUidIdentifier("deferred");
     let argId;
     let branchId;
 
-    if (hasDeferredArgs) {
+    if (deferredArgsLength) {
       argId = path.scope.generateUidIdentifier("args");
     }
     if (branches > 0) {
@@ -148,9 +147,9 @@ const expressionExtractor = {
     });
 
     // Now push the transformed expression into our closure variables.
-    // This cloned node has all the deferrable calls remapped into their contexts,
+    // This node has all the deferrable calls remapped into their contexts,
     // and won't actually invoke them.
-    closureVars.push({ id: deferredId, init: t.cloneDeep(expression.node) });
+    closureVars.push({ id: deferredId, init: expression.node });
 
     // Now that we've evaluated the expression, we need to evaluate the arguments
     // to the deferred call that "won", if any did.
@@ -173,7 +172,7 @@ const expressionExtractor = {
         });
       }
       // If no branch "won", we need to evaluate to something else.
-      if (branchId) {
+      if (!everyBranchHasCall) {
         init = t.conditionalExpression(
           t.binaryExpression("==", branchId, t.numericLiteral(0)),
           t.nullLiteral(),
@@ -200,6 +199,7 @@ const expressionExtractor = {
       }
 
       // Any arguments are now passed through the evaluated args array.
+      // TODO: Allow literals inline, instead of evaluating them in the array.
       node.arguments = node.arguments.map((arg, i) => {
         if (onlyOneArg) {
           return argId;

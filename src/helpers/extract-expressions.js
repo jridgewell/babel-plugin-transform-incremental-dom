@@ -142,7 +142,6 @@ const expressionExtractor = {
       path.replaceWith(context);
 
       return {
-        path,
         node,
         isMemberExpression,
       }
@@ -191,7 +190,7 @@ const expressionExtractor = {
 
     // Finally, transform the calls into their evaluted "contex" form.
     const evaluatedBranches = calls.map((struct) => {
-      const { path, node, isMemberExpression } = struct;
+      const { node, isMemberExpression } = struct;
 
       // This reverses the context transform done earlier.
       if (isMemberExpression) {
@@ -201,7 +200,6 @@ const expressionExtractor = {
       }
 
       // Any arguments are now passed through the evaluated args array.
-      const args = node.arguments;
       node.arguments = node.arguments.map((arg, i) => {
         if (onlyOneArg) {
           return argId;

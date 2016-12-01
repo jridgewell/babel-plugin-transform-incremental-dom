@@ -17,29 +17,29 @@ function useFastRoot(path, { fastRoot = false }) {
   return fastRoot;
 }
 
-function ancestorPath(path, useFastRoot) {
-  let child = path;
-  let last = path;
+function ancestry(ancestor, fastRoot) {
+  let path = ancestor;
 
-  while ((last = path, path = path.parentPath)) {
+  let last;
+  while ((last = ancestor, ancestor = ancestor.parentPath)) {
     // We've found our path to a parent.
-    if (path.isJSXElement()) {
-      return child
+    if (ancestor.isJSXElement()) {
+      return path;
     }
 
     // JSX Attributes may never extend the search path.
-    if (path.isJSXAttribute()) {
+    if (ancestor.isJSXAttribute()) {
       return;
     }
 
     // We're interested in the expression container's child, not the expression
     // container itself.
-    if (path.isJSXExpressionContainer()) {
+    if (ancestor.isJSXExpressionContainer()) {
       continue;
     }
 
-    if (path.isSequenceExpression()) {
-      const expressions = path.get("expressions");
+    if (ancestor.isSequenceExpression()) {
+      const expressions = ancestor.get("expressions");
       // If we didn't traverse up from the last expression, we're not really
       // a child.
       if (expressions[expressions.length - 1] !== last) {
@@ -49,41 +49,41 @@ function ancestorPath(path, useFastRoot) {
       // Sequence Expressions extend the search only when the direct child is the expression.
       // Ie, we can't extend the search if we've already stopped due to some
       // conditional or logical expression.
-      if (last !== child) {
+      if (last !== path) {
         continue;
       }
-    } else if (path.isConditionalExpression()) {
-      if (last.key === "test") {
-        break;
+    } else if (ancestor.isConditionalExpression()) {
+      if (last.key !== "test") {
+        continue;
       }
 
-      continue;
-    } else if (path.isLogicalExpression()) {
-      if (path.get("right") === last || path.node.operator === "||") {
+      return;
+    } else if (ancestor.isLogicalExpression()) {
+      if (ancestor.get("right") === last || ancestor.node.operator === "||") {
         // These expressions "extend" the search, but they do not count as direct children.
         // That's because the expression could resolve to something other than a JSX element.
         continue;
       }
 
-      break;
-    } else if (!useFastRoot) {
+      return;
+    } else if (!fastRoot) {
       // In normal mode, nothing else keeps a JSX search going.
       return;
     }
 
     // Record this path as the topmost child so far.
-    child = path;
+    path = ancestor;
   }
 }
 
 // Detects if this element is a child of another JSX element,
 // returning the topmost child expression in the path to get there.
-export default function childAncestor(path, { opts }) {
+export default function ancestorExpression(path, { opts }) {
   if (map.has(path)) {
     return map.get(path);
   }
 
-  const ancestor = ancestorPath(path, useFastRoot(path, opts));
+  const ancestor = ancestry(path, useFastRoot(path, opts));
   map.set(path, ancestor);
   return ancestor;
 }

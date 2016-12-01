@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  var wrapper = args ? function wrapper() {
+    return func.apply(this, args);
+  } : func;
+  wrapper.__jsxDOMWrapper = true;
+  return wrapper;
+};
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -20,12 +28,19 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+var _wrapper = function _wrapper(_deferred, _args) {
+  elementOpen("ul");
+
+  _renderArbitrary(_deferred.map(_args));
+
+  return elementClose("ul");
+},
+    _wrapper2 = function _wrapper2(_deferred2, _args2) {
+  elementOpen("li");
+
+  _renderArbitrary(_deferred2(_args2));
+
+  return elementClose("li");
 };
 
 function renderMessage(i) {
@@ -34,28 +49,13 @@ function renderMessage(i) {
   return elementClose("em");
 }
 
-function intermediate(i) {
-  return renderMessage(i);
-}
-
 function render() {
-  var a = _jsxWrapper(renderMessage, [1]);
-  var b = _jsxWrapper(intermediate, [1]);
-  var c = _jsxWrapper(renderMessage2, [1]);
-
+  var ul = _jsxWrapper(_wrapper, [[0, 1, 2, 3, 4], function (i) {
+    return _jsxWrapper(_wrapper2, [renderMessage, i]);
+  }]);
   elementOpen("root");
 
-  _renderArbitrary(a);
-
-  _renderArbitrary(b);
-
-  _renderArbitrary(c);
+  _renderArbitrary(ul);
 
   return elementClose("root");
-}
-
-function renderMessage2(i) {
-  elementOpen("em");
-  text("my message " + i);
-  return elementClose("em");
 }

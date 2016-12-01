@@ -21,10 +21,10 @@
     "mocha": "^2.2.5"
   },
   "scripts": {
-    "preversion": "npm test",
+    "preversion": "npm test && npm run lint",
     "version": "npm run build",
     "build": "babel src --out-dir lib --copy-files",
-    "test": "mocha --compilers js:babel-register && npm run lint",
+    "test": "mocha --compilers js:babel-register",
     "lint": "eslint src"
   },
   "keywords": [

@@ -33,13 +33,14 @@ var _wrapper = function _wrapper() {
 };
 
 function render() {
-  var _lis$map = lis.map(function (li) {
+  var _deferred = lis,
+      _args = function _args(li) {
     return _jsxWrapper(_wrapper);
-  });
+  };
   elementOpen("root");
   elementOpen("ul");
 
-  _renderArbitrary(_lis$map);
+  _renderArbitrary(_deferred.map(_args));
 
   elementClose("ul");
   return elementClose("root");

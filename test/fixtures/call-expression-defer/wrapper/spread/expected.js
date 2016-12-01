@@ -28,31 +28,26 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args) {
-  elementOpen("ul");
+var _wrapper = function _wrapper(_deferred, _args, _deferred2, _args2, _deferred3, _args3) {
+  elementOpen("div");
 
-  _renderArbitrary(_deferred.map(_args));
+  _renderArbitrary(_deferred.apply(_args[0], _args[1]));
 
-  return elementClose("ul");
-},
-    _statics = ["key", ""],
-    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+  _renderArbitrary(_deferred2.apply(_args2[0], _args2[1]));
 
-  _renderArbitrary(_file$name2);
+  _renderArbitrary(_deferred3.apply(_args3[0], _args3[1]));
 
-  return elementClose("li");
+  return elementClose("div");
 };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function render() {
-  var ul = _jsxWrapper(_wrapper, [files, function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
-      return fileClicked(e, file);
-    }, file.name]);
-  }]);
+  function fn() {}
+  var div = _jsxWrapper(_wrapper, [fn, [undefined, _toConsumableArray(args)], fn, [undefined, [1].concat(_toConsumableArray(args))], fn.test, [fn, _toConsumableArray(args)]]);
   elementOpen("root");
 
-  _renderArbitrary(ul);
+  _renderArbitrary(div);
 
   return elementClose("root");
 }

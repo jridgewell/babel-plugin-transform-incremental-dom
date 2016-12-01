@@ -6,6 +6,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   return wrapper;
 };
 
+var _flipAttr = function _flipAttr(value, name) {
+  attr(name, value);
+};
+
+var _spreadAttribute = function _spreadAttribute(spread) {
+  _forOwn(spread, _flipAttr);
+};
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -28,31 +36,22 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args) {
-  elementOpen("ul");
+var _wrapper = function _wrapper(_fn, _fn2) {
+  elementOpenStart("div");
+  attr("attr", _fn);
 
-  _renderArbitrary(_deferred.map(_args));
+  _spreadAttribute(_fn2);
 
-  return elementClose("ul");
-},
-    _statics = ["key", ""],
-    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
-
-  _renderArbitrary(_file$name2);
-
-  return elementClose("li");
+  elementOpenEnd("div");
+  return elementClose("div");
 };
 
 function render() {
-  var ul = _jsxWrapper(_wrapper, [files, function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
-      return fileClicked(e, file);
-    }, file.name]);
-  }]);
+  function fn() {}
+  var div = _jsxWrapper(_wrapper, [fn(), fn()]);
   elementOpen("root");
 
-  _renderArbitrary(ul);
+  _renderArbitrary(div);
 
   return elementClose("root");
 }

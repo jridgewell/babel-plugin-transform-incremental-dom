@@ -167,7 +167,7 @@ export default function ({ types: t, traverse: _traverse }) {
       Program: {
         enter(path) {
           if (this.opts.inlineExpressions) {
-            path.traverse(expressionInliner);
+            path.traverse(expressionInliner, this);
           }
           setupInjector(this);
           setupHoists(this);

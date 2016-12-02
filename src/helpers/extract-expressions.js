@@ -1,4 +1,4 @@
-import isLiteralOrSpecial from "./is-literal-or-special";
+import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
 import * as t from "babel-types";
 
 function addClosureVar(expression, closureVars) {
@@ -16,7 +16,13 @@ function last(array) {
 const collectDeferrables = {
   CallExpression(path) {
     if (deferrable(path)) {
-      const args = path.node.arguments;
+      const args = path.get("arguments").reduce((args, arg) => {
+        if (!(isLiteralOrSpecial(arg) || arg.isJSXElement())) {
+          args.push(arg.node);
+        }
+
+        return args;
+      }, []);
 
       this.deferred.push(path);
       this.deferredArgs.push(args);
@@ -112,7 +118,7 @@ const expressionExtractor = {
     let argId;
     let branchId;
 
-    if (deferredArgsLength) {
+    if (deferredArgsLength > 0) {
       argId = path.scope.generateUidIdentifier("args");
     }
     if (branches > 0) {
@@ -156,11 +162,12 @@ const expressionExtractor = {
     if (argId) {
       let init;
       if (onlyOneArg) {
-        init = deferredArgs[0][0];
+        init = deferredArgs.find((args) => args.length)[0];
       } else {
-        init = deferredArgs.map((args) => t.arrayExpression(args));
-        init = init.reduceRight((conditional, args, i) => {
-          if (!branchId || args.elements.length === 0) {
+        init = deferredArgs.map((args) => {
+          return t.arrayExpression(args);
+        }).reduceRight((conditional, args, i) => {
+          if (!branchId || args.length === 0) {
             return conditional;
           }
 
@@ -199,8 +206,11 @@ const expressionExtractor = {
       }
 
       // Any arguments are now passed through the evaluated args array.
-      // TODO: Allow literals inline, instead of evaluating them in the array.
       node.arguments = node.arguments.map((arg, i) => {
+        if (isLiteralOrSpecialNode(arg)) {
+          return arg;
+        }
+
         if (onlyOneArg) {
           return argId;
         }

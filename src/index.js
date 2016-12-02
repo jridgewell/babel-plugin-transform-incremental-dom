@@ -1,6 +1,6 @@
 import isRootJSX from "./helpers/is-root-jsx";
 import isReturned from "./helpers/is-returned";
-import childAncestor from "./helpers/is-child-element";
+import ancestorExpression from "./helpers/ancestry";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
 
@@ -49,7 +49,7 @@ export default function ({ types: t, traverse: _traverse }) {
     JSXElement: {
       enter(path) {
         const { secondaryTree, root, closureVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !childAncestor(path, this));
+        const needsWrapper = secondaryTree || (root !== path && !ancestorExpression(path, this));
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -66,8 +66,8 @@ export default function ({ types: t, traverse: _traverse }) {
 
       exit(path) {
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
-        const childAncestorPath = childAncestor(path, this);
-        const needsWrapper = secondaryTree || (root !== path && !childAncestorPath);
+        const ancestorPath = ancestorExpression(path, this);
+        const needsWrapper = secondaryTree || (root !== path && !ancestorPath);
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -124,8 +124,8 @@ export default function ({ types: t, traverse: _traverse }) {
           return;
         }
 
-        if (childAncestorPath) {
-          replacedElements.add(childAncestorPath);
+        if (ancestorPath) {
+          replacedElements.add(ancestorPath);
         }
 
         // This is the main JSX element. Replace the return statement
@@ -167,7 +167,7 @@ export default function ({ types: t, traverse: _traverse }) {
       Program: {
         enter(path) {
           if (this.opts.inlineExpressions) {
-            path.traverse(expressionInliner);
+            path.traverse(expressionInliner, this);
           }
           setupInjector(this);
           setupHoists(this);

@@ -1,3 +1,5 @@
+'use strict';
+
 var _jsxWrapper = function _jsxWrapper(func, args) {
   var wrapper = args ? function wrapper() {
     return func.apply(this, args);
@@ -17,31 +19,33 @@ var _forOwn = function _forOwn(object, iterator) {
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
-  if (type === "number" || type === "string" || type === "object" && child instanceof String) {
+  if (type === 'number' || type === 'string' || type === 'object' && child instanceof String) {
     text(child);
-  } else if (type === "function" && child.__jsxDOMWrapper) {
+  } else if (type === 'function' && child.__jsxDOMWrapper) {
     child();
   } else if (Array.isArray(child)) {
     child.forEach(_renderArbitrary);
-  } else if (type === "object" && String(child) === "[object Object]") {
+  } else if (type === 'object' && String(child) === '[object Object]') {
     _forOwn(child, _renderArbitrary);
   }
 };
 
-var _wrapper = function _wrapper() {
-  return elementVoid("li");
+var _wrapper = function _wrapper(_deferred, _args, _deferred2, _args2) {
+  elementOpen('div');
+
+  _renderArbitrary(_deferred(1, true, _args, 'test'));
+
+  _renderArbitrary(_deferred2(1, _args2[1], 2, _args2[3], 'test'));
+
+  return elementClose('div');
 };
 
 function render() {
-  var _deferred = lis,
-      _args = function _args(li) {
-    return _jsxWrapper(_wrapper);
-  };
-  elementOpen("root");
-  elementOpen("ul");
+  function fn() {}
+  var div = _jsxWrapper(_wrapper, [fn, i, fn, [a, i]]);
+  elementOpen('root');
 
-  _renderArbitrary(_deferred.map(_args));
+  _renderArbitrary(div);
 
-  elementClose("ul");
-  return elementClose("root");
+  return elementClose('root');
 }

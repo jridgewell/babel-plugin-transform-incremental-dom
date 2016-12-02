@@ -28,31 +28,33 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args) {
-  elementOpen("ul");
+var _wrapper = function _wrapper(_deferred, _deferred2, _deferred3, _b, _deferred4, _b2, _deferred5, _b3) {
+  elementOpen("div");
 
-  _renderArbitrary(_deferred.map(_args));
+  _renderArbitrary(_deferred());
 
-  return elementClose("ul");
-},
-    _statics = ["key", ""],
-    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+  _renderArbitrary(_deferred2());
 
-  _renderArbitrary(_file$name2);
+  _renderArbitrary(_b == 1 ? _deferred3() : _deferred3());
 
-  return elementClose("li");
+  _renderArbitrary(_b2 == 0 ? _deferred4 : _deferred4());
+
+  _renderArbitrary(_b3 == 0 ? _deferred5 : _deferred5());
+
+  return elementClose("div");
 };
 
 function render() {
-  var ul = _jsxWrapper(_wrapper, [files, function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
-      return fileClicked(e, file);
-    }, file.name]);
-  }]);
+  var _b = 0,
+      _b2 = 0,
+      _b3 = 0;
+
+  function fn() {}
+  function fn2() {}
+  var div = _jsxWrapper(_wrapper, [(1, 2, fn2), (1, fn(), fn2), true ? (1, 2, (_b = 1, fn2)) : (1, 2, (_b = 2, fn2)), _b, true && (1, fn(), (_b2 = 1, fn2)), _b2, true || (1, fn(), (_b3 = 1, fn2)), _b3]);
   elementOpen("root");
 
-  _renderArbitrary(ul);
+  _renderArbitrary(div);
 
   return elementClose("root");
 }

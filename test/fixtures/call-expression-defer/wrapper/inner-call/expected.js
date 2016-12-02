@@ -35,20 +35,23 @@ var _wrapper = function _wrapper(_deferred, _args) {
 
   return elementClose("ul");
 },
-    _statics = ["key", ""],
-    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+    _wrapper2 = function _wrapper2(_deferred2, _args2) {
+  elementOpen("li");
 
-  _renderArbitrary(_file$name2);
+  _renderArbitrary(_deferred2(_args2));
 
   return elementClose("li");
 };
 
+function renderMessage(i) {
+  elementOpen("em");
+  text("my message " + i);
+  return elementClose("em");
+}
+
 function render() {
-  var ul = _jsxWrapper(_wrapper, [files, function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
-      return fileClicked(e, file);
-    }, file.name]);
+  var ul = _jsxWrapper(_wrapper, [[0, 1, 2, 3, 4], function (i) {
+    return _jsxWrapper(_wrapper2, [renderMessage, i]);
   }]);
   elementOpen("root");
 

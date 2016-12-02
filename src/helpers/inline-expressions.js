@@ -26,7 +26,10 @@ const expressionInliner = {
     }
 
     const closureVars = [];
-    init.traverse(expressionExtractor, { closureVarsStack: [closureVars] });
+    const state = Object.assign({}, this, {
+      closureVarsStack: [closureVars]
+    });
+    init.traverse(expressionExtractor, state);
 
     expression.replaceWith(init.node);
     declarator.replaceWithMultiple(closureVars.map((cv) => {

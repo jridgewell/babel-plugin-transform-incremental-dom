@@ -28,31 +28,27 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args) {
-  elementOpen("ul");
+var _wrapper = function _wrapper(_deferred, _args, _deferred2, _args2, _b, _deferred3, _args3, _b2) {
+  elementOpen("div");
 
-  _renderArbitrary(_deferred.map(_args));
+  _renderArbitrary(_deferred(_args));
 
-  return elementClose("ul");
-},
-    _statics = ["key", ""],
-    _wrapper2 = function _wrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+  _renderArbitrary(_b == 1 ? _deferred2(_args2) : _deferred2());
 
-  _renderArbitrary(_file$name2);
+  _renderArbitrary(_b2 == 1 ? _deferred3() : _deferred3(_args3));
 
-  return elementClose("li");
+  return elementClose("div");
 };
 
 function render() {
-  var ul = _jsxWrapper(_wrapper, [files, function (file) {
-    return _jsxWrapper(_wrapper2, [file.name, file, function (e) {
-      return fileClicked(e, file);
-    }, file.name]);
-  }]);
+  var _b = 0,
+      _b2 = 0;
+
+  function fn() {}
+  var div = _jsxWrapper(_wrapper, [fn, args, true ? (_b = 1, fn) : (_b = 2, fn2), args, _b, true ? (_b2 = 1, fn) : (_b2 = 2, fn2), args, _b2]);
   elementOpen("root");
 
-  _renderArbitrary(ul);
+  _renderArbitrary(div);
 
   return elementClose("root");
 }

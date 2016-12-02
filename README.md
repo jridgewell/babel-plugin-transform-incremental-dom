@@ -24,82 +24,91 @@ export default function render(data) {
 **Out** (default, unoptimized options)
 
 ```javascript
-export default function render(data) {
-    var header = data.conditional ? _jsxWrapper(_wrapper) : null;
-    var collection = data.items.map(function (item) {
-        return _jsxWrapper(_wrapper2, [item.id, item.className, item.name]);
-    });
+var _statics2 = ["key", ""];
+var _wrapper2 = function _wrapper2(_item$id, _item$className, _item$name) {
+  elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
 
-    elementOpen("div", "bb2c39da-ab6a-4ebf-8c93-6bcfd2592ad8", _statics);
+    _renderArbitrary(_item$name);
+
+  return elementClose("li");
+};
+
+var _statics = ["id", "container"];
+var _wrapper = function _wrapper() {
+  return elementVoid("div");
+};
+function render(data) {
+  var header = data.conditional ? _jsxWrapper(_wrapper) : null;
+  var collection = data.items.map(function (item) {
+    return _jsxWrapper(_wrapper2, [item.id, item.className, item.name]);
+  });
+
+  elementOpen("div", "7a0d2286-d60a-4faf-9564-3afab41a2bb9", _statics);
 
     _renderArbitrary(header);
 
     elementOpen("ul");
-
-    _renderArbitrary(collection);
-
+      _renderArbitrary(collection);
     elementClose("ul");
+
     elementOpenStart("p");
-
     _spreadAttribute(data.props);
-
     elementOpenEnd("p");
-    text("Some features");
+      text("Some features");
     elementClose("p");
-    return elementClose("div");
+  return elementClose("div");
 }
 
-var _statics = ["id", "container"],
-    _wrapper = function _wrapper() {
-    return elementVoid("div");
-},
-    _statics2 = ["key", ""],
-    _wrapper2 = function _wrapper2(_item$id, _item$className, _item$name) {
-    elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
 
-    _renderArbitrary(_item$name);
-
-    return elementClose("li");
-};
+// Helpers
+// -------
 
 var _jsxWrapper = function _jsxWrapper(func, args) {
-    var wrapper = args ? function wrapper() {
-        return func.apply(this, args);
-    } : func;
-    wrapper.__jsxDOMWrapper = true;
-    return wrapper;
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
 };
 
 var _flipAttr = function _flipAttr(value, name) {
-    attr(name, value);
+  attr(name, value);
 };
 
 var _spreadAttribute = function _spreadAttribute(spread) {
-    _forOwn(spread, _flipAttr);
+  _forOwn(spread, _flipAttr);
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
-    for (var prop in object) {
-        if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-    }
+  for (var prop in object) {
+    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+  }
 };
 
 var _renderArbitrary = function _renderArbitrary(child) {
-    var type = typeof child;
+  var type = typeof child;
 
-    if (type === "number" || type === "string" || type === "object" && child instanceof String) {
-        text(child);
-    } else if (type === "function" && child.__jsxDOMWrapper) {
-        child();
-    } else if (Array.isArray(child)) {
-        child.forEach(_renderArbitrary);
-    } else if (type === "object" && String(child) === "[object Object]") {
-        _forOwn(child, _renderArbitrary);
+  if (type === "number" || type === "string" || type === "object" && child instanceof String) {
+    text(child);
+  } else if (Array.isArray(child)) {
+    child.forEach(_renderArbitrary);
+  } else if (type === "object") {
+    if (child.__jsxDOMWrapper) {
+      var func = child.func,
+          args = child.args;
+
+      if (args) {
+        func.apply(this, args);
+      } else {
+        func();
+      }
+    } else if (String(child) === "[object Object]") {
+      _forOwn(child, _renderArbitrary);
     }
+  }
 };
-
 ```
 
 ## Installation
@@ -461,22 +470,23 @@ The runtime's required functions are:
 - `jsxWrapper`
 
   To prevent iDOM's incremental nature from screwing up our beautiful
-  JSX syntax, certain elements must be wrapped in a function closure
-  that will be later evaluated. That closure will be passed into
-  `jsxWrapper`, along with an array of any (if any) arguments
-  needed to render the contained JSX element.
+  JSX syntax, certain elements rendering functions must be wrapped
+  evaluated at a later time. The element will be passed into
+  `jsxWrapper`, along with an array of any (if any) arguments needed to
+  render the contained JSX element.
 
   Note it is not `jsxWrapper`'s responsibility to create the JSX
-  closure, merely to help identify the passed in closure later. Here, we
-  set the `__jsxDOMWrapper` property of the returned closure.
+  rendering function, merely to mark the passed in function as a lazy
+  evaluation. Here, we return a special `__jsxDOMWrapper` struct with
+  the needed information.
 
   ```js
-  runtime.jsxWrapper = function(elementClosure, args) {
-    var wrapper = args ? function() {
-      return elementClosure.apply(this, args);
-    } : elementClosure;
-    wrapper.__jsxDOMWrapper = true;
-    return wrapper;
+  runtime.jsxWrapper = function(elementFn, args) {
+    return {
+      __jsxDOMWrapper: true,
+      func: elementFn,
+      args: args
+    };
   }
   ```
 
@@ -485,27 +495,30 @@ The runtime's required functions are:
   To render child elements correctly, we'll need to be able to identify
   them. `renderArbitrary` receives a `child`, and must call the
   appropriate action. For string and numbers, that's to call
-  `IncrementalDOM#text`. For wrapped JSX Closures, that's to invoke the
-  closure. For arrays, that's to render every element. And for objects,
-  that's to render every property.
+  `IncrementalDOM#text`. For lazy evaluation JSX functions, that's to
+  invoke the closure. For arrays, that's to render every element. And
+  for objects, that's to render every property.
 
-  Note that we identify JSX Closures by the `__jsxDOMWrapper` property
-  we set inside the `jsxWrapper` runtime function.
+  Note that we identify lazy JSX functions by the `__jsxDOMWrapper`
+  struct we created inside the `jsxWrapper` runtime function.
 
   ```js
   runtime.renderArbitrary = function _renderArbitrary(child) {
     var type = typeof child;
     if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
       iDOM.text(child);
-    } else if (type === "function" && child.__jsxDOMWrapper) {
-      child();
     } else if (Array.isArray(child)) {
       child.forEach(_renderArbitrary);
-    } else if (type === 'object' && String(child) === '[object Object]') {
-      for (var prop in child) {
-        if (Object.prototype.hasOwn.call(child, prop)) {
-          _renderArbitrary(child[prop]);
+    } else if (type === "object") {
+      if (child.__jsxDOMWrapper) {
+        var func = child.func, args = child.args;
+        if (args) {
+          func.apply(this, args);
+        } else {
+          func();
         }
+      } else if (String(child) === "[object Object]") {
+        _forOwn(child, _renderArbitrary);
       }
     }
   }

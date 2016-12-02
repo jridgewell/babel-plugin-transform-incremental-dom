@@ -11,21 +11,30 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
-  } else if (type === "function" && child.__jsxDOMWrapper) {
-    child();
   } else if (Array.isArray(child)) {
     child.forEach(_renderArbitrary);
-  } else if (type === "object" && String(child) === "[object Object]") {
-    _forOwn(child, _renderArbitrary);
+  } else if (type === "object") {
+    if (child.__jsxDOMWrapper) {
+      var func = child.func,
+          args = child.args;
+
+      if (args) {
+        func.apply(this, args);
+      } else {
+        func();
+      }
+    } else if (String(child) === "[object Object]") {
+      _forOwn(child, _renderArbitrary);
+    }
   }
 };
 
 var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
 };
 
 var _statics = ["key", ""],

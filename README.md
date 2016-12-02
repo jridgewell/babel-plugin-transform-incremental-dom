@@ -1,4 +1,4 @@
-# babel-plugin-incremental-dom [![Build Status](https://travis-ci.org/jridgewell/babel-plugin-incremental-dom.svg?branch=master)](https://travis-ci.org/jridgewell/babel-plugin-incremental-dom)
+# babel-plugin-transform-incremental-dom [![Build Status](https://travis-ci.org/jridgewell/babel-plugin-transform-incremental-dom.svg?branch=master)](https://travis-ci.org/jridgewell/babel-plugin-transform-incremental-dom)
 
 Turn JSX into [Incremental DOM](http://google.github.io/incremental-dom/).
 
@@ -105,7 +105,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 ## Installation
 
 ```sh
-$ npm install babel-plugin-incremental-dom
+$ npm install babel-plugin-transform-incremental-dom
 ```
 
 ## Usage
@@ -394,7 +394,7 @@ plugin:
 
 #### Auto Importing Incremental DOM
 
-By deafult, `babel-plugin-incremental-dom` expects any necessary
+By deafult, `babel-plugin-transform-incremental-dom` expects any necessary
 Incremental DOM methods to already imported and in-scope:
 
 ```js
@@ -451,7 +451,7 @@ the `process.cwd()` of the babel process.
 
 #### Runtime
 
-By deafult, `babel-plugin-incremental-dom` injects several helpers into
+By deafult, `babel-plugin-transform-incremental-dom` injects several helpers into
 each file as needed. When transforming multiple files with JSX, you can
 avoid this helper duplication by specifying a runtime library to use
 instead.

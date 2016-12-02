@@ -1,8 +1,8 @@
 {
-  "name": "babel-plugin-incremental-dom",
+  "name": "babel-plugin-transform-incremental-dom",
   "version": "3.4.0",
   "description": "Turn jsx into incremental-dom",
-  "repository": "jridgewell/babel-plugin-incremental-dom",
+  "repository": "jridgewell/babel-plugin-transform-incremental-dom",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {

@@ -12,76 +12,76 @@ Changelog
 
 - **New Feature**
   - Optimize conditional children expressions
-    - [#58](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/58)
+    - [#58](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/58)
   - Enable `fastRoot` option in inline comments
-    - [#61](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/61)
+    - [#61](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/61)
 - **Bug Fix**
   - Transpile JSX Elements outside functions
-    - [#62](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/62)
+    - [#62](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/62)
   - Memoize key expressions
-    - [#63](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/63)
+    - [#63](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/63)
 - **Internal**
   - Add `babel-plugin-syntax-jsx` dependency
-    - [bf426fca](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/bf426fcafc60bab64964104bd041487b278ec905)
+    - [bf426fca](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/bf426fcafc60bab64964104bd041487b278ec905)
 
 ## 3.3.0
 
 - **New Feature**
   - Add a Fast path for JSX under the Root node
-    - [#47](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/47)
+    - [#47](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/47)
   - Add support for Attribute Namespaces
-    - [#55](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/55)
+    - [#55](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/55)
   - `forceStatics` option now generates a UUID `key` for key-less nodes
-    - [9db682c7](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/9db682c78732682c022a32077dc499a98c9f4bb7)
+    - [9db682c7](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/9db682c78732682c022a32077dc499a98c9f4bb7)
 
 ## 3.2.1
 
 - **Bug Fix**
   - Support `import`ing iDOM methods
-    - [#51](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/51)
+    - [#51](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/51)
 
 ## 3.2.0
 
 - **New Feature**
   - Allow forcing the use of statics when there are constant attributes
-    - [#49](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/49)
+    - [#49](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/49)
 - **Bug Fix**
   - Only use `statics` when there is a `key`
-    - [#49](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/49)
+    - [#49](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/49)
 
 ## 3.1.0
 
 - **New Feature**
   - Pass Components by reference
-    - [#43](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/43)
+    - [#43](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/43)
   - Inline JSX Expressions
-    - [#46](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/46)
+    - [#46](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/46)
 - **Bug Fix**
   - Assign eager variable keys to statics array
-    - [#44](https://github.com/jridgewell/babel-plugin-incremental-dom/pull/44)
+    - [#44](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/44)
 
 ## 3.0.3
 
 - **Bug Fix**
   - Fix whitespace cleaning around inline elements
-    - [e7bcb28f](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e7bcb28f719812b51a633762ffad3c243121b523)
+    - [e7bcb28f](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/e7bcb28f719812b51a633762ffad3c243121b523)
 
 ## 3.0.2
 
 - **Bug Fix**
   - Support multiple returned root nodes
-    - [8515f6b0](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/8515f6b00f420a36a2c25f8f1ceca2cacc2bf29e)
+    - [8515f6b0](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/8515f6b00f420a36a2c25f8f1ceca2cacc2bf29e)
   - Do not try to recursively render arbitrary DOM element
-    - [e5229ed8](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e5229ed8dd55501563f7e9d88e60d75f01e96069)
+    - [e5229ed8](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/e5229ed8dd55501563f7e9d88e60d75f01e96069)
 - **Internal**
   - Use a `version` npm script
-    - [0a81e9e0](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/0a81e9e03587f375deca36b481d32711ef4973ae)
+    - [0a81e9e0](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/0a81e9e03587f375deca36b481d32711ef4973ae)
 
 ## 3.0.1
 
 - **Bug Fix**
   - Properly wrap non-returned elements that are the "root" of their function
-    - [e2567ff1](https://github.com/jridgewell/babel-plugin-incremental-dom/commit/e2567ff143f68e6b86b544b6b6c8acc0fd5b90c9)
+    - [e2567ff1](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/e2567ff143f68e6b86b544b6b6c8acc0fd5b90c9)
 
 ## 3.0.0
 
@@ -96,15 +96,15 @@ Changelog
 
 - **New Feature**
   - Add optional Static Attribute hoisting.
-    - [#26](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/26)
+    - [#26](https://github.com/babel-plugins/babel-plugin-transform-incremental-dom/pull/26)
 - **Bug Fix**
   - Fixes detection of root JSX Element in sub-render functions.
-    - [#21](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/21)
-    - [#28](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/28)
+    - [#21](https://github.com/babel-plugins/babel-plugin-transform-incremental-dom/pull/21)
+    - [#28](https://github.com/babel-plugins/babel-plugin-transform-incremental-dom/pull/28)
   - Supports JSX Elements implicitly returned by arrow functions.
-    - [#20](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/20)
+    - [#20](https://github.com/babel-plugins/babel-plugin-transform-incremental-dom/pull/20)
   - Fixes use of JSX Elements inside Sequence Expressions.
-    - [#24](https://github.com/babel-plugins/babel-plugin-incremental-dom/pull/24)
+    - [#24](https://github.com/babel-plugins/babel-plugin-transform-incremental-dom/pull/24)
 
 ## 2.1.0
 

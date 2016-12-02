@@ -9,6 +9,12 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 4.0.1
+
+- **Polish**
+  - Attempt to generate similar hoist names, to aid debugging
+    - [7fa4ea68](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/7fa4ea6814185e069525ab13c5f7a0e3797c4ea9)
+
 ## 4.0.0
 
 - **New Feature**

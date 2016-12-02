@@ -7,6 +7,50 @@ Changelog
 > - [Documentation]
 > - [Internal]
 > - [Polish]
+> - [Change]
+
+## 4.0.0
+
+- **New Feature**
+  - Add `moduleSource` option to auto import needed iDOM methods
+    - [#71](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/71)
+  - Add `runtimeModuleSource` option to auto import needed runtime methods
+    - [#72](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/72)
+  - Add `spreadAttribute` runtime method
+    - [#59](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/59)
+  - Defer calling functions until wrapper executes
+    - [#75](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/75)
+- **Bug Fix**
+  - Forbid error caused by mutating `key` after referencing in another attribute
+    - [08c54e5b](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/08c54e5b3b3e082d6a7ff8b628373808743cc9cf)
+  - Ensure logical expressions do not call iDOM methods
+    - [42778115](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/42778115d0eefcdab4b1f6227be3aee3bd00de35)
+  - Ensure conditional expressions do not call iDOM methods
+    - [d9462c5c](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/d9462c5c2e92d94e08f9871bfa226ca025628214)
+- **Polish**
+  - Convert "special" literals (numbers, `undefined`, `null`) to strings
+    - [#64](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/64)
+  - Template strings no longer require a `renderArbitrary` call
+    - [1009af83](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/1009af83006949e0956ee79c34f349ad14eed0fd)
+  - Unwrap a child expression's sequence to avoid unneeded `renderArbitrary` calls
+    - [bac0d802](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/bac0d802cf55dfdac0ef98b8eee10f46cd733e04)
+    - [172bd0ba](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/172bd0ba7f13b4c448db271e16a10f49ee09c1be)
+    - [644cf5a5](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/644cf5a58cfb91b01b7a868669478a83d10052d1)
+  - Use more performant jsxWrapper
+    - [#74](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/74)
+  - Speed up transform
+    - [1266d907](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/1266d9070a5e19e44d18e48ae85fb5feb605f2d5)
+    - [90066991](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/900669911bc205b84d33dec02614d50462262c2d)
+- **Change**
+  - Rename to `babel-plugin-transform-incremental-dom`
+  - `hoist` is now standard behavior
+    - [#60](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/60)
+  - Using static attributes will generate a UUID key by default
+    - [#60](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/60)
+  - Remove `prefix` option in favor of `moduleSource`
+    - [#60](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/60)
+  - Remove `runtime` option in favor of `runtimeModuleSource`
+    - [#60](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/60)
 
 ## 3.4.0
 

@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_i, _ref, _i2) {
+var _map = function _map(_i, _ref, _i2) {
   elementOpen("span", null, null, "attr", _i);
 
   _renderArbitrary(_ref);
@@ -50,7 +50,7 @@ var _wrapper = function _wrapper(_i, _ref, _i2) {
 function render() {
   var mapNested5 = [1, 2, 3].map(function (i) {
     elementOpen("outer5");
-    elementOpen("inner5", null, null, "attr", _jsxWrapper(_wrapper, [i, i++, i]));
+    elementOpen("inner5", null, null, "attr", _jsxWrapper(_map, [i, i++, i]));
     elementClose("inner5");
     return elementClose("outer5");
   });

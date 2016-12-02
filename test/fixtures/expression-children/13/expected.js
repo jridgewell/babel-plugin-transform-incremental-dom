@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_i, _i2) {
+var _map = function _map(_i, _i2) {
   elementOpen("span", null, null, "attr", _i);
 
   _renderArbitrary(_i2);
@@ -48,7 +48,7 @@ var _wrapper = function _wrapper(_i, _i2) {
 function render() {
   var mapNested4 = [1, 2, 3].map(function (i) {
     elementOpen("outer4");
-    elementOpen("inner4", null, null, "attr", _jsxWrapper(_wrapper, [i, i]));
+    elementOpen("inner4", null, null, "attr", _jsxWrapper(_map, [i, i]));
     elementClose("inner4");
     return elementClose("outer4");
   });

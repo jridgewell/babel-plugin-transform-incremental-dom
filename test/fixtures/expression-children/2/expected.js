@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_i) {
+var _items$i = function _items$i(_i) {
   elementOpen("div");
 
   _renderArbitrary(_i);
@@ -48,6 +48,6 @@ var _wrapper = function _wrapper(_i) {
 function render() {
   var items = [];
   for (var i = 0; i < 10; i++) {
-    items[i] = _jsxWrapper(_wrapper, [i]);
+    items[i] = _jsxWrapper(_items$i, [i]);
   }
 }

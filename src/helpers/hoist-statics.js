@@ -4,7 +4,8 @@ import * as t from "babel-types";
 // Hoists the static attributes array, so that the array instance is not
 // recreated multiple times.
 export default function addStaticHoist(scope, plugin, statics, keyIndex) {
-  const id = addHoistedDeclarator(scope, "statics", statics, plugin);
+  const id = scope.generateUidIdentifier("statics");
+  addHoistedDeclarator(scope, id, statics, plugin);
 
   if (keyIndex === -1) {
     return id;

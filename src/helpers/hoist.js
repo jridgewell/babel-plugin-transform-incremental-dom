@@ -19,10 +19,23 @@ export function hoist(program, { file }) {
 }
 
 // Hoists the variable to the top of the file.
-export function addHoistedDeclarator(scope, name, value, { file }) {
-  const ref = scope.generateUidIdentifier(name);
+export function addHoistedDeclarator(scope, ref, value, { file }) {
   const declarator = t.variableDeclarator(ref, value);
   file.get(namespace).push(declarator);
 
   return ref;
+}
+
+// Name Smartly Do Good.
+export function generateHoistName(path, fallback = "ref") {
+  const { scope } = path;
+  const parent = path.findParent((p) => {
+    return p.isVariableDeclarator() ||
+      p.isAssignmentExpression() ||
+      p.isCallExpression();
+  });
+
+  return parent ?
+    scope.generateUidIdentifierBasedOnNode(parent.node) :
+    scope.generateUidIdentifier(fallback);
 }

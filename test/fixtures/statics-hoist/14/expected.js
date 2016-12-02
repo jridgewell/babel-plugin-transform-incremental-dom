@@ -7,13 +7,13 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 };
 
 var _statics = ["id", "id"],
-    _wrapper = function _wrapper() {
+    _items$map = function _items$map() {
   return elementVoid("div", "__uuid__0__", _statics);
 };
 
 function fn7(items) {
   items = items.map(function (el, i) {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(_items$map);
   });
   return elementVoid("root");
 }

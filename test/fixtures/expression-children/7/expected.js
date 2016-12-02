@@ -6,12 +6,12 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _declarator = function _declarator() {
   elementOpen("div");
   text("will be wrapped");
   return elementClose("div");
 };
 
 function render() {
-  var declarator = _jsxWrapper(_wrapper);
+  var declarator = _jsxWrapper(_declarator);
 }

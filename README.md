@@ -24,39 +24,41 @@ export default function render(data) {
 **Out** (default, unoptimized options)
 
 ```javascript
-var _statics2 = ["key", ""];
-var _wrapper2 = function _wrapper2(_item$id, _item$className, _item$name) {
-  elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
+const _statics2 = ["key", ""];
+const _data$items$map = function(_item$id, _item$className, _item$name) {
+    elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
 
     _renderArbitrary(_item$name);
 
-  return elementClose("li");
+    return elementClose("li");
 };
 
-var _statics = ["id", "container"];
-var _wrapper = function _wrapper() {
-  return elementVoid("div");
+const _header = function() {
+    return elementVoid("div");
 };
+const _statics = ["id", "container"];
+
 function render(data) {
-  var header = data.conditional ? _jsxWrapper(_wrapper) : null;
-  var collection = data.items.map(function (item) {
-    return _jsxWrapper(_wrapper2, [item.id, item.className, item.name]);
-  });
+    var header = data.conditional ? _jsxWrapper(_header) : null;
+    var collection = data.items.map(item => {
+        return _jsxWrapper(_data$items$map, [item.id, item.className, item.name]);
+    });
 
-  elementOpen("div", "7a0d2286-d60a-4faf-9564-3afab41a2bb9", _statics);
+    elementOpen("div", "dae2fae9-47cb-4946-a96f-dbf5eb0fb8b7", _statics);
 
-    _renderArbitrary(header);
+      _renderArbitrary(header);
 
-    elementOpen("ul");
-      _renderArbitrary(collection);
-    elementClose("ul");
+      elementOpen("ul");
+        _renderArbitrary(collection);
+      elementClose("ul");
 
-    elementOpenStart("p");
-    _spreadAttribute(data.props);
-    elementOpenEnd("p");
-      text("Some features");
-    elementClose("p");
-  return elementClose("div");
+      elementOpenStart("p");
+      _spreadAttribute(data.props);
+      elementOpenEnd("p");
+        text("Some features");
+      elementClose("p");
+
+    return elementClose("div");
 }
 
 
@@ -64,51 +66,50 @@ function render(data) {
 // -------
 
 var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
+    return {
+        __jsxDOMWrapper: true,
+        func: func,
+        args: args
+    };
 };
 
 var _flipAttr = function _flipAttr(value, name) {
-  attr(name, value);
+    attr(name, value);
 };
 
 var _spreadAttribute = function _spreadAttribute(spread) {
-  _forOwn(spread, _flipAttr);
+    _forOwn(spread, _flipAttr);
 };
 
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
-  for (var prop in object) {
-    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-  }
+    for (var prop in object) if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
 };
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+    var type = typeof child;
 
-  if (type === "number" || type === "string" || type === "object" && child instanceof String) {
-    text(child);
-  } else if (Array.isArray(child)) {
-    child.forEach(_renderArbitrary);
-  } else if (type === "object") {
-    if (child.__jsxDOMWrapper) {
-      var func = child.func,
-          args = child.args;
+    if (type === "number" || type === "string" || type === "object" && child instanceof String) {
+        text(child);
+    } else if (Array.isArray(child)) {
+        child.forEach(_renderArbitrary);
+    } else if (type === "object") {
+        if (child.__jsxDOMWrapper) {
+            var func = child.func,
+                args = child.args;
 
-      if (args) {
-        func.apply(this, args);
-      } else {
-        func();
-      }
-    } else if (String(child) === "[object Object]") {
-      _forOwn(child, _renderArbitrary);
+            if (args) {
+                func.apply(this, args);
+            } else {
+                func();
+            }
+        } else if (String(child) === "[object Object]") {
+            _forOwn(child, _renderArbitrary);
+        }
     }
-  }
 };
+
 ```
 
 ## Installation

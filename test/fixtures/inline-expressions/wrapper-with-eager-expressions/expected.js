@@ -37,13 +37,13 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_attr) {
+var _div = function _div(_attr) {
   return elementVoid("div", null, null, "attr", _attr);
 };
 
 function render() {
   var div;
-  div = _jsxWrapper(_wrapper, [attr]);
+  div = _jsxWrapper(_div, [attr]);
   elementOpen("root");
 
   _renderArbitrary(div);

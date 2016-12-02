@@ -37,14 +37,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper() {
+var _args2 = function _args2() {
   return elementVoid("li");
 };
 
 function render() {
   var _deferred = lis,
       _args = function _args(li) {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(_args2);
   };
   elementOpen("root");
   elementOpen("ul");

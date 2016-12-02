@@ -1,10 +1,10 @@
 var _iDOM = require("iDOM");
 
-var _wrapper = function _wrapper() {
+var _div = function _div() {
   return elementVoid("div");
 };
 
 function render() {
-  var div = (0, _iDOM.jsxWrapper)(_wrapper);
+  var div = (0, _iDOM.jsxWrapper)(_div);
   return elementVoid("div");
 }

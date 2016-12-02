@@ -6,12 +6,12 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _children = function _children() {
   elementOpen("array");
   text("will be wrapped");
   return elementClose("array");
 };
 
 function render() {
-  var children = [1, 2, 3, _jsxWrapper(_wrapper)];
+  var children = [1, 2, 3, _jsxWrapper(_children)];
 }

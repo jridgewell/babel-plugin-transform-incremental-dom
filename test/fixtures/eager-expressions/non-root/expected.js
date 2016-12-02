@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
+var _test = function _test(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
   elementOpen("div", null, null, "attr", _ref);
   elementOpen("div", null, null, "first", _ref2);
 
@@ -56,7 +56,7 @@ var _wrapper = function _wrapper(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
 };
 
 function render() {
-  var test = _jsxWrapper(_wrapper, [i++, i++, i++, i++, i++, i++]);
+  var test = _jsxWrapper(_test, [i++, i++, i++, i++, i++, i++]);
   elementOpen("root");
 
   _renderArbitrary(test);

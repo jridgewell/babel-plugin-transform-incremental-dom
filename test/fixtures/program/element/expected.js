@@ -6,9 +6,9 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _div = function _div() {
   elementOpen("div");
   return elementClose("div");
 };
 
-var div = _jsxWrapper(_wrapper);
+var div = _jsxWrapper(_div);

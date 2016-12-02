@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args, _b, _deferred2, _args2, _b2) {
+var _div = function _div(_deferred, _args, _b, _deferred2, _args2, _b2) {
   elementOpen("div");
 
   _renderArbitrary(_b == 1 ? _deferred(_args[0]) : _deferred(_args[0], _args[1]));
@@ -51,7 +51,7 @@ function render() {
   var _b = 0,
       _b2 = 0;
 
-  var div = _jsxWrapper(_wrapper, [true ? (_b = 1, fn) : (_b = 2, fn2), _b == 1 ? [a++] : [b++, c++], _b, fn(i++) ? (_b2 = 1, fn) : (_b2 = 2, fn2), _b2 == 1 ? [a++] : [b++, c++], _b2]);
+  var div = _jsxWrapper(_div, [true ? (_b = 1, fn) : (_b = 2, fn2), _b == 1 ? [a++] : [b++, c++], _b, fn(i++) ? (_b2 = 1, fn) : (_b2 = 2, fn2), _b2 == 1 ? [a++] : [b++, c++], _b2]);
   elementOpen("root");
 
   _renderArbitrary(div);

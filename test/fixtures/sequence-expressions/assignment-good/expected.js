@@ -6,11 +6,11 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _a = function _a() {
   return elementVoid("div");
 };
 
 function fn() {
   var a;
-  var b = (a = _jsxWrapper(_wrapper), 1);
+  var b = (a = _jsxWrapper(_a), 1);
 }

@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _b, _deferred2, _b2, _ref, _ref2, _deferred3, _b3, _deferred4, _b4, _deferred5, _b5, _deferred6, _b6) {
+var _div = function _div(_deferred, _b, _deferred2, _b2, _ref, _ref2, _deferred3, _b3, _deferred4, _b4, _deferred5, _b5, _deferred6, _b6) {
   elementOpen("div");
 
   _renderArbitrary(_b == 0 ? _deferred : _deferred());
@@ -68,7 +68,7 @@ function render() {
       _b6 = 0;
 
   function fn() {}
-  var div = _jsxWrapper(_wrapper, [true && (_b = 1, fn), _b, true || (_b2 = 1, fn), _b2, fn() || true, fn() && true, (1, 2, true && (_b3 = 1, fn)), _b3, (1, 2, true || (_b4 = 1, fn)), _b4, true ? true && (_b5 = 1, fn) : true && (_b5 = 2, fn), _b5, true ? true || (_b6 = 1, fn) : true || (_b6 = 2, fn), _b6]);
+  var div = _jsxWrapper(_div, [true && (_b = 1, fn), _b, true || (_b2 = 1, fn), _b2, fn() || true, fn() && true, (1, 2, true && (_b3 = 1, fn)), _b3, (1, 2, true || (_b4 = 1, fn)), _b4, true ? true && (_b5 = 1, fn) : true && (_b5 = 2, fn), _b5, true ? true || (_b6 = 1, fn) : true || (_b6 = 2, fn), _b6]);
   elementOpen("root");
 
   _renderArbitrary(div);

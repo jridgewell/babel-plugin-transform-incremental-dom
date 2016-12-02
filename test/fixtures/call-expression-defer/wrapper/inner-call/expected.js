@@ -37,14 +37,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred, _args) {
+var _ul = function _ul(_deferred, _args) {
   elementOpen("ul");
 
   _renderArbitrary(_deferred.map(_args));
 
   return elementClose("ul");
 },
-    _wrapper2 = function _wrapper2(_deferred2, _args2) {
+    _jsxWrapper2 = function _jsxWrapper2(_deferred2, _args2) {
   elementOpen("li");
 
   _renderArbitrary(_deferred2(_args2));
@@ -59,8 +59,8 @@ function renderMessage(i) {
 }
 
 function render() {
-  var ul = _jsxWrapper(_wrapper, [[0, 1, 2, 3, 4], function (i) {
-    return _jsxWrapper(_wrapper2, [renderMessage, i]);
+  var ul = _jsxWrapper(_ul, [[0, 1, 2, 3, 4], function (i) {
+    return _jsxWrapper(_jsxWrapper2, [renderMessage, i]);
   }]);
   elementOpen("root");
 

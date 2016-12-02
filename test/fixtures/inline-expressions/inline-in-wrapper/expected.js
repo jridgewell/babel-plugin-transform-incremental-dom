@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_text) {
+var _div = function _div(_text) {
   elementOpen("div");
 
   _renderArbitrary(_text);
@@ -48,7 +48,7 @@ var _wrapper = function _wrapper(_text) {
 function render(key) {
   var text = key;
   var div;
-  div = _jsxWrapper(_wrapper, [text]);
+  div = _jsxWrapper(_div, [text]);
   elementOpen("root");
 
   _renderArbitrary(div);

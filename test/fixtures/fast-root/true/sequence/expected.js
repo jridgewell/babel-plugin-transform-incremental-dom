@@ -6,26 +6,26 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _files$map = function _files$map() {
+  return elementVoid("span");
+},
+    _files$map2 = function _files$map2() {
+  return elementVoid("span");
+},
+    _wrapper = function _wrapper() {
   return elementVoid("span");
 },
     _wrapper2 = function _wrapper2() {
-  return elementVoid("span");
-},
-    _wrapper3 = function _wrapper3() {
-  return elementVoid("span");
-},
-    _wrapper4 = function _wrapper4() {
   return elementVoid("span");
 };
 
 function render() {
   elementOpen("ul");
   files.map(function (file) {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(_files$map);
   });
   files.map(function (file) {
-    return _jsxWrapper(_wrapper2);
+    return _jsxWrapper(_files$map2);
   });
   files.map(function (file) {
     return elementVoid("span");
@@ -35,13 +35,13 @@ function render() {
     return elementVoid("span");
   });
 
-  _jsxWrapper(_wrapper3);
+  _jsxWrapper(_wrapper);
 
   null;
   elementVoid("span");
   null;
 
-  _jsxWrapper(_wrapper4);
+  _jsxWrapper(_wrapper2);
 
   return elementClose("ul");
 }

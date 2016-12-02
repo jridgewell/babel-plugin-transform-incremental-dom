@@ -6,7 +6,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _assignment = function _assignment() {
   elementOpen("div");
   text("will be wrapped");
   return elementClose("div");
@@ -14,5 +14,5 @@ var _wrapper = function _wrapper() {
 
 function render() {
   var assignment;
-  assignment = _jsxWrapper(_wrapper);
+  assignment = _jsxWrapper(_assignment);
 }

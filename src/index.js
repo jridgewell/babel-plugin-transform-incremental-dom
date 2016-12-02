@@ -2,7 +2,7 @@ import isRootJSX from "./helpers/is-root-jsx";
 import isReturned from "./helpers/is-returned";
 import ancestorExpression from "./helpers/ancestry";
 import { setupInjector, injectHelpers } from "./helpers/inject";
-import { setupHoists, hoist, addHoistedDeclarator } from "./helpers/hoist";
+import { setupHoists, hoist, addHoistedDeclarator, generateHoistName } from "./helpers/hoist";
 
 import expressionExtractor from "./helpers/extract-expressions";
 import expressionInliner from "./helpers/inline-expressions";
@@ -109,7 +109,7 @@ export default function ({ types: t, traverse: _traverse }) {
           const params = closureVars.map((e) => e.id);
           let wrapper = addHoistedDeclarator(
             path.scope,
-            "wrapper",
+            generateHoistName(path, "wrapper"),
             t.functionExpression(null, params, t.blockStatement(elements)),
             this
           );

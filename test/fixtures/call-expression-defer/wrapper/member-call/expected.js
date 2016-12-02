@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper(_deferred) {
+var _div = function _div(_deferred) {
   elementOpen("div");
 
   _renderArbitrary(_deferred.fn());
@@ -49,7 +49,7 @@ function render() {
   var a = { b: {
       fn: function fn() {}
     } };
-  var div = _jsxWrapper(_wrapper, [a.b]);
+  var div = _jsxWrapper(_div, [a.b]);
   elementOpen("root");
 
   _renderArbitrary(div);

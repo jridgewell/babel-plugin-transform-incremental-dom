@@ -540,8 +540,8 @@ The runtime's required functions are:
   }
   ```
 
-To do this, simply add the `runtime` option to the Incremental DOM
-plugin:
+To do this, simply add the `runtimeModuleSource` option to the
+Incremental DOM plugin:
 
 ```json
 {

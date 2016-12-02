@@ -19,6 +19,8 @@ import buildChildren from "./helpers/build-children";
 
 import JSX from "babel-plugin-syntax-jsx";
 
+import * as messages from "./messages";
+
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
     _traverse.explode(visitor);
@@ -166,6 +168,13 @@ export default function ({ types: t, traverse: _traverse }) {
     visitor: {
       Program: {
         enter(path) {
+          if (this.opts.prefix) {
+            throw new Error(messages.prefixOptionRemoved);
+          }
+          if (this.opts.runtime) {
+            throw new Error(messages.runtimeOptionRemoved);
+          }
+
           if (this.opts.inlineExpressions) {
             path.traverse(expressionInliner, this);
           }

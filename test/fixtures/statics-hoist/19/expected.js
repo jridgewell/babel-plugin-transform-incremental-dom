@@ -1,9 +1,9 @@
 var _jsxWrapper = function _jsxWrapper(func, args) {
-  var wrapper = args ? function wrapper() {
-    return func.apply(this, args);
-  } : func;
-  wrapper.__jsxDOMWrapper = true;
-  return wrapper;
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
 };
 
 var _statics = ["id", "id2", "key", ""],

@@ -28,14 +28,26 @@ export function addHoistedDeclarator(scope, ref, value, { file }) {
 
 // Name Smartly Do Good.
 export function generateHoistName(path, fallback = "ref") {
-  const { scope } = path;
   const parent = path.findParent((p) => {
     return p.isVariableDeclarator() ||
       p.isAssignmentExpression() ||
       p.isCallExpression();
   });
 
-  return parent ?
-    scope.generateUidIdentifierBasedOnNode(parent.node) :
-    scope.generateUidIdentifier(fallback);
+  return path.scope.generateUidIdentifierBasedOnNode(parent && parent.node, fallback)}
+
+// Name Smartly Do Good.
+export function generateStaticsName(path) {
+  const { scope } = path;
+  const name = path.get("name");
+
+  const names = ["statics"];
+  let current = name;
+  while (!current.isJSXIdentifier()) {
+    names.push(current.node.property.name);
+    current = current.get("object");
+  }
+  names.push(current.node.name);
+
+  return scope.generateUidIdentifier(names.reverse().join("$"));
 }

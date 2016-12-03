@@ -6,11 +6,11 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _statics = ["id", "id2", "key", ""],
-    _statics2 = ["id", "id"],
+var _div$statics = ["id", "id2", "key", ""],
+    _div$statics2 = ["id", "id"],
     _a = function _a(_key) {
-  elementOpen("div", "__uuid__0__", _statics2);
-  elementVoid("div", _key, (_statics[3] = _key, _statics));
+  elementOpen("div", "__uuid__0__", _div$statics2);
+  elementVoid("div", _key, (_div$statics[3] = _key, _div$statics));
   return elementClose("div");
 };
 

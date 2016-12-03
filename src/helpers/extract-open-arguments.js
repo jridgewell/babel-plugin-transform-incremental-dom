@@ -10,7 +10,6 @@ import * as t from "babel-types";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(path, plugin) {
   const attributes = path.get("attributes");
-  const { scope } = path;
   const { requireStaticsKey } = plugin.opts;
   let attrs = [];
   let staticAttrs = [];
@@ -109,7 +108,7 @@ export default function extractOpenArguments(path, plugin) {
   if (staticAttrs.length === 0) {
     statics = null;
   } else {
-    statics = addStaticHoist(scope, plugin, statics, keyIndex);
+    statics = addStaticHoist(path, plugin, statics, keyIndex);
   }
 
   return { key, statics, attrs };

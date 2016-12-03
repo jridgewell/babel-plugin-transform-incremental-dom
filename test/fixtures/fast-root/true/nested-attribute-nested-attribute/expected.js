@@ -37,10 +37,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _statics = ["key", ""],
+var _span$statics = ["key", ""],
     _files$map = function _files$map(_file$name3, _file2, _ref2, _file$name4) {
   elementOpen("span");
-  elementOpen("span", _file$name3, (_statics[1] = _file$name3, _statics), "file", _file2, "onclick", _ref2);
+  elementOpen("span", _file$name3, (_span$statics[1] = _file$name3, _span$statics), "file", _file2, "onclick", _ref2);
 
   _renderArbitrary(_file$name4);
 

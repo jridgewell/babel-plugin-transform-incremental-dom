@@ -14,9 +14,9 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   _forOwn(spread, _flipAttr);
 };
 
-var _statics = ["class", "test", "key", "test"];
+var _div$statics = ["class", "test", "key", "test"];
 function render() {
-  elementOpenStart("div", "test", _statics);
+  elementOpenStart("div", "test", _div$statics);
   attr("id", id);
 
   _spreadAttribute(props);

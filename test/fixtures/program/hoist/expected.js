@@ -6,9 +6,9 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _statics = ["key", ""],
+var _div$statics = ["key", ""],
     _div = function _div(_ref) {
-  elementOpen("div", _ref, (_statics[1] = _ref, _statics));
+  elementOpen("div", _ref, (_div$statics[1] = _ref, _div$statics));
   return elementClose("div");
 };
 

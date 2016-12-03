@@ -37,9 +37,9 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _statics = ["key", ""],
+var _div$statics = ["key", ""],
     _queries$forEach = function _queries$forEach(_query$id) {
-  elementOpen("div", _query$id, (_statics[1] = _query$id, _statics));
+  elementOpen("div", _query$id, (_div$statics[1] = _query$id, _div$statics));
   return elementClose("div");
 };
 

@@ -1,4 +1,4 @@
-var _statics = ["key", "1"];
+var _div$statics = ["key", "1"];
 function render() {
-  return elementVoid("div", "1", _statics);
+  return elementVoid("div", "1", _div$statics);
 }

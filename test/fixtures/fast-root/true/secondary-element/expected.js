@@ -44,9 +44,9 @@ var _ul = function _ul(_deferred, _args) {
 
   return elementClose("ul");
 },
-    _statics = ["key", ""],
+    _li$statics = ["key", ""],
     _jsxWrapper2 = function _jsxWrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+  elementOpen("li", _file$name, (_li$statics[1] = _file$name, _li$statics), "file", _file, "onclick", _ref);
 
   _renderArbitrary(_file$name2);
 

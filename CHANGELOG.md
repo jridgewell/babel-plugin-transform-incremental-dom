@@ -9,6 +9,14 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 4.0.2
+
+- **Polish**
+  - Attempt to generate similar statics hoist names, to aid debugging
+    - [#78](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/78)
+  - Fall back to element tag when generating hoist names
+    - [#78](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/78)
+
 ## 4.0.1
 
 - **Polish**

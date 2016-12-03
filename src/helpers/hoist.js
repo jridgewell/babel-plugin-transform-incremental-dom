@@ -28,7 +28,6 @@ export function addHoistedDeclarator(scope, ref, value, { file }) {
 
 // Name Smartly Do Good.
 export function generateHoistName(path, suffix = "ref") {
-  const { scope } = path;
   const parent = path.findParent((p) => {
     return p.isVariableDeclarator() ||
       p.isAssignmentExpression() ||

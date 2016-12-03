@@ -24,9 +24,9 @@ export default function render(data) {
 **Out** (default, unoptimized options)
 
 ```javascript
-const _li$statics = ["key", ""];
+const _statics2 = ["key", ""];
 const _data$items$map = function(_item$id, _item$className, _item$name) {
-    elementOpen("li", _item$id, (_li$statics[1] = _item$id, _li$statics), "class", _item$className);
+    elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
 
     _renderArbitrary(_item$name);
 
@@ -36,7 +36,7 @@ const _data$items$map = function(_item$id, _item$className, _item$name) {
 const _header = function() {
     return elementVoid("div");
 };
-const _div$statics = ["id", "container"];
+const _statics = ["id", "container"];
 
 function render(data) {
     var header = data.conditional ? _jsxWrapper(_header) : null;
@@ -44,7 +44,7 @@ function render(data) {
         return _jsxWrapper(_data$items$map, [item.id, item.className, item.name]);
     });
 
-    elementOpen("div", "dae2fae9-47cb-4946-a96f-dbf5eb0fb8b7", _div$statics);
+    elementOpen("div", "dae2fae9-47cb-4946-a96f-dbf5eb0fb8b7", _statics);
 
       _renderArbitrary(header);
 
@@ -164,26 +164,26 @@ static attributes will be deoptimized into the dynamic attributes list.
 
 ```js
 // Disabled (default)
-var _a$statics = ["key", "key", "href", "http://key/specified"];
-var _a$statics2 = ["key", "8ad02822-f391-48fb-a277-8065f7f92a99", "href", "http://example.com"];
-var _a$statics3 = ["key", "adbe4414-e6ad-41c0-aae2-1ca578653119", "href", "http://other.com"];
+var _statics = ["key", "key", "href", "http://key/specified"];
+var _statics2 = ["key", "8ad02822-f391-48fb-a277-8065f7f92a99", "href", "http://example.com"];
+var _statics3 = ["key", "adbe4414-e6ad-41c0-aae2-1ca578653119", "href", "http://other.com"];
 
 function render() {
-  elementVoid("a", "key", _a$statics);
+  elementVoid("a", "key", _statics);
   if (condition)
-    elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", _a$statics2);
+    elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", _statics2);
   } else {
-    elementVoid("a", "adbe4414-e6ad-41c0-aae2-1ca578653119", _a$statics3);
+    elementVoid("a", "adbe4414-e6ad-41c0-aae2-1ca578653119", _statics3);
   }
 }
 ```
 
 ```js
 // Enabled
-var _a$statics = ["key", "key", "href", "http://key/specified"];
+var _statics = ["key", "key", "href", "http://key/specified"];
 
 function render(condition) {
-  elementVoid("a", "key", _a$statics);
+  elementVoid("a", "key", _statics);
   if (condition)
     elementVoid("a", null, null, "href", "http://example.com");
   } else {

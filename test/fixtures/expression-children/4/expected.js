@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _el = function _el(_i) {
+var _el$wrapper = function _el$wrapper(_i) {
   elementOpen("map2");
 
   _renderArbitrary(_i);
@@ -47,7 +47,7 @@ var _el = function _el(_i) {
 
 function render() {
   var map2 = [1, 2, 3].map(function (i) {
-    var el = _jsxWrapper(_el, [i]);
+    var el = _jsxWrapper(_el$wrapper, [i]);
     return el;
   });
 }

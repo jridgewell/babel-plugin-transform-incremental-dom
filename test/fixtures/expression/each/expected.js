@@ -38,7 +38,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 };
 
 var _div$statics = ["key", ""],
-    _queries$forEach = function _queries$forEach(_query$id) {
+    _div$wrapper = function _div$wrapper(_query$id) {
   elementOpen("div", _query$id, (_div$statics[1] = _query$id, _div$statics));
   return elementClose("div");
 };
@@ -47,7 +47,7 @@ function render() {
   elementOpen("div");
 
   _renderArbitrary(queries.forEach(function (query) {
-    return _jsxWrapper(_queries$forEach, [query.id]);
+    return _jsxWrapper(_div$wrapper, [query.id]);
   }));
 
   return elementClose("div");

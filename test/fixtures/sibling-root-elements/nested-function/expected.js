@@ -6,20 +6,20 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 },
-    _wrapper2 = function _wrapper2() {
+    _div$wrapper2 = function _div$wrapper2() {
   elementOpen("div");
   return elementClose("div");
 };
 
 function render() {
   function fn1() {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(_div$wrapper);
   }
   function fn2() {
-    return _jsxWrapper(_wrapper2);
+    return _jsxWrapper(_div$wrapper2);
   }
   elementOpen("root");
   return elementClose("root");

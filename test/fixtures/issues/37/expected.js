@@ -39,7 +39,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 var _div$statics = ["id", "app"],
     _input$statics = ["type", "text", "id", "testInput"],
-    _renderInput = function _renderInput() {
+    _div$wrapper = function _div$wrapper() {
   elementOpen("div");
   elementVoid("input", "__uuid__0__", _input$statics);
   return elementClose("div");
@@ -51,7 +51,7 @@ var _div$statics = ["id", "app"],
 
 function renderMain() {
   var renderInput = function renderInput() {
-    return _jsxWrapper(_renderInput);
+    return _jsxWrapper(_div$wrapper);
   };
   elementOpen("div", "__uuid__1__", _div$statics);
 

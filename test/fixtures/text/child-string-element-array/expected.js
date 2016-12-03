@@ -37,7 +37,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _span$wrapper = function _span$wrapper() {
   elementOpen("span");
   text("\xB7");
   return elementClose("span");
@@ -47,7 +47,7 @@ function render() {
   elementOpen("div");
   elementOpen("div");
 
-  _renderArbitrary(["First ", _jsxWrapper(_wrapper), " Second"]);
+  _renderArbitrary(["First ", _jsxWrapper(_span$wrapper), " Second"]);
 
   elementClose("div");
   return elementClose("div");

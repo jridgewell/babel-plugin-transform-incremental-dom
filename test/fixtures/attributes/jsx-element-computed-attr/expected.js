@@ -6,13 +6,13 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper(_ref) {
+var _span$wrapper = function _span$wrapper(_ref) {
   return elementVoid("span", null, null, "attr", _ref);
 };
 
 function render() {
   elementOpen("root");
-  elementOpen("div", null, null, "prop", _jsxWrapper(_wrapper, [i++]));
+  elementOpen("div", null, null, "prop", _jsxWrapper(_span$wrapper, [i++]));
   elementClose("div");
   return elementClose("root");
 }

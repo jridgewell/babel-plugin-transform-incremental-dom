@@ -38,7 +38,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 var _span$statics = ["key", ""],
-    _files$map = function _files$map(_file$name, _file, _ref, _file$name2) {
+    _li$wrapper = function _li$wrapper(_file$name, _file, _ref, _file$name2) {
   elementOpen("li");
   elementOpen("span", _file$name, (_span$statics[1] = _file$name, _span$statics), "file", _file, "onclick", _ref);
 
@@ -50,7 +50,7 @@ var _span$statics = ["key", ""],
 
 function render() {
   elementOpen("ul", null, null, "files", files.map(function (file) {
-    return _jsxWrapper(_files$map, [file.name, file, function (e) {
+    return _jsxWrapper(_li$wrapper, [file.name, file, function (e) {
       return fileClicked(e, file);
     }, file.name]);
   }));

@@ -37,14 +37,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _div = function _div() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
 function render() {
   var div;
   if (condition) {
-    div = _jsxWrapper(_div);
+    div = _jsxWrapper(_div$wrapper);
   }
   elementOpen("root");
 

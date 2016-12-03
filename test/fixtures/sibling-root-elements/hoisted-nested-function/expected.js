@@ -6,7 +6,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
@@ -16,6 +16,6 @@ function fn5() {
   return elementClose("root");
 
   function inner() {
-    return _jsxWrapper(_wrapper);
+    return _jsxWrapper(_div$wrapper);
   }
 }

@@ -37,14 +37,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _map = function _map(_i) {
+var _map$wrapper = function _map$wrapper(_i) {
   elementOpen("map");
 
   _renderArbitrary(_i);
 
   return elementClose("map");
 },
-    _ref3 = function _ref3(_ref, _ref2) {
+    _div$wrapper = function _div$wrapper(_ref, _ref2) {
   elementOpen("div", null, null, "first", _ref);
 
   _renderArbitrary(_ref2);
@@ -57,11 +57,11 @@ function render() {
   elementOpen("div", null, null, "attr", i++);
 
   _renderArbitrary([1, 2, 3].map(function (i) {
-    return _jsxWrapper(_map, [i]);
+    return _jsxWrapper(_map$wrapper, [i]);
   }));
 
   _renderArbitrary(function () {
-    _jsxWrapper(_ref3, [i++, i++]);
+    _jsxWrapper(_div$wrapper, [i++, i++]);
   }());
 
   _renderArbitrary(i++);

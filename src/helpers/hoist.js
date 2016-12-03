@@ -27,27 +27,38 @@ export function addHoistedDeclarator(scope, ref, value, { file }) {
 }
 
 // Name Smartly Do Good.
-export function generateHoistName(path, fallback = "ref") {
+export function generateHoistName(path, suffix = "ref") {
+  const { scope } = path;
   const parent = path.findParent((p) => {
     return p.isVariableDeclarator() ||
       p.isAssignmentExpression() ||
-      p.isCallExpression();
+      p.isStatement();
   });
 
-  return path.scope.generateUidIdentifierBasedOnNode(parent && parent.node, fallback)}
+  let name;
+  if (parent.isAssignmentExpression()) {
+    name = parent.get("left");
+  } else if (parent.isVariableDeclarator()) {
+    name = parent.get("id");
+  } else {
+    name = path.get("name");
+  }
+  return generateHoistNameBasedOn(name, suffix);
+}
 
 // Name Smartly Do Good.
-export function generateStaticsName(path) {
-  const { scope } = path;
-  const name = path.get("name");
+export function generateHoistNameBasedOn(path, suffix = "") {
+  const names = [];
+  if (suffix) {
+    names.push(suffix);
+  }
 
-  const names = ["statics"];
-  let current = name;
-  while (!current.isJSXIdentifier()) {
+  let current = path;
+  while (!(current.isIdentifier() || current.isJSXIdentifier())) {
     names.push(current.node.property.name);
     current = current.get("object");
   }
   names.push(current.node.name);
 
-  return scope.generateUidIdentifier(names.reverse().join("$"));
+  return path.scope.generateUidIdentifier(names.reverse().join("$"));
 }

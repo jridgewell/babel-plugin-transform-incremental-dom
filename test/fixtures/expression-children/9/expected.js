@@ -37,14 +37,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _one = function _one(_ref) {
+var _one$wrapper = function _one$wrapper(_ref) {
   elementOpen("one");
 
   _renderArbitrary(_ref);
 
   return elementClose("one");
 },
-    _two = function _two(_ref2) {
+    _two$wrapper = function _two$wrapper(_ref2) {
   elementOpen("two");
 
   _renderArbitrary(_ref2);
@@ -54,6 +54,6 @@ var _one = function _one(_ref) {
 
 function render() {
   var i = 1;
-  var one = _jsxWrapper(_one, [i++]);
-  var two = _jsxWrapper(_two, [i++]);
+  var one = _jsxWrapper(_one$wrapper, [i++]);
+  var two = _jsxWrapper(_two$wrapper, [i++]);
 }

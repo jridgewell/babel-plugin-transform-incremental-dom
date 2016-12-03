@@ -6,13 +6,13 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _items$map = function _items$map() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
 function fn4() {
   var items = items.map(function (item) {
-    return _jsxWrapper(_items$map);
+    return _jsxWrapper(_div$wrapper);
   });
   return elementVoid("root");
 }

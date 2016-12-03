@@ -37,7 +37,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _ref = function _ref() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
@@ -45,7 +45,7 @@ function render() {
   elementOpen("root");
 
   _renderArbitrary(function div() {
-    return _jsxWrapper(_ref);
+    return _jsxWrapper(_div$wrapper);
   }());
 
   return elementClose("root");

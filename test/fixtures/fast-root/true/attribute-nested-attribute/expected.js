@@ -38,21 +38,21 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 var _span$statics = ["key", ""],
-    _files$map = function _files$map(_file$name3, _file2, _ref2, _file$name4) {
+    _span$wrapper = function _span$wrapper(_file$name3, _file2, _ref2, _file$name4) {
   elementOpen("span", _file$name3, (_span$statics[1] = _file$name3, _span$statics), "file", _file2, "onclick", _ref2);
 
   _renderArbitrary(_file$name4);
 
   return elementClose("span");
 },
-    _files$map2 = function _files$map2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", null, null, "attr", _jsxWrapper(_files$map, [_file$name, _file, _ref, _file$name2]));
+    _li$wrapper = function _li$wrapper(_file$name, _file, _ref, _file$name2) {
+  elementOpen("li", null, null, "attr", _jsxWrapper(_span$wrapper, [_file$name, _file, _ref, _file$name2]));
   return elementClose("li");
 };
 
 function render() {
   elementOpen("ul", null, null, "files", files.map(function (file) {
-    return _jsxWrapper(_files$map2, [file.name, file, function (e) {
+    return _jsxWrapper(_li$wrapper, [file.name, file, function (e) {
       return fileClicked(e, file);
     }, file.name]);
   }));

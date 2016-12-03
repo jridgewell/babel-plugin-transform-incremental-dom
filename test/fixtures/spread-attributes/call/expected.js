@@ -22,7 +22,7 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   _forOwn(spread, _flipAttr);
 };
 
-var _test = function _test(_props) {
+var _test$wrapper = function _test$wrapper(_props) {
   elementOpenStart("div");
 
   _spreadAttribute(_props);
@@ -32,7 +32,7 @@ var _test = function _test(_props) {
 };
 
 function render() {
-  var test = _jsxWrapper(_test, [props()]);
+  var test = _jsxWrapper(_test$wrapper, [props()]);
   elementOpenStart("div");
 
   _spreadAttribute(props());

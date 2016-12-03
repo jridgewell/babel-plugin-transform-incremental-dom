@@ -37,7 +37,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _wrapper = function _wrapper() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
@@ -52,7 +52,7 @@ function render() {
 
   _renderArbitrary(true ? (elementOpen("div"), (elementOpen("div"), text("Top"), elementClose("div")), _renderArbitrary(getDiv()), elementClose("div")) : elementVoid("other"));
 
-  _renderArbitrary(_jsxWrapper(_wrapper) ? 1 : 2);
+  _renderArbitrary(_jsxWrapper(_div$wrapper) ? 1 : 2);
 
   return elementClose("div");
 }

@@ -6,10 +6,10 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _b = function _b() {
+var _b$wrapper = function _b$wrapper() {
   return elementVoid("bad");
 };
 
 function fn() {
-  var b = (_jsxWrapper(_b), 1);
+  var b = (_jsxWrapper(_b$wrapper), 1);
 }

@@ -37,23 +37,23 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _statics = ["id", "app"],
-    _statics2 = ["type", "text", "id", "testInput"],
-    _renderInput = function _renderInput() {
+var _div$statics = ["id", "app"],
+    _input$statics = ["type", "text", "id", "testInput"],
+    _div$wrapper = function _div$wrapper() {
   elementOpen("div");
-  elementVoid("input", "__uuid__0__", _statics2);
+  elementVoid("input", "__uuid__0__", _input$statics);
   return elementClose("div");
 },
-    _statics3 = ["type", "text", "id", "testInput"],
-    _statics4 = ["id", "app"],
-    _statics5 = ["id", "app"],
-    _statics6 = ["id", "app"];
+    _input$statics2 = ["type", "text", "id", "testInput"],
+    _div$statics2 = ["id", "app"],
+    _div$statics3 = ["id", "app"],
+    _div$statics4 = ["id", "app"];
 
 function renderMain() {
   var renderInput = function renderInput() {
-    return _jsxWrapper(_renderInput);
+    return _jsxWrapper(_div$wrapper);
   };
-  elementOpen("div", "__uuid__1__", _statics);
+  elementOpen("div", "__uuid__1__", _div$statics);
 
   _renderArbitrary(renderInput());
 
@@ -62,12 +62,12 @@ function renderMain() {
 
 var renderInput = function renderInput() {
   elementOpen("div");
-  elementVoid("input", "__uuid__2__", _statics3);
+  elementVoid("input", "__uuid__2__", _input$statics2);
   return elementClose("div");
 };
 
 function renderMain() {
-  elementOpen("div", "__uuid__3__", _statics4);
+  elementOpen("div", "__uuid__3__", _div$statics2);
 
   _renderArbitrary(renderInput());
 
@@ -78,10 +78,10 @@ function renderMain() {
 
 function renderMain(flag) {
   if (flag) {
-    elementOpen("div", "__uuid__4__", _statics5);
+    elementOpen("div", "__uuid__4__", _div$statics3);
     return elementClose("div");
   }
-  elementOpen("div", "__uuid__5__", _statics6);
+  elementOpen("div", "__uuid__5__", _div$statics4);
 
   _renderArbitrary(renderInput());
 

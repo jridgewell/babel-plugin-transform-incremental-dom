@@ -29,14 +29,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _statics = ["key", ""];
+var _li$statics = ["key", ""];
 function render() {
   elementOpen("ul");
   files.map(function (file) {
     var _file$name;
 
     // @incremental-dom enable-fastRoot
-    elementOpen("li", _file$name = file.name, (_statics[1] = _file$name, _statics), "file", file, "onclick", function (e) {
+    elementOpen("li", _file$name = file.name, (_li$statics[1] = _file$name, _li$statics), "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

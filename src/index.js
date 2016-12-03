@@ -109,7 +109,7 @@ export default function ({ types: t, traverse: _traverse }) {
           const params = closureVars.map((e) => e.id);
           let wrapper = addHoistedDeclarator(
             path.scope,
-            generateHoistName(path, "wrapper"),
+            generateHoistName(path.get("openingElement"), "wrapper"),
             t.functionExpression(null, params, t.blockStatement(elements)),
             this
           );

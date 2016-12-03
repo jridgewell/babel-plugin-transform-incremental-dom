@@ -1,11 +1,11 @@
-import { addHoistedDeclarator } from "./hoist";
+import { addHoistedDeclarator, generateHoistNameBasedOn } from "./hoist";
 import * as t from "babel-types";
 
 // Hoists the static attributes array, so that the array instance is not
 // recreated multiple times.
-export default function addStaticHoist(scope, plugin, statics, keyIndex) {
-  const id = scope.generateUidIdentifier("statics");
-  addHoistedDeclarator(scope, id, statics, plugin);
+export default function addStaticHoist(path, plugin, statics, keyIndex) {
+  const id = generateHoistNameBasedOn(path.get("name"), "statics");
+  addHoistedDeclarator(path.scope, id, statics, plugin);
 
   if (keyIndex === -1) {
     return id;

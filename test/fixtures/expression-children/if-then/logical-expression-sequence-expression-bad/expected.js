@@ -37,14 +37,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _wrapper = function _wrapper() {
+var _div$wrapper = function _div$wrapper() {
   return elementVoid("div");
 };
 
 function render() {
   elementOpen("div");
 
-  _renderArbitrary(true && (1, _jsxWrapper(_wrapper), 2));
+  _renderArbitrary(true && (1, _jsxWrapper(_div$wrapper), 2));
 
   return elementClose("div");
 }

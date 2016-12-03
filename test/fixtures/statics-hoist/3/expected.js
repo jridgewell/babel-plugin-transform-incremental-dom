@@ -1,4 +1,4 @@
-var _statics = ["id", "id", "key", ""];
+var _div$statics = ["id", "id", "key", ""];
 function fn3o() {
-  return elementVoid("div", key4, (_statics[3] = key4, _statics));
+  return elementVoid("div", key4, (_div$statics[3] = key4, _div$statics));
 }

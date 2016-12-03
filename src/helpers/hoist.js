@@ -27,15 +27,37 @@ export function addHoistedDeclarator(scope, ref, value, { file }) {
 }
 
 // Name Smartly Do Good.
-export function generateHoistName(path, fallback = "ref") {
-  const { scope } = path;
+export function generateHoistName(path, suffix = "ref") {
   const parent = path.findParent((p) => {
     return p.isVariableDeclarator() ||
       p.isAssignmentExpression() ||
-      p.isCallExpression();
+      p.isStatement();
   });
 
-  return parent ?
-    scope.generateUidIdentifierBasedOnNode(parent.node) :
-    scope.generateUidIdentifier(fallback);
+  let name;
+  if (parent.isAssignmentExpression()) {
+    name = parent.get("left");
+  } else if (parent.isVariableDeclarator()) {
+    name = parent.get("id");
+  } else {
+    name = path.get("name");
+  }
+  return generateHoistNameBasedOn(name, suffix);
+}
+
+// Name Smartly Do Good.
+export function generateHoistNameBasedOn(path, suffix = "") {
+  const names = [];
+  if (suffix) {
+    names.push(suffix);
+  }
+
+  let current = path;
+  while (!(current.isIdentifier() || current.isJSXIdentifier())) {
+    names.push(current.node.property.name);
+    current = current.get("object");
+  }
+  names.push(current.node.name);
+
+  return path.scope.generateUidIdentifier(names.reverse().join("$"));
 }

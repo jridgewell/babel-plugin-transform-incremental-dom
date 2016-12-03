@@ -6,15 +6,15 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _statics = ["id", "id", "key", "key"],
-    _els$push = function _els$push() {
-  return elementVoid("div", "key", _statics);
+var _div$statics = ["id", "id", "key", "key"],
+    _div$wrapper = function _div$wrapper() {
+  return elementVoid("div", "key", _div$statics);
 };
 
 function fn7(items) {
   var els = [];
   for (var i = 0; i < items.length; i++) {
-    els.push(_jsxWrapper(_els$push));
+    els.push(_jsxWrapper(_div$wrapper));
   }
   return els;
 }

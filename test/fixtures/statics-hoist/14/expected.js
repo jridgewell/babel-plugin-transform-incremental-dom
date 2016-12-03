@@ -6,14 +6,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _statics = ["id", "id"],
-    _items$map = function _items$map() {
-  return elementVoid("div", "__uuid__0__", _statics);
+var _div$statics = ["id", "id"],
+    _div$wrapper = function _div$wrapper() {
+  return elementVoid("div", "__uuid__0__", _div$statics);
 };
 
 function fn7(items) {
   items = items.map(function (el, i) {
-    return _jsxWrapper(_items$map);
+    return _jsxWrapper(_div$wrapper);
   });
   return elementVoid("root");
 }

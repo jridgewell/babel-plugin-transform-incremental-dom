@@ -24,27 +24,27 @@ export default function render(data) {
 **Out** (default, unoptimized options)
 
 ```javascript
-const _statics2 = ["key", ""];
-const _data$items$map = function(_item$id, _item$className, _item$name) {
-    elementOpen("li", _item$id, (_statics2[1] = _item$id, _statics2), "class", _item$className);
+const _li$statics = ["key", ""];
+const _li$wrapper = function (_item$id, _item$className, _item$name) {
+    elementOpen("li", _item$id, (_li$statics[1] = _item$id, _li$statics), "class", _item$className);
 
     _renderArbitrary(_item$name);
 
     return elementClose("li");
 };
 
-const _header = function() {
+const _header$wrapper = function () {
     return elementVoid("div");
 };
-const _statics = ["id", "container"];
 
+const _div$statics = ["id", "container"];
 function render(data) {
-    var header = data.conditional ? _jsxWrapper(_header) : null;
+    var header = data.conditional ? _jsxWrapper(_header$wrapper) : null;
     var collection = data.items.map(item => {
-        return _jsxWrapper(_data$items$map, [item.id, item.className, item.name]);
+        return _jsxWrapper(_li$wrapper, [item.id, item.className, item.name]);
     });
 
-    elementOpen("div", "dae2fae9-47cb-4946-a96f-dbf5eb0fb8b7", _statics);
+    elementOpen("div", "ab4a1d60-7353-4d98-b1f5-2682f1bc2b3c", _div$statics);
 
       _renderArbitrary(header);
 

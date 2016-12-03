@@ -37,16 +37,16 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _ul = function _ul(_deferred, _args) {
+var _ul$wrapper = function _ul$wrapper(_deferred, _args) {
   elementOpen("ul");
 
   _renderArbitrary(_deferred.map(_args));
 
   return elementClose("ul");
 },
-    _statics = ["key", ""],
-    _jsxWrapper2 = function _jsxWrapper2(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_statics[1] = _file$name, _statics), "file", _file, "onclick", _ref);
+    _li$statics = ["key", ""],
+    _li$wrapper = function _li$wrapper(_file$name, _file, _ref, _file$name2) {
+  elementOpen("li", _file$name, (_li$statics[1] = _file$name, _li$statics), "file", _file, "onclick", _ref);
 
   _renderArbitrary(_file$name2);
 
@@ -54,8 +54,8 @@ var _ul = function _ul(_deferred, _args) {
 };
 
 function render() {
-  var ul = _jsxWrapper(_ul, [files, function (file) {
-    return _jsxWrapper(_jsxWrapper2, [file.name, file, function (e) {
+  var ul = _jsxWrapper(_ul$wrapper, [files, function (file) {
+    return _jsxWrapper(_li$wrapper, [file.name, file, function (e) {
       return fileClicked(e, file);
     }, file.name]);
   }]);

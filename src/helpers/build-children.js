@@ -23,7 +23,6 @@ function isStringConcatenation(path) {
 
 // Transforms the children into an array of iDOM function calls
 export default function buildChildren(children, plugin) {
-  let renderArbitraryRef;
   const { replacedElements } = plugin;
 
   children = children.reduce((children, child) => {
@@ -64,13 +63,11 @@ export default function buildChildren(children, plugin) {
 
       node = toFunctionCall(iDOMMethod("text", plugin), [value]);
     } else if (isStringConcatenation(child)) {
-      node = toFunctionCall(iDOMMethod("text", plugin), [child.node]);
+      node = toFunctionCall(iDOMMethod("text", plugin), [node]);
     } else if (wasInExpressionContainer && !replacedElements.has(child)) {
       // Arbitrary expressions, e.g. variables, need to be inspected at runtime
       // to determine how to render them.
-      renderArbitraryRef = renderArbitraryRef || injectRenderArbitrary(plugin);
-
-      node = toFunctionCall(renderArbitraryRef, [node]);
+      node = toFunctionCall(injectRenderArbitrary(plugin), [node]);
     }
 
     children.push(node);

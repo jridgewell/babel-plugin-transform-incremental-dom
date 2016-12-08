@@ -1,4 +1,6 @@
 import isReturned from "./is-returned";
+import useFastRoot from "./use-fast-root";
+import moduleSource from "./module-source";
 
 const map = new WeakMap();
 
@@ -28,11 +30,66 @@ const rootElementFinder = {
   }
 };
 
+function inPatchRoot(path, plugin) {
+  const { opts, file } = plugin;
+  if (useFastRoot(path, opts)) {
+    return true;
+  }
+
+  const importSource = moduleSource(plugin);
+  if (!importSource) {
+    return true;
+  }
+
+  const patchRoots = [];
+  const { imports } = file.metadata.modules;
+  const iDOMImport = imports.find((imported) => {
+    return imported.source === importSource;
+  });
+
+  if (iDOMImport && iDOMImport.imported.includes('patch')) {
+    const patchImport = iDOMImport.specifiers.find((imported) => {
+      return imported.imported === "patch";
+    });
+    const binding = file.scope.getBinding(patchImport.local);
+
+    binding.referencePaths.forEach((reference) => {
+      const { parentPath } = reference;
+      if (parentPath.isCallExpression()) {
+        patchRoots.push(parentPath);
+      }
+    });
+  } else if (iDOMImport && iDOMImport.imported.includes('*')) {
+    const starImport = iDOMImport.specifiers.find((imported) => {
+      return imported.kind === "namespace";
+    });
+    const binding = file.scope.getBinding(starImport.local);
+
+    binding.referencePaths.forEach((reference) => {
+      const { parentPath } = reference;
+      if (parentPath.isMemberExpression()) {
+        const property = parentPath.get("property");
+        if (property.isIdentifier({ name: "patch" })) {
+          const grandParentPath = parentPath.parentPath;
+          if (grandParentPath.isCallExpression()) {
+            patchRoots.push(grandParentPath);
+          }
+        }
+      }
+    });
+  }
+
+
+  return !patchRoots.length || path.findParent((parent) => {
+    return patchRoots.includes(parent);
+  });
+}
+
 // Detects if this JSX element is the root element.
 // It is not the root if there is another root element in this
 // or a higher function scope.
-export default function isRootJSX(path) {
-  let state = {
+export default function isRootJSX(path, plugin) {
+  const state = {
     root: null,
     crossedFunction: false,
     jsx: path
@@ -43,6 +100,10 @@ export default function isRootJSX(path) {
   }
 
   if (!isReturned(path)) {
+    return false;
+  }
+
+  if (!inPatchRoot(path, plugin)) {
     return false;
   }
 

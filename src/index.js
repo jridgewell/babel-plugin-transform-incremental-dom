@@ -146,7 +146,7 @@ export default function ({ types: t, traverse: _traverse }) {
       const previousRoot = this.root;
       const sameLevel = !previousRoot || previousRoot.getFunctionParent() === path.getFunctionParent();
 
-      if (sameLevel && isRootJSX(path)) {
+      if (sameLevel && isRootJSX(path, this)) {
         this.root = path;
         const state = Object.assign({}, this, {
           secondaryTree: !isReturned(path),

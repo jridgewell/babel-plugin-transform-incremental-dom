@@ -10,12 +10,14 @@ import expressionInliner from "./helpers/inline-expressions";
 import injectJSXWrapper from "./helpers/runtime/jsx-wrapper";
 
 import toFunctionCall from "./helpers/ast/to-function-call";
+import iDOMMethod from "./helpers/idom-method";
 import flattenExpressions from "./helpers/ast/flatten-expressions";
 import statementsWithReturnLast from "./helpers/ast/statements-with-return-last";
 
 import elementOpenCall from "./helpers/element-open-call";
 import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
+import { hasSkip } from "./helpers/attributes";
 
 import JSX from "babel-plugin-syntax-jsx";
 
@@ -74,10 +76,13 @@ export default function ({ types: t, traverse: _traverse }) {
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
         const implicitReturn = parentPath.isArrowFunctionExpression();
+        const openingElementPath = path.get("openingElement");
 
-        const openingElement = elementOpenCall(path.get("openingElement"), this);
-        const closingElement = elementCloseCall(path.get("openingElement"), this);
-        const children = buildChildren(path.get("children"), this);
+        const openingElement = elementOpenCall(openingElementPath, this);
+        const closingElement = elementCloseCall(openingElementPath, this);
+        const isSkipping = hasSkip(openingElementPath.get("attributes"), this);
+        const children =  isSkipping ? [toFunctionCall(iDOMMethod("skip", this), [])] :
+          buildChildren(path.get("children"), this);
 
         let elements = [ openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }

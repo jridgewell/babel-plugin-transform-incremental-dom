@@ -47,7 +47,7 @@ function inPatchRoot(path, plugin) {
     return imported.source === importSource;
   });
 
-  if (iDOMImport && iDOMImport.imported.includes("patch")) {
+  if (iDOMImport && iDOMImport.imported.indexOf("patch") > -1) {
     const patchImport = iDOMImport.specifiers.find((imported) => {
       return imported.imported === "patch";
     });
@@ -59,7 +59,7 @@ function inPatchRoot(path, plugin) {
         patchRoots.push(parentPath);
       }
     });
-  } else if (iDOMImport && iDOMImport.imported.includes("*")) {
+  } else if (iDOMImport && iDOMImport.imported.indexOf("*") > -1) {
     const starImport = iDOMImport.specifiers.find((imported) => {
       return imported.kind === "namespace";
     });
@@ -81,7 +81,7 @@ function inPatchRoot(path, plugin) {
 
 
   return !patchRoots.length || path.findParent((parent) => {
-    return patchRoots.includes(parent);
+    return patchRoots.indexOf(parent) > -1;
   });
 }
 

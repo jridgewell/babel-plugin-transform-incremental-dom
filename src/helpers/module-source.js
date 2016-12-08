@@ -2,7 +2,7 @@ import resolvePath from "./resolve-path";
 
 // Determines the import module source for iDOM.
 export default function moduleSource({ opts, file }) {
-  let { moduleSource } = opts;;
+  let { moduleSource } = opts;
   if (moduleSource) {
     return resolvePath(file.opts.filename, moduleSource);
   }

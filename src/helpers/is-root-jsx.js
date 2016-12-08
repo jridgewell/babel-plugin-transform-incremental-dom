@@ -47,7 +47,7 @@ function inPatchRoot(path, plugin) {
     return imported.source === importSource;
   });
 
-  if (iDOMImport && iDOMImport.imported.includes('patch')) {
+  if (iDOMImport && iDOMImport.imported.includes("patch")) {
     const patchImport = iDOMImport.specifiers.find((imported) => {
       return imported.imported === "patch";
     });
@@ -59,7 +59,7 @@ function inPatchRoot(path, plugin) {
         patchRoots.push(parentPath);
       }
     });
-  } else if (iDOMImport && iDOMImport.imported.includes('*')) {
+  } else if (iDOMImport && iDOMImport.imported.includes("*")) {
     const starImport = iDOMImport.specifiers.find((imported) => {
       return imported.kind === "namespace";
     });

@@ -41,12 +41,13 @@ function inPatchRoot(path, plugin) {
     return true;
   }
 
-  const patchRoots = [];
+  const patchCalls = [];
   const { imports } = file.metadata.modules;
   const iDOMImport = imports.find((imported) => {
     return imported.source === importSource;
   });
 
+  // Gather all the patch calls
   if (iDOMImport && iDOMImport.imported.indexOf("patch") > -1) {
     const patchImport = iDOMImport.specifiers.find((imported) => {
       return imported.imported === "patch";
@@ -56,7 +57,7 @@ function inPatchRoot(path, plugin) {
     binding.referencePaths.forEach((reference) => {
       const { parentPath } = reference;
       if (parentPath.isCallExpression()) {
-        patchRoots.push(parentPath);
+        patchCalls.push(parentPath);
       }
     });
   } else if (iDOMImport && iDOMImport.imported.indexOf("*") > -1) {
@@ -72,13 +73,36 @@ function inPatchRoot(path, plugin) {
         if (property.isIdentifier({ name: "patch" })) {
           const grandParentPath = parentPath.parentPath;
           if (grandParentPath.isCallExpression()) {
-            patchRoots.push(grandParentPath);
+            patchCalls.push(grandParentPath);
           }
         }
       }
     });
   }
 
+  if (!patchCalls.length) {
+    return true;
+  }
+
+  // Now, gather the renderer function that is the second param.
+  const patchRoots = patchCalls.reduce((roots, call) => {
+    const renderer = call.get("arguments.1");
+    if (!renderer) {
+      return roots;
+    }
+
+    if (renderer.isFunction()) {
+      roots.push(renderer);
+    } else if (renderer.isIdentifier()) {
+      const { name } = renderer.node;
+      const binding = renderer.scope.getBinding(name);
+      if (binding) {
+        roots.push(binding.path);
+      }
+    }
+
+    return roots;
+  }, []);
 
   return !patchRoots.length || path.findParent((parent) => {
     return patchRoots.indexOf(parent) > -1;

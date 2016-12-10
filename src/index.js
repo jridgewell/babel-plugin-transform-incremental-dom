@@ -119,6 +119,13 @@ export default function ({ types: t, traverse: _traverse }) {
             this
           );
 
+          // If we're the direct child of a JSXAttribute, we have to wrap the wrapper
+          // call in an expression container.
+          if (parentPath.isJSXAttribute()) {
+            path.replaceWith(t.jSXExpressionContainer(t.jSXEmptyExpression()));
+            path = path.get("expression");
+          }
+
           const args = [ wrapper ];
           if (closureVars.length) {
             const paramArgs = closureVars.map((e) => e.init);

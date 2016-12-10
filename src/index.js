@@ -22,6 +22,7 @@ import { hasSkip } from "./helpers/attributes";
 import JSX from "babel-plugin-syntax-jsx";
 
 import * as messages from "./messages";
+import * as t from "babel-types";
 
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {
@@ -118,6 +119,13 @@ export default function ({ types: t, traverse: _traverse }) {
             t.functionExpression(null, params, t.blockStatement(elements)),
             this
           );
+
+          // If we're the direct child of a JSXAttribute, we have to wrap the wrapper
+          // call in an expression container.
+          if (parentPath.isJSXAttribute()) {
+            path.replaceWith(t.jSXExpressionContainer(t.jSXEmptyExpression()));
+            path = path.get("expression");
+          }
 
           const args = [ wrapper ];
           if (closureVars.length) {

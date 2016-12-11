@@ -19,11 +19,18 @@ function useFastRoot(path, { fastRoot = false }) {
 
 function ancestry(ancestor, fastRoot) {
   let path = ancestor;
+  let crossed = false;
 
   let last;
+  console.log("\t", ancestor.node.openingElement.name.name)
   while ((last = ancestor, ancestor = ancestor.parentPath)) {
+    console.log("\t\t", ancestor.type);
     // We've found our path to a parent.
     if (ancestor.isJSXElement()) {
+      if (crossed && !fastRoot) {
+        return;
+      }
+
       return path;
     }
 
@@ -35,6 +42,12 @@ function ancestry(ancestor, fastRoot) {
     // We're interested in the expression container's child, not the expression
     // container itself.
     if (ancestor.isJSXExpressionContainer()) {
+      continue;
+    }
+
+    if (ancestor.type === 'JSXSpreadChild') {
+      console.log(ancestor.node);
+      crossed = false;
       continue;
     }
 
@@ -66,9 +79,8 @@ function ancestry(ancestor, fastRoot) {
       }
 
       return;
-    } else if (!fastRoot) {
-      // In normal mode, nothing else keeps a JSX search going.
-      return;
+    } else {
+      crossed = true;
     }
 
     // Record this path as the topmost child so far.

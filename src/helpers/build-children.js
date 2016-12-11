@@ -64,6 +64,9 @@ export default function buildChildren(children, plugin) {
       node = toFunctionCall(iDOMMethod("text", plugin), [value]);
     } else if (isStringConcatenation(child)) {
       node = toFunctionCall(iDOMMethod("text", plugin), [node]);
+    } else if (child.type === "JSXSpreadChild") {
+      // TODO After babel/babel#3575 is merged, we can use #isJSXSpreadChild
+      node = node.expression;
     } else if (wasInExpressionContainer && !replacedElements.has(child)) {
       // Arbitrary expressions, e.g. variables, need to be inspected at runtime
       // to determine how to render them.

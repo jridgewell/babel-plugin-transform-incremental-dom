@@ -52,6 +52,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
+        console.log('enter')
         const { secondaryTree, root, closureVarsStack } = this;
         const needsWrapper = secondaryTree || (root !== path && !ancestorExpression(path, this));
 
@@ -69,6 +70,7 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
+        console.log('exit')
         const { root, secondaryTree, replacedElements, closureVarsStack } = this;
         const ancestorPath = ancestorExpression(path, this);
         const needsWrapper = secondaryTree || (root !== path && !ancestorPath);
@@ -89,7 +91,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (!needsWrapper && parentPath.isJSXExpressionContainer()) {
+        if (!needsWrapper && parentPath.isJSX()) {
           const sequence = t.sequenceExpression(elements);
           // Mark this sequence as a JSX Element so we can avoid an unnecessary
           // renderArbitrary call.

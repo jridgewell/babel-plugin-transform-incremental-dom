@@ -127,7 +127,7 @@ $ npm install babel-plugin-transform-incremental-dom
 ```json
 {
   "presets": ["es2015"],
-  "plugins": ["incremental-dom"]
+  "plugins": ["transform-incremental-dom"]
 }
 ```
 
@@ -136,7 +136,7 @@ Any of the [configuration options](#options) may also be passed.
 ### Via CLI
 
 ```sh
-$ babel --plugins incremental-dom script.js
+$ babel --plugins transform-incremental-dom script.js
 ```
 
 ### Via Node API
@@ -144,7 +144,7 @@ $ babel --plugins incremental-dom script.js
 ```javascript
 require("babel-core").transform("code", {
   "presets": ["es2015"],
-  "plugins": ["incremental-dom"],
+  "plugins": ["transform-incremental-dom"],
 });
 ```
 
@@ -198,7 +198,7 @@ plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "requireStaticsKey": true
     }
   ]]
@@ -224,7 +224,7 @@ Incremental DOM plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "namespaceAttributes": true
     }
   ]]
@@ -268,7 +268,7 @@ plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "inlineExpressions": true
     }
   ]]
@@ -325,7 +325,7 @@ plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "fastRoot": true
     }
   ]]
@@ -395,7 +395,7 @@ plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "components": true
     }
   ]]
@@ -448,7 +448,7 @@ plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "moduleSource": "incremental-dom"
     }
   ]]
@@ -547,7 +547,7 @@ Incremental DOM plugin:
 ```json
 {
   "plugins": [[
-    "incremental-dom", {
+    "transform-incremental-dom", {
       "runtimeModuleSource": "iDOMHelpers"
     }
   ]]

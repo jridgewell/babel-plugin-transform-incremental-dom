@@ -52,8 +52,10 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        const { secondaryTree, root, closureVarsStack } = this;
+        const { secondaryTree, root, closureVarsStack, elementVarsStack } = this;
         const needsWrapper = secondaryTree || (root !== path && !ancestorExpression(path, this));
+
+        elementVarsStack.push([]);
 
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
@@ -69,7 +71,7 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
-        const { root, secondaryTree, replacedElements, closureVarsStack } = this;
+        const { root, secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
         const ancestorPath = ancestorExpression(path, this);
         const needsWrapper = secondaryTree || (root !== path && !ancestorPath);
 
@@ -80,11 +82,12 @@ export default function ({ types: t, traverse: _traverse }) {
 
         const openingElement = elementOpenCall(openingElementPath, this);
         const closingElement = elementCloseCall(openingElementPath, this);
+        const elementVars = elementVarsStack.pop();
         const isSkipping = hasSkip(openingElementPath.get("attributes"), this);
         const children =  isSkipping ? [toFunctionCall(iDOMMethod("skip", this), [])] :
           buildChildren(path.get("children"), this);
 
-        let elements = [ openingElement, ...children ];
+        let elements = [ ...elementVars, openingElement, ...children ];
         if (closingElement) { elements.push(closingElement); }
 
         // Expressions Containers must contain an expression and not statements.
@@ -200,6 +203,7 @@ export default function ({ types: t, traverse: _traverse }) {
             root: null,
             replacedElements: new Set(),
             closureVarsStack: [],
+            elementVarsStack: [],
             file: this.file,
             opts: this.opts,
           });
@@ -217,6 +221,7 @@ export default function ({ types: t, traverse: _traverse }) {
             root: null,
             replacedElements: new Set(),
             closureVarsStack: [],
+            elementVarsStack: [],
             file: this.file,
             opts: this.opts,
           };

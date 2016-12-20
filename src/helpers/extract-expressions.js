@@ -1,4 +1,5 @@
 import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
+import last from "./last";
 import * as t from "babel-types";
 
 function addClosureVar(expression, closureVars) {
@@ -7,10 +8,6 @@ function addClosureVar(expression, closureVars) {
 
   closureVars.push({ id, init });
   return id;
-}
-
-function last(array) {
-  return array[array.length - 1];
 }
 
 const collectDeferrables = {

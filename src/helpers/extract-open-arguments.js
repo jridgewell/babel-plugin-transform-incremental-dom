@@ -1,7 +1,8 @@
-import isLiteralOrSpecial from "./is-literal-or-special";
+import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
 import addStaticHoist from "./hoist-statics";
 import uuid from "./uuid";
 import toString from "./ast/to-string";
+import last from "./last";
 import * as t from "babel-types";
 
 // Extracts attributes into the appropriate
@@ -10,7 +11,9 @@ import * as t from "babel-types";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(path, plugin) {
   const attributes = path.get("attributes");
+  const { elementVarsStack } = plugin;
   const { requireStaticsKey } = plugin.opts;
+  const elementVars = last(elementVarsStack);
   let attrs = [];
   let staticAttrs = [];
   let key = null;
@@ -57,15 +60,24 @@ export default function extractOpenArguments(path, plugin) {
     // The key attribute must be passed to the `elementOpen` call.
     if (name.value === "key") {
       key = node;
+      const { scope } = value;
 
       // If it's not a literal key, we must assign it in the statics array.
       if (!literal) {
-        if (attrs.length) {
-          throw attribute.buildCodeFrameError("Key should always be the first computed attribute.");
-        }
+        attrs.forEach((attr) => {
+          const { name, value } = attr;
+          if (isLiteralOrSpecialNode(value) || t.isIdentifier(value)) {
+            return;
+          }
+
+          const id = scope.generateUidIdentifier(name ? name.value : "spread");
+          scope.push({ id });
+          elementVars.push(t.assignmentExpression("=", id, value));
+          attr.value = id;
+        });
 
         if (!value.isIdentifier()) {
-          node = value.scope.maybeGenerateMemoised(node);
+          node = scope.maybeGenerateMemoised(node);
           key = t.assignmentExpression("=", node, key);
         }
 

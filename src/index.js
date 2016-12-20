@@ -22,7 +22,6 @@ import { hasSkip } from "./helpers/attributes";
 import JSX from "babel-plugin-syntax-jsx";
 
 import * as messages from "./messages";
-import * as t from "babel-types";
 
 export default function ({ types: t, traverse: _traverse }) {
   function traverse(path, visitor, state) {

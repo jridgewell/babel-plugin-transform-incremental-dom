@@ -110,7 +110,6 @@ const expressionExtractor = {
     }
 
     const everyBranchHasCall = deferred.length >= branches;
-    const onlyOneArg = deferredArgsLength === 1;
     let deferredId = path.scope.generateUidIdentifier("deferred");
     let argId;
     let branchId;
@@ -157,32 +156,24 @@ const expressionExtractor = {
     // Now that we've evaluated the expression, we need to evaluate the arguments
     // to the deferred call that "won", if any did.
     if (argId) {
-      let init;
-      if (onlyOneArg) {
-        init = deferredArgs.find((args) => args.length)[0];
-      } else {
-        init = deferredArgs.map((args) => {
-          return t.arrayExpression(args);
-        }).reduceRight((conditional, args, i) => {
-          if (!branchId || args.length === 0) {
-            return conditional;
-          }
+      let init = deferredArgs.map((args) => {
+        const { length } = args;
+        return length === 0 ? null : length === 1 ? args[0] : t.arrayExpression(args);
+      }).reduceRight((conditional, args, i) => {
+        if (!args) {
+          return conditional;
+        }
 
-          return t.conditionalExpression(
-            t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
-            args,
-            conditional
-          );
-        });
-      }
-      // If no branch "won", we need to evaluate to something else.
-      if (!everyBranchHasCall) {
-        init = t.conditionalExpression(
-          t.binaryExpression("==", branchId, t.numericLiteral(0)),
-          t.nullLiteral(),
-          init
+        if (!branchId) {
+          return args;
+        }
+
+        return t.conditionalExpression(
+          t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
+          args,
+          conditional
         );
-      }
+      }, t.nullLiteral());
       closureVars.push({ id: argId, init });
     }
 
@@ -192,7 +183,7 @@ const expressionExtractor = {
     }
 
     // Finally, transform the calls into their evaluted "contex" form.
-    const evaluatedBranches = calls.map((struct) => {
+    const evaluatedBranches = calls.map((struct, i) => {
       const { node, isMemberExpression } = struct;
 
       // This reverses the context transform done earlier.
@@ -203,18 +194,20 @@ const expressionExtractor = {
       }
 
       // Any arguments are now passed through the evaluated args array.
-      node.arguments = node.arguments.map((arg, i) => {
+      let index = 0;
+      const deferredArgsLength = deferredArgs[i].length;
+      node.arguments = node.arguments.map((arg) => {
         if (isLiteralOrSpecialNode(arg)) {
           return arg;
         }
 
-        if (onlyOneArg) {
+        if (deferredArgsLength === 1) {
           return argId;
         }
 
         return t.memberExpression(
           argId,
-          t.numericLiteral(i),
+          t.numericLiteral(index++),
           true
         );
       });

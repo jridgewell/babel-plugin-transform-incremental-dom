@@ -77,13 +77,77 @@ for (let i = 0; i < cases.length; i++) {
   }
 }
 
-for (let i = 0; i < tests.length; i++) {
-  let fn = 0;
-  tests[i] = tests[i].replace(/fn\(\)/g, function() {
-    fn++;
-    return `fn${fn}(args[${fn - 1}]++)`;
-  });
+cases = tests;
+tests = [];
+for (let i = 0; i < cases.length; i++) {
+  const kase = cases[i].split('()');
+
+  const perms = Math.pow(2, kase.length - 1);
+  for (let j = 0; j < perms; j++) {
+    const bits = j.toString(2).split('').map((b) => b == "1");
+
+    while (bits.length < kase.length - 1) {
+      bits.unshift(false);
+    }
+    let perm = kase[0];
+    for (let k = 1; k < kase.length; k++) {
+      perm += `(${bits[k - 1] ? "arg" : ""})${kase[k]}`;
+    }
+    tests.push(perm)
+  }
 }
+
+cases = tests;
+tests = [];
+for (let i = 0; i < cases.length; i++) {
+  const kase = cases[i].split('arg');
+
+  const perms = Math.pow(2, kase.length - 1);
+  for (let j = 0; j < perms; j++) {
+    const bits = j.toString(2).split('').map((b) => b == "1");
+
+    while (bits.length < kase.length - 1) {
+      bits.unshift(false);
+    }
+    let perm = kase[0];
+    for (let k = 1; k < kase.length; k++) {
+      perm += `${bits[k - 1] ? "arg, arg" : "arg"}${kase[k]}`;
+    }
+    tests.push(perm)
+  }
+}
+
+cases = tests;
+tests = [];
+for (let i = 0; i < cases.length; i++) {
+  const kase = cases[i].split('arg');
+
+  const perms = Math.pow(2, kase.length - 1);
+  for (let j = 0; j < perms; j++) {
+    const bits = j.toString(2).split('').map((b) => b == "1");
+
+    while (bits.length < kase.length - 1) {
+      bits.unshift(false);
+    }
+    let perm = kase[0];
+    for (let k = 1; k < kase.length; k++) {
+      perm += `${bits[k - 1] ? "1" : "arg"}${kase[k]}`;
+    }
+    tests.push(perm)
+  }
+}
+
+cases = tests;
+tests = [];
+for (let i = 0; i < cases.length; i++) {
+  let fn = 0;
+  if (Math.random() > 0.05) continue;
+  tests.push(cases[i].replace(/fn\(([^)]*)\)/g, function(match, arg) {
+    fn++;
+    return `fn${fn}(${arg.replace(/arg/g, `args[${fn - 1}]++`)})`;
+  }));
+}
+
 
 
 let val;
@@ -138,6 +202,6 @@ for (let i = 0; i < tests.length; i++) {
     const count = args.reduce((sum, i) => sum + (i & 1));
 
     assert.equal(val, expected);
-    assert.equal(count,expectedCount, 'arguments were eagerly evaluated');
+    assert.equal(count, expectedCount, 'arguments were eagerly evaluated');
   });
 }

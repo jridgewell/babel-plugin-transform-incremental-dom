@@ -44,7 +44,7 @@ var _div$wrapper = function _div$wrapper(_deferred, _args, _deferred2, _args2) {
 
   _renderArbitrary(_deferred(1, true, _args, 'test'));
 
-  _renderArbitrary(_deferred2(1, _args2[1], 2, _args2[3], 'test'));
+  _renderArbitrary(_deferred2(1, _args2[0], 2, _args2[1], 'test'));
 
   return elementClose('div');
 };

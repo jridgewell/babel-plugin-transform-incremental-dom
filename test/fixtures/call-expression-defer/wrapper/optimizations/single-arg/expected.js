@@ -54,7 +54,7 @@ function render() {
       _b2 = 0;
 
   function fn() {}
-  var div = _jsxWrapper(_div$wrapper, [fn, args, true ? (_b = 1, fn) : (_b = 2, fn2), args, _b, true ? (_b2 = 1, fn) : (_b2 = 2, fn2), args, _b2]);
+  var div = _jsxWrapper(_div$wrapper, [fn, args, true ? (_b = 1, fn) : (_b = 2, fn2), _b == 1 ? args : null, _b, true ? (_b2 = 1, fn) : (_b2 = 2, fn2), _b2 == 2 ? args : null, _b2]);
   elementOpen("root");
 
   _renderArbitrary(div);

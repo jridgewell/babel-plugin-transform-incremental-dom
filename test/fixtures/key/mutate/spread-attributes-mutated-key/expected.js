@@ -16,11 +16,12 @@ var _spreadAttribute = function _spreadAttribute(spread) {
 
 var _div$statics = ["key", ""];
 function render() {
-  var _div$key;
+  var _spread, _div$key;
 
+  _spread = props;
   elementOpenStart("div", _div$key = props.key++, (_div$statics[1] = _div$key, _div$statics));
 
-  _spreadAttribute(props);
+  _spreadAttribute(_spread);
 
   elementOpenEnd("div");
   return elementClose("div");

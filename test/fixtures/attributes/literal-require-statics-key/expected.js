@@ -32,7 +32,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 function render(condition) {
   elementOpen("root");
 
-  _renderArbitrary(condition ? (elementOpen("div", null, null, "class", "my-class"), elementClose("div")) : (elementOpen("div", null, null, "class", "other-class"), elementClose("div")));
+  _renderArbitrary(condition ? (elementOpen("div", null, null, "class", "my-class", "attr", i++), elementClose("div")) : (elementOpen("div", null, null, "attr", i++, "class", "other-class"), elementClose("div")));
 
   return elementClose("root");
 }

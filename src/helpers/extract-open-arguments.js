@@ -1,4 +1,4 @@
-import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
+import isLiteralOrSpecial from "./is-literal-or-special";
 import addStaticHoist from "./hoist-statics";
 import { generateHoistName } from "./hoist";
 import uuid from "./uuid";
@@ -12,21 +12,22 @@ import * as t from "babel-types";
 // are placed into the variadic attributes.
 export default function extractOpenArguments(path, plugin) {
   const attributes = path.get("attributes");
-  const { elementVarsStack } = plugin;
+  const { elementVarsStack, closureVarsStack } = plugin;
   const { requireStaticsKey } = plugin.opts;
   const elementVars = last(elementVarsStack);
+  const closureVars = last(closureVarsStack) || [];
+
   let attrs = [];
-  let staticAttrs = [];
   let key = null;
   let keyIndex = -1;
-  let statics = t.arrayExpression(staticAttrs);
 
   attributes.forEach((attribute) => {
     if (attribute.isJSXSpreadAttribute()) {
       attrs.push({
         name: null,
         value: attribute.get("argument").node,
-        isSpread: true
+        isSpread: true,
+        isStatic: false,
       });
       return;
     }
@@ -65,9 +66,16 @@ export default function extractOpenArguments(path, plugin) {
 
       // If it's not a literal key, we must assign it in the statics array.
       if (!literal) {
+
+        // Make sure the rearranging the key for iDOM's call does not affect
+        // the value of a previous attribute.
         attrs.forEach((attr) => {
-          const { name, value } = attr;
-          if (isLiteralOrSpecialNode(value) || t.isIdentifier(value)) {
+          const { name, value, isStatic } = attr;
+          if (isStatic) {
+            return;
+          }
+          // Closure vars don't need to considered, they're already evaluated properly.
+          if (t.isIdentifier(value) && closureVars.find(({ id }) => id === value)) {
             return;
           }
 
@@ -83,45 +91,42 @@ export default function extractOpenArguments(path, plugin) {
           key = t.assignmentExpression("=", node, key);
         }
 
-        keyIndex = staticAttrs.length + 1;
+        keyIndex = attrs.reduce((sum, { isStatic }) => {
+          return sum + (isStatic ? 2 : 0);
+        }, 1);
         literal = true;
       }
     }
 
-    if (literal) {
-      staticAttrs.push(name, node);
-    } else {
-      attrs.push({
-        name,
-        value: node,
-        isSpread: false
-      });
-    }
+    attrs.push({
+      name,
+      value: node,
+      isSpread: false,
+      isStatic: literal,
+    });
   });
 
-  if (staticAttrs.length > 0 && !key) {
-    if (requireStaticsKey) {
-      // Don't use statics if a "key" isn't passed, as recommended by the
-      // incremental dom documentation:
-      // http://google.github.io/incremental-dom/#rendering-dom/statics-array.
-      for (let i = 0; i < staticAttrs.length; i += 2) {
-        attrs.push({
-          name: staticAttrs[i],
-          value: staticAttrs[i + 1],
-          isSpread: false
-        });
+  let statics = null;
+  const hasStatic = !!attrs.find(({ isStatic }) => isStatic);
+  if (hasStatic && !key && !requireStaticsKey) {
+    // Generate a UUID to be used as the key.
+    key = t.stringLiteral(uuid());
+  }
+  if (hasStatic && key) {
+    const staticAttrs = [];
+    statics = t.arrayExpression(staticAttrs);
+
+    attrs = attrs.filter((attr) => {
+      if (attr.isStatic) {
+        staticAttrs.push(attr.name, attr.value);
+        return false;
       }
-      staticAttrs = [];
-    } else {
-      // Generate a UUID to be used as the key.
-      key = t.stringLiteral(uuid());
-    }
+      return true;
+    });
   }
 
   if (attrs.length === 0) { attrs = null; }
-  if (staticAttrs.length === 0) {
-    statics = null;
-  } else {
+  if (statics) {
     statics = addStaticHoist(path, plugin, statics, keyIndex);
   }
 

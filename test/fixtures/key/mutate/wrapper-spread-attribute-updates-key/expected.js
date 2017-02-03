@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
+};
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -29,20 +37,18 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _li$statics = ["key", ""];
-// @incremental-dom enable-fastRoot
+var _div$statics = ["key", ""],
+    _div$wrapper = function _div$wrapper(_ref, _obj, _ref2) {
+  elementOpen("div", null, null, "attr", _ref);
+  elementVoid("div", _ref2, (_div$statics[1] = _ref2, _div$statics), "spread", _obj);
+  return elementClose("div");
+};
+
 function render() {
-  elementOpen("ul");
-  files.map(function (file) {
-    var _li$key;
+  var div = _jsxWrapper(_div$wrapper, [i++, obj, obj.i++]);
+  elementOpen("root");
 
-    elementOpen("li", _li$key = file.name, (_li$statics[1] = _li$key, _li$statics), "file", file, "onclick", function (e) {
-      return fileClicked(e, file);
-    });
+  _renderArbitrary(div);
 
-    _renderArbitrary(file.name);
-
-    return elementClose("li");
-  });
-  return elementClose("ul");
+  return elementClose("root");
 }

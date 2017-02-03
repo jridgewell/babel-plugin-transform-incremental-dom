@@ -59,7 +59,7 @@ function ancestry(ancestor, fastRoot) {
 
       return;
     } else if (ancestor.isLogicalExpression()) {
-      if (ancestor.get("right") === last || ancestor.node.operator === "||") {
+      if (last.key === "right" || ancestor.node.operator === "||") {
         // These expressions "extend" the search, but they do not count as direct children.
         // That's because the expression could resolve to something other than a JSX element.
         continue;

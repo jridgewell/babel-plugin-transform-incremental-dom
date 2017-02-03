@@ -7,8 +7,8 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 };
 
 var _div$statics = ["key", ""],
-    _div$wrapper = function _div$wrapper(_ref) {
-  elementOpen("div", _ref, (_div$statics[1] = _ref, _div$statics));
+    _div$wrapper = function _div$wrapper(_key) {
+  elementOpen("div", _key, (_div$statics[1] = _key, _div$statics));
   return elementClose("div");
 };
 

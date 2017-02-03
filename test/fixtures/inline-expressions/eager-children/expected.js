@@ -1,8 +1,8 @@
 function render() {
   var i = 0;
-  var _ref = i++,
-      _ref2 = i++;
+  var _attr = i++,
+      _other = i++;
   elementOpen("root", null, null, "attr", i++);
-  elementVoid("div", null, null, "attr", _ref, "other", _ref2);
+  elementVoid("div", null, null, "attr", _attr, "other", _other);
   return elementClose("root");
 }

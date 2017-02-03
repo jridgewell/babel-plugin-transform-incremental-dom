@@ -44,10 +44,10 @@ var _map$wrapper = function _map$wrapper(_i) {
 
   return elementClose("map");
 },
-    _div$wrapper = function _div$wrapper(_ref, _ref2) {
-  elementOpen("div", null, null, "first", _ref);
+    _div$wrapper = function _div$wrapper(_first, _child) {
+  elementOpen("div", null, null, "first", _first);
 
-  _renderArbitrary(_ref2);
+  _renderArbitrary(_child);
 
   return elementClose("div");
 };

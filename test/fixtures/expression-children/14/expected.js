@@ -37,10 +37,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _span$wrapper = function _span$wrapper(_i, _ref, _i2) {
+var _span$wrapper = function _span$wrapper(_i, _child, _i2) {
   elementOpen("span", null, null, "attr", _i);
 
-  _renderArbitrary(_ref);
+  _renderArbitrary(_child);
 
   _renderArbitrary(_i2);
 

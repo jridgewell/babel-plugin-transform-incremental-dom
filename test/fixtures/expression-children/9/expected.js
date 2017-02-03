@@ -37,17 +37,17 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _one$wrapper = function _one$wrapper(_ref) {
+var _one$wrapper = function _one$wrapper(_child) {
   elementOpen("one");
 
-  _renderArbitrary(_ref);
+  _renderArbitrary(_child);
 
   return elementClose("one");
 },
-    _two$wrapper = function _two$wrapper(_ref2) {
+    _two$wrapper = function _two$wrapper(_child2) {
   elementOpen("two");
 
-  _renderArbitrary(_ref2);
+  _renderArbitrary(_child2);
 
   return elementClose("two");
 };

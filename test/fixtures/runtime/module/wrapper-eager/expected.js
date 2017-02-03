@@ -1,7 +1,7 @@
 var _iDOM = require("iDOM");
 
-var _div$wrapper = function _div$wrapper(_ref) {
-  return elementVoid("div", null, null, "attr", _ref);
+var _div$wrapper = function _div$wrapper(_attr) {
+  return elementVoid("div", null, null, "attr", _attr);
 };
 
 function render() {

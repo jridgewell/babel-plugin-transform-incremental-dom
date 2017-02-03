@@ -37,19 +37,19 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _test$wrapper = function _test$wrapper(_ref, _ref2, _ref3, _ref4, _ref5, _ref6) {
-  elementOpen("div", null, null, "attr", _ref);
-  elementOpen("div", null, null, "first", _ref2);
+var _test$wrapper = function _test$wrapper(_attr, _first, _child, _child2, _second, _child3) {
+  elementOpen("div", null, null, "attr", _attr);
+  elementOpen("div", null, null, "first", _first);
 
-  _renderArbitrary(_ref3);
+  _renderArbitrary(_child);
 
   elementClose("div");
 
-  _renderArbitrary(_ref4);
+  _renderArbitrary(_child2);
 
-  elementOpen("div", null, null, "second", _ref5);
+  elementOpen("div", null, null, "second", _second);
 
-  _renderArbitrary(_ref6);
+  _renderArbitrary(_child3);
 
   elementClose("div");
   return elementClose("div");

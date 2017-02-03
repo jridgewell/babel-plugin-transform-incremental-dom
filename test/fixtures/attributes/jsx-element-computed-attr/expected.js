@@ -6,8 +6,8 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _span$wrapper = function _span$wrapper(_ref) {
-  return elementVoid("span", null, null, "attr", _ref);
+var _span$wrapper = function _span$wrapper(_attr) {
+  return elementVoid("span", null, null, "attr", _attr);
 };
 
 function render() {

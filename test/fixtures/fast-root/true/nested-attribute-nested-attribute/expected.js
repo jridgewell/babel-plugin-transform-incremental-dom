@@ -38,17 +38,17 @@ var _renderArbitrary = function _renderArbitrary(child) {
 };
 
 var _span$statics = ["key", ""],
-    _span$wrapper = function _span$wrapper(_file$name3, _file2, _ref2, _file$name4) {
+    _span$wrapper = function _span$wrapper(_file$name3, _file2, _onclick2, _file$name4) {
   elementOpen("span");
-  elementOpen("span", _file$name3, (_span$statics[1] = _file$name3, _span$statics), "file", _file2, "onclick", _ref2);
+  elementOpen("span", _file$name3, (_span$statics[1] = _file$name3, _span$statics), "file", _file2, "onclick", _onclick2);
 
   _renderArbitrary(_file$name4);
 
   elementClose("span");
   return elementClose("span");
 },
-    _li$wrapper = function _li$wrapper(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", null, null, "attr", _jsxWrapper(_span$wrapper, [_file$name, _file, _ref, _file$name2]));
+    _li$wrapper = function _li$wrapper(_file$name, _file, _onclick, _file$name2) {
+  elementOpen("li", null, null, "attr", _jsxWrapper(_span$wrapper, [_file$name, _file, _onclick, _file$name2]));
   return elementClose("li");
 };
 

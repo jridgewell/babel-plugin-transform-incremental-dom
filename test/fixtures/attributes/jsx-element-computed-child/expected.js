@@ -37,10 +37,10 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _span$wrapper = function _span$wrapper(_ref) {
+var _span$wrapper = function _span$wrapper(_child) {
   elementOpen("span");
 
-  _renderArbitrary(_ref);
+  _renderArbitrary(_child);
 
   return elementClose("span");
 };

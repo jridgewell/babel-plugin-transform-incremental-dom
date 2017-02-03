@@ -6,14 +6,14 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
   };
 };
 
-var _div$wrapper = function _div$wrapper(_ref) {
-  return elementVoid("div", null, null, "attr", _ref);
+var _div$wrapper = function _div$wrapper(_attr) {
+  return elementVoid("div", null, null, "attr", _attr);
 },
     _div$statics = ["key", ""];
 
 function render() {
-  var _attr, _div$key;
+  var _attr2, _div$key;
 
-  _attr = _jsxWrapper(_div$wrapper, [i++]);
-  return elementVoid("div", _div$key = i++, (_div$statics[1] = _div$key, _div$statics), "attr2", _attr);
+  _attr2 = _jsxWrapper(_div$wrapper, [i++]);
+  return elementVoid("div", _div$key = i++, (_div$statics[1] = _div$key, _div$statics), "attr2", _attr2);
 }

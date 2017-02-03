@@ -2,9 +2,9 @@ import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-spec
 import last from "./last";
 import * as t from "babel-types";
 
-function addClosureVar(expression, closureVars) {
+function addClosureVar(expression, closureVars, defaultName) {
   const init = expression.node;
-  const id = expression.scope.generateUidIdentifierBasedOnNode(init);
+  const id = expression.scope.generateUidIdentifierBasedOnNode(init, defaultName);
 
   closureVars.push({ id, init });
   return id;
@@ -74,7 +74,7 @@ const expressionExtractor = {
   JSXSpreadAttribute(path) {
     const { closureVarsStack } = this;
     const argument = path.get("argument");
-    const id = addClosureVar(argument, last(closureVarsStack));
+    const id = addClosureVar(argument, last(closureVarsStack), "spread");
     argument.replaceWith(id)
   },
 
@@ -89,7 +89,7 @@ const expressionExtractor = {
 
     // Only call defer JSX Children Expressions
     if (!path.parentPath.isJSXElement()) {
-      expression.replaceWith(addClosureVar(expression, closureVars));
+      expression.replaceWith(addClosureVar(expression, closureVars, path.parentPath.node.name.name));
       return;
     }
 
@@ -105,7 +105,7 @@ const expressionExtractor = {
 
     // Exit early if there's nothing to defer.
     if (deferred.length === 0) {
-      expression.replaceWith(addClosureVar(expression, closureVars));
+      expression.replaceWith(addClosureVar(expression, closureVars, "child"));
       return;
     }
 

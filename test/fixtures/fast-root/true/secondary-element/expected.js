@@ -45,8 +45,8 @@ var _ul$wrapper = function _ul$wrapper(_deferred, _args) {
   return elementClose("ul");
 },
     _li$statics = ["key", ""],
-    _li$wrapper = function _li$wrapper(_file$name, _file, _ref, _file$name2) {
-  elementOpen("li", _file$name, (_li$statics[1] = _file$name, _li$statics), "file", _file, "onclick", _ref);
+    _li$wrapper = function _li$wrapper(_file$name, _file, _onclick, _file$name2) {
+  elementOpen("li", _file$name, (_li$statics[1] = _file$name, _li$statics), "file", _file, "onclick", _onclick);
 
   _renderArbitrary(_file$name2);
 

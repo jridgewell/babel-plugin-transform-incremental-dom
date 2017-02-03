@@ -1,4 +1,6 @@
 import isReturned from "./is-returned";
+import useFastRoot from "./use-fast-root";
+import moduleSource from "./module-source";
 
 const map = new WeakMap();
 
@@ -28,11 +30,90 @@ const rootElementFinder = {
   }
 };
 
+function inPatchRoot(path, plugin) {
+  const { opts, file } = plugin;
+  if (useFastRoot(path, opts)) {
+    return true;
+  }
+
+  const importSource = moduleSource(plugin);
+  if (!importSource) {
+    return true;
+  }
+
+  const patchCalls = [];
+  const { imports } = file.metadata.modules;
+  const iDOMImport = imports.find((imported) => {
+    return imported.source === importSource;
+  });
+
+  // Gather all the patch calls
+  if (iDOMImport && iDOMImport.imported.indexOf("patch") > -1) {
+    const patchImport = iDOMImport.specifiers.find((imported) => {
+      return imported.imported === "patch";
+    });
+    const binding = file.scope.getBinding(patchImport.local);
+
+    binding.referencePaths.forEach((reference) => {
+      const { parentPath } = reference;
+      if (parentPath.isCallExpression()) {
+        patchCalls.push(parentPath);
+      }
+    });
+  } else if (iDOMImport && iDOMImport.imported.indexOf("*") > -1) {
+    const starImport = iDOMImport.specifiers.find((imported) => {
+      return imported.kind === "namespace";
+    });
+    const binding = file.scope.getBinding(starImport.local);
+
+    binding.referencePaths.forEach((reference) => {
+      const { parentPath } = reference;
+      if (parentPath.isMemberExpression()) {
+        const property = parentPath.get("property");
+        if (property.isIdentifier({ name: "patch" })) {
+          const grandParentPath = parentPath.parentPath;
+          if (grandParentPath.isCallExpression()) {
+            patchCalls.push(grandParentPath);
+          }
+        }
+      }
+    });
+  }
+
+  if (!patchCalls.length) {
+    return true;
+  }
+
+  // Now, gather the renderer function that is the second param.
+  const patchRoots = patchCalls.reduce((roots, call) => {
+    const renderer = call.get("arguments.1");
+    if (!renderer) {
+      return roots;
+    }
+
+    if (renderer.isFunction()) {
+      roots.push(renderer);
+    } else if (renderer.isIdentifier()) {
+      const { name } = renderer.node;
+      const binding = renderer.scope.getBinding(name);
+      if (binding) {
+        roots.push(binding.path);
+      }
+    }
+
+    return roots;
+  }, []);
+
+  return !patchRoots.length || path.findParent((parent) => {
+    return patchRoots.indexOf(parent) > -1;
+  });
+}
+
 // Detects if this JSX element is the root element.
 // It is not the root if there is another root element in this
 // or a higher function scope.
-export default function isRootJSX(path) {
-  let state = {
+export default function isRootJSX(path, plugin) {
+  const state = {
     root: null,
     crossedFunction: false,
     jsx: path
@@ -43,6 +124,10 @@ export default function isRootJSX(path) {
   }
 
   if (!isReturned(path)) {
+    return false;
+  }
+
+  if (!inPatchRoot(path, plugin)) {
     return false;
   }
 

@@ -1,21 +1,6 @@
+import useFastRoot from "./use-fast-root";
+
 const map = new WeakMap();
-
-function useFastRoot(path, { fastRoot = false }) {
-  path.find((path) => {
-    const comments = path.node.leadingComments;
-
-    return comments && comments.find((comment) => {
-      const match = /@incremental-dom.+(enable|disable)-fastRoot/.exec(comment.value);
-
-      if (match) {
-        fastRoot = match[1] === "enable";
-        return true;
-      }
-    });
-  });
-
-  return fastRoot;
-}
 
 function ancestry(ancestor, fastRoot) {
   let path = ancestor;

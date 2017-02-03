@@ -1,5 +1,6 @@
 import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
 import addStaticHoist from "./hoist-statics";
+import { generateHoistName } from "./hoist";
 import uuid from "./uuid";
 import toString from "./ast/to-string";
 import last from "./last";
@@ -77,7 +78,8 @@ export default function extractOpenArguments(path, plugin) {
         });
 
         if (!value.isIdentifier()) {
-          node = scope.maybeGenerateMemoised(node);
+          node = generateHoistName(path, "key");
+          scope.push({ id: node });
           key = t.assignmentExpression("=", node, key);
         }
 

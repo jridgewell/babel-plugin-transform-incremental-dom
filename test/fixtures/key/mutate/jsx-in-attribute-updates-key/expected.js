@@ -12,8 +12,8 @@ var _div$wrapper = function _div$wrapper(_ref) {
     _div$statics = ["key", ""];
 
 function render() {
-  var _attr, _ref2;
+  var _attr, _div$key;
 
   _attr = _jsxWrapper(_div$wrapper, [i++]);
-  return elementVoid("div", _ref2 = i++, (_div$statics[1] = _ref2, _div$statics), "attr2", _attr);
+  return elementVoid("div", _div$key = i++, (_div$statics[1] = _div$key, _div$statics), "attr2", _attr);
 }

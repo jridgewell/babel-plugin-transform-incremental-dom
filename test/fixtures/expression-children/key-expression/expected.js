@@ -1,6 +1,6 @@
 var _div$statics = ["key", ""];
 function render() {
-  var _ref;
+  var _div$key;
 
-  return elementVoid("div", _ref = i++, (_div$statics[1] = _ref, _div$statics));
+  return elementVoid("div", _div$key = i++, (_div$statics[1] = _div$key, _div$statics));
 }

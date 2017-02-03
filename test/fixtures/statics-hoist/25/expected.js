@@ -1,7 +1,7 @@
 var _div$statics = ["id", "id", "key", ""];
 function test(props) {
-  var _props$key;
+  var _div$key;
 
   props.key = 1;
-  return elementVoid("div", _props$key = props.key, (_div$statics[3] = _props$key, _div$statics));
+  return elementVoid("div", _div$key = props.key, (_div$statics[3] = _div$key, _div$statics));
 }

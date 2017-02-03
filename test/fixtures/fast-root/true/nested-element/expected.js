@@ -34,9 +34,9 @@ function render() {
   elementOpen("root");
   elementOpen("ul");
   files.map(function (file) {
-    var _file$name;
+    var _li$key;
 
-    elementOpen("li", _file$name = file.name, (_li$statics[1] = _file$name, _li$statics), "file", file, "onclick", function (e) {
+    elementOpen("li", _li$key = file.name, (_li$statics[1] = _li$key, _li$statics), "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

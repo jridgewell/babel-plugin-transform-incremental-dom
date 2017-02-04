@@ -165,8 +165,8 @@ static attributes will be deoptimized into the dynamic attributes list.
 ```js
 // Disabled (default)
 var _statics = ["key", "key", "href", "http://key/specified"];
-var _statics2 = ["key", "8ad02822-f391-48fb-a277-8065f7f92a99", "href", "http://example.com"];
-var _statics3 = ["key", "adbe4414-e6ad-41c0-aae2-1ca578653119", "href", "http://other.com"];
+var _statics2 = ["href", "http://example.com"];
+var _statics3 = ["href", "http://other.com"];
 
 function render() {
   elementVoid("a", "key", _statics);
@@ -200,6 +200,46 @@ plugin:
   "plugins": [[
     "transform-incremental-dom", {
       "requireStaticsKey": true
+    }
+  ]]
+}
+```
+
+#### UUID Prefix
+
+Together with automatic UUID generation, you can specify a UUID "prefix"
+that will allow for shorter automatic keys. You must ensure that this
+prefix will not conflict with any other value you use as a key.
+
+When using the UUID prefix, a simple counter is used instead of creating
+a true UUID.
+
+```js
+// Disabled (default)
+var _statics = ["href", "http://example.com"];
+
+function render() {
+  elementVoid("a", "8ad02822-f391-48fb-a277-8065f7f92a99", _statics);
+}
+```
+
+```js
+// Enabled ("uuid-")
+var _statics = ["href", "http://example.com"];
+
+function render() {
+  elementVoid("a", "uuid-1", _statics);
+}
+```
+
+To do this, simply add the `uuidPrefix` option to the Incremental DOM
+plugin:
+
+```json
+{
+  "plugins": [[
+    "transform-incremental-dom", {
+      "uuidPrefix": "uuid-"
     }
   ]]
 }

@@ -110,7 +110,7 @@ export default function extractOpenArguments(path, plugin) {
   const hasStatic = !!attrs.find(({ isStatic }) => isStatic);
   if (hasStatic && !key && !requireStaticsKey) {
     // Generate a UUID to be used as the key.
-    key = t.stringLiteral(uuid());
+    key = t.stringLiteral(uuid(plugin));
   }
   if (hasStatic && key) {
     const staticAttrs = [];

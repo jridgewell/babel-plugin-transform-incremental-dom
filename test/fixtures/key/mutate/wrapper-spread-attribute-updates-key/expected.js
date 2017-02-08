@@ -40,7 +40,8 @@ var _renderArbitrary = function _renderArbitrary(child) {
 var _div$statics = ["key", ""],
     _div$wrapper = function _div$wrapper(_attr, _obj, _key) {
   elementOpen("div", null, null, "attr", _attr);
-  elementVoid("div", _key, (_div$statics[1] = _key, _div$statics), "spread", _obj);
+  _div$statics[1] = _key;
+  elementVoid("div", _key, _div$statics, "spread", _obj);
   return elementClose("div");
 };
 

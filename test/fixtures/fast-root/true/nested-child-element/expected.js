@@ -36,7 +36,8 @@ function render() {
     var _span$key;
 
     elementOpen("li");
-    elementOpen("span", _span$key = file.name, (_span$statics[1] = _span$key, _span$statics), "file", file, "onclick", function (e) {
+    _span$key = _span$statics[1] = file.name;
+    elementOpen("span", _span$key, _span$statics, "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

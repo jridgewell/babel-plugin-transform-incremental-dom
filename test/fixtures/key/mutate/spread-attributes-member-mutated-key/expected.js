@@ -19,7 +19,8 @@ function render() {
   var _spread, _div$key;
 
   _spread = props.props;
-  elementOpenStart("div", _div$key = props.key++, (_div$statics[1] = _div$key, _div$statics));
+  _div$key = _div$statics[1] = props.key++;
+  elementOpenStart("div", _div$key, _div$statics);
 
   _spreadAttribute(_spread);
 

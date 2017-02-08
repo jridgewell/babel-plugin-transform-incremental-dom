@@ -40,7 +40,8 @@ var _renderArbitrary = function _renderArbitrary(child) {
 var _span$statics = ["key", ""],
     _span$wrapper = function _span$wrapper(_file$name3, _file2, _onclick2, _file$name4) {
   elementOpen("span");
-  elementOpen("span", _file$name3, (_span$statics[1] = _file$name3, _span$statics), "file", _file2, "onclick", _onclick2);
+  _span$statics[1] = _file$name3;
+  elementOpen("span", _file$name3, _span$statics, "file", _file2, "onclick", _onclick2);
 
   _renderArbitrary(_file$name4);
 

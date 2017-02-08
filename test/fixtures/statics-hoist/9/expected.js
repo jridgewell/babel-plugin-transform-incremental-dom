@@ -8,7 +8,8 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 
 var _div$statics = ["id", "id", "key", ""],
     _div$wrapper = function _div$wrapper(_i) {
-  return elementVoid("div", _i, (_div$statics[3] = _i, _div$statics));
+  _div$statics[3] = _i;
+  return elementVoid("div", _i, _div$statics);
 };
 
 function fn7(items) {

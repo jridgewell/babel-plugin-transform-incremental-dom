@@ -39,7 +39,8 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 
 var _div$statics = ["key", ""],
     _div$wrapper = function _div$wrapper(_query$id) {
-  elementOpen("div", _query$id, (_div$statics[1] = _query$id, _div$statics));
+  _div$statics[1] = _query$id;
+  elementOpen("div", _query$id, _div$statics);
   return elementClose("div");
 };
 

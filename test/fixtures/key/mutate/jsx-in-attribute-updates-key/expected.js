@@ -15,5 +15,6 @@ function render() {
   var _attr2, _div$key;
 
   _attr2 = _jsxWrapper(_div$wrapper, [i++]);
-  return elementVoid("div", _div$key = i++, (_div$statics[1] = _div$key, _div$statics), "attr2", _attr2);
+  _div$key = _div$statics[1] = i++;
+  return elementVoid("div", _div$key, _div$statics, "attr2", _attr2);
 }

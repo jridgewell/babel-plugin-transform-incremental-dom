@@ -36,7 +36,8 @@ function render() {
     var _li$key;
 
     // @incremental-dom enable-fastRoot
-    elementOpen("li", _li$key = file.name, (_li$statics[1] = _li$key, _li$statics), "file", file, "onclick", function (e) {
+    _li$key = _li$statics[1] = file.name;
+    elementOpen("li", _li$key, _li$statics, "file", file, "onclick", function (e) {
       return fileClicked(e, file);
     });
 

@@ -1,6 +1,5 @@
 import isLiteralOrSpecial from "./is-literal-or-special";
-import addStaticHoist from "./hoist-statics";
-import { generateHoistName } from "./hoist";
+import { generateHoistName, addHoistedDeclarator } from "./hoist";
 import uuid from "./uuid";
 import toString from "./ast/to-string";
 import last from "./last";
@@ -61,7 +60,6 @@ export default function extractOpenArguments(path, plugin) {
 
     // The key attribute must be passed to the `elementOpen` call.
     if (name.value === "key") {
-      key = node;
       const { scope } = value;
 
       // If it's not a literal key, we must assign it in the statics array.
@@ -86,9 +84,10 @@ export default function extractOpenArguments(path, plugin) {
         });
 
         if (!value.isIdentifier()) {
-          node = generateHoistName(path, "key");
-          scope.push({ id: node });
-          key = t.assignmentExpression("=", node, key);
+          const id = generateHoistName(path, "key");
+          scope.push({ id });
+          elementVars.push(t.assignmentExpression("=", id, node));
+          node = id;
         }
 
         keyIndex = attrs.reduce((sum, { isStatic }) => {
@@ -96,6 +95,8 @@ export default function extractOpenArguments(path, plugin) {
         }, 1);
         literal = true;
       }
+
+      key = node;
     }
 
     attrs.push({
@@ -114,7 +115,7 @@ export default function extractOpenArguments(path, plugin) {
   }
   if (hasStatic && key) {
     const staticAttrs = [];
-    statics = t.arrayExpression(staticAttrs);
+    statics = generateHoistName(path, "statics");
 
     attrs = attrs.filter((attr) => {
       if (attr.isStatic) {
@@ -123,12 +124,26 @@ export default function extractOpenArguments(path, plugin) {
       }
       return true;
     });
+
+    addHoistedDeclarator(path.scope, statics, t.arrayExpression(staticAttrs), plugin);
+    if (keyIndex > -1) {
+      const keyAssignment = last(elementVars);
+      const staticsAssignment = t.assignmentExpression(
+        "=",
+        t.memberExpression(statics, t.numericLiteral(keyIndex), true),
+        keyAssignment ? keyAssignment.right : key
+      );
+      staticAttrs[keyIndex] = t.stringLiteral("");
+
+      if (keyAssignment) {
+        keyAssignment.right = staticsAssignment;
+      } else {
+        elementVars.push(staticsAssignment);
+      }
+    }
   }
 
   if (attrs.length === 0) { attrs = null; }
-  if (statics) {
-    statics = addStaticHoist(path, plugin, statics, keyIndex);
-  }
 
   return { key, statics, attrs };
 }

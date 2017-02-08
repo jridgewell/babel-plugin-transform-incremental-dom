@@ -162,7 +162,7 @@ not one and there are static attributes.
 Alternatively, you may disable the automatic generation. In this case,
 static attributes will be deoptimized into the dynamic attributes list.
 
-```js
+```javascript
 // Disabled (default)
 var _statics = ["key", "key", "href", "http://key/specified"];
 var _statics2 = ["href", "http://example.com"];
@@ -178,7 +178,7 @@ function render() {
 }
 ```
 
-```js
+```javascript
 // Enabled
 var _statics = ["key", "key", "href", "http://key/specified"];
 
@@ -214,7 +214,7 @@ prefix will not conflict with any other value you use as a key.
 When using the UUID prefix, a simple counter is used instead of creating
 a true UUID.
 
-```js
+```javascript
 // Disabled (default)
 var _statics = ["href", "http://example.com"];
 
@@ -223,7 +223,7 @@ function render() {
 }
 ```
 
-```js
+```javascript
 // Enabled ("uuid-")
 var _statics = ["href", "http://example.com"];
 
@@ -251,7 +251,7 @@ Incremental DOM supports a few Attribute Namespaces, but those are
 foreign to JSX. You can enabled them with the `namespaceAttributes`
 option. Note that this does not enable Namespaced Elements.
 
-```js
+```javascript
 // Enabled
 function render() {
     return elementVoid("a", null, ["xml:static", true], "xlink:href", "https");
@@ -279,7 +279,7 @@ save you from allocating needless closure wrappers around elements that
 are only referenced inside the root element.
 
 
-```js
+```javascript
 // Disabled (default)
 function render() {
   var header = _jsxWrapper(function () {
@@ -293,7 +293,7 @@ function render() {
 }
 ```
 
-```js
+```javascript
 // Enabled
 function render() {
   elementOpen("body");
@@ -323,7 +323,7 @@ with array maps, this should significantly decrease memory usage and
 increase speed.
 
 
-```js
+```javascript
 // Disabled (default)
 function render() {
   elementOpen("ul");
@@ -342,7 +342,7 @@ function render() {
 }
 ```
 
-```js
+```javascript
 // Enabled
 function render() {
   elementOpen("ul");
@@ -415,14 +415,14 @@ that's not done by incremental DOM automatically. Note that this will
 break unless you have code to handle it.
 
 
-```js
+```javascript
 // Disabled (default)
 function render() {
   elementVoid("MyComponent");
 }
 ```
 
-```js
+```javascript
 // Enabled
 function render() {
   elementVoid(MyComponent);
@@ -447,7 +447,7 @@ plugin:
 By deafult, `babel-plugin-transform-incremental-dom` expects any necessary
 Incremental DOM methods to already imported and in-scope:
 
-```js
+```javascript
 // Disabled (default)
 
 // Manually managed imports
@@ -469,7 +469,7 @@ breaking it.
 This can be fixed entirely by auto-importing everything necessary from
 Incremental DOM module:
 
-```js
+```javascript
 // Enabled with `incremental-dom`
 
 // Auto generated import
@@ -499,6 +499,37 @@ Additionally, the module source can be an absolute or relative path to
 the module. If a relative path is used, it will be resolve relative to
 the `process.cwd()` of the babel process.
 
+#### Skip Children
+
+Some templates do not control all the child elements of certain nodes,
+like components. Incremental DOM supports such nodes using a "skip"
+child. To support this, we identify a special skip attribute, which will
+not contain any child nodes and will never clear the later-added
+children of the element.
+
+```javascript
+function render() {
+    // This node will neither create nor clear children.
+    return <div __skip>
+    </div>;
+}
+```
+
+
+To customize the attribute that signals a skip, simply add the
+`skipAttribute` option to the Incremental DOM plugin:
+
+```json
+{
+  "plugins": [[
+    "transform-incremental-dom", {
+      "skipAttribute": "skip"
+    }
+  ]]
+}
+```
+
+
 #### Runtime
 
 By deafult, `babel-plugin-transform-incremental-dom` injects several helpers into
@@ -521,7 +552,7 @@ The runtime's required functions are:
   evaluation. Here, we return a special `__jsxDOMWrapper` struct with
   the needed information.
 
-  ```js
+  ```javascript
   runtime.jsxWrapper = function(elementFn, args) {
     return {
       __jsxDOMWrapper: true,
@@ -543,7 +574,7 @@ The runtime's required functions are:
   Note that we identify lazy JSX functions by the `__jsxDOMWrapper`
   struct we created inside the `jsxWrapper` runtime function.
 
-  ```js
+  ```javascript
   runtime.renderArbitrary = function _renderArbitrary(child) {
     var type = typeof child;
     if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
@@ -571,7 +602,7 @@ The runtime's required functions are:
   over every property and determine if it's an _own_ property. If so,
   call `IncrementalDOM#attr` to set it.
 
-  ```js
+  ```javascript
   runtime.spreadAttribute = function _spreadAttribute(spread) {
     for (var prop in spread) {
       if (Object.prototype.hasOwn.call(spread, prop)) {

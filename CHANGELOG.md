@@ -9,6 +9,15 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 4.1.1
+
+- **Bug Fix**
+  - Fix self-closing elements with skip attribute
+    - [6ede609c](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/6ede609cd62068cd18be5f9d58e0ba779ed7851c)
+- **Polish**
+  - Move key assignment and static's key assignment into statements before the element call.
+    - [6014535b](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/6014535b84882c987804262a0ec8f7d0ca4a54fd)
+
 ## 4.1.0
 
 - **New Feature**

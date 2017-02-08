@@ -10,7 +10,7 @@ export function hasSpread(attributes) {
 // Detects if the skip attribute is used
 export function hasSkip(attributes, { opts }) {
   const skipAttribute = opts.skipAttribute || "__skip";
-  return attributes.some((attr) => (attr.isJSXAttribute() && attr.node.name.name === skipAttribute));
+  return attributes.some((attr) => attr.isJSXAttribute() && attr.node.name.name === skipAttribute);
 }
 
 // Returns an array of `name`-`value` attribute pairs

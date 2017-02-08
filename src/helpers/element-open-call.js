@@ -3,12 +3,13 @@ import toReference from "./ast/to-reference";
 import iDOMMethod from "./idom-method";
 import isComponent from "./is-component";
 import extractOpenArguments from "./extract-open-arguments";
-import { hasSpread, toAttrsArray, toAttrsCalls } from "./attributes";
+import { hasSpread, hasSkip, toAttrsArray, toAttrsCalls } from "./attributes";
 import * as t from "babel-types";
 
 // Returns the opening element's function call.
 export default function elementOpenCall(path, plugin) {
   const name = path.get("name");
+  const attributes = path.get("attributes");
   const useReference = isComponent(name, plugin);
   const tag = toReference(name.node, useReference);
   const args = [tag];
@@ -30,7 +31,7 @@ export default function elementOpenCall(path, plugin) {
   // the elementOpenStart/elementOpenEnd syntax.
   // This allows spreads to be transformed into
   // attr(name, value) calls.
-  if (hasSpread(path.get("attributes"))) {
+  if (hasSpread(attributes)) {
     const expressions = [
       toFunctionCall(iDOMMethod("elementOpenStart", plugin), args),
       ...toAttrsCalls(attrs, plugin),
@@ -54,6 +55,8 @@ export default function elementOpenCall(path, plugin) {
   }
 
   const { selfClosing } = path.node;
-  const elementFunction = (selfClosing) ? "elementVoid" : "elementOpen";
+  const elementFunction = (selfClosing && !hasSkip(attributes, plugin)) ?
+    "elementVoid" :
+    "elementOpen";
   return toFunctionCall(iDOMMethod(elementFunction, plugin), args);
 }

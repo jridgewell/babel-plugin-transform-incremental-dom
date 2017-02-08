@@ -84,7 +84,8 @@ export default function ({ types: t, traverse: _traverse }) {
         const closingElement = elementCloseCall(openingElementPath, this);
         const elementVars = elementVarsStack.pop();
         const isSkipping = hasSkip(openingElementPath.get("attributes"), this);
-        const children =  isSkipping ? [toFunctionCall(iDOMMethod("skip", this), [])] :
+        const children =  isSkipping ?
+          [toFunctionCall(iDOMMethod("skip", this), [])] :
           buildChildren(path.get("children"), this);
 
         let elements = [ ...elementVars, openingElement, ...children ];

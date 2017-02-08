@@ -9,6 +9,30 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 4.1.0
+
+- **New Feature**
+  - Add basic support for skip via special attribute
+    - [#79](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/79/)
+  - Identify `iDOM.patch` calls a JSX roots
+    - [#81](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/81)
+  - Eagerly evaluate attributes that could mutate a key, instead of throwing error
+    - [#84](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/84)
+  - Add UUID Prefix option
+    - [#89](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/89)
+- **Bug Fix**
+  - Support `JSXElement` as direct child of `JSXAttribute`
+    - [23d8aca9](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/23d8aca903f98d714e6be77d80f82f20f84f1fd0)
+  - Fix a bug with deferred callbacks where branches have different argument lengths
+    - [021612a4](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/021612a499318543328001bd696140145b44629c)
+  - `requireStaticsKey = false` will keep attributes in correct order
+    - [e7735620](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/e7735620fac1bb5a1d42c2883bc2258b0b4e61c3)
+- **Polish**
+  - Attempt to generate similar wrapper parameter names.
+    - [f50937a7](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/f50937a7500b0e768552b9c97a9ada5f88532827)
+  - Attempt to generate similar key variable names.
+    - [ce178584](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/ce17858432c4876163c1ef3a4a22ae20c55cb85f)
+
 ## 4.0.2
 
 - **Polish**

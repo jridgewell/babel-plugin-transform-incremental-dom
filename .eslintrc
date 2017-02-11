@@ -4,7 +4,7 @@
   "rules": {
     "quotes": [2, "double", "avoid-escape"],
     "no-var": 2,
-    "space-after-keywords": 2,
+    "keyword-spacing": 2,
     "strict": 0,
     "no-underscore-dangle": 0,
     "curly": 0,
@@ -30,6 +30,7 @@
     "no-inner-declarations": 0
   },
   "env": {
-    "node": true
+    "node": true,
+    "es6":   true
   }
 }

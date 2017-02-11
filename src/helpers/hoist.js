@@ -46,7 +46,7 @@ export function generateHoistName(path, suffix = "ref") {
 }
 
 // Name Smartly Do Good.
-export function generateHoistNameBasedOn(path, suffix = "") {
+function generateHoistNameBasedOn(path, suffix = "") {
   const names = [];
   if (suffix) {
     names.push(suffix);

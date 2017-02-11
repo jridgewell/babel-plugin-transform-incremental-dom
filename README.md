@@ -26,10 +26,9 @@ export default function render(data) {
 ```javascript
 const _li$statics = ["key", ""];
 const _li$wrapper = function (_item$id, _item$className, _item$name) {
-    elementOpen("li", _item$id, (_li$statics[1] = _item$id, _li$statics), "class", _item$className);
-
-    _renderArbitrary(_item$name);
-
+    _li$statics[1] = _item$id;
+    elementOpen("li", _item$id, _li$statics, "class", _item$className);
+      _renderArbitrary(_item$name);
     return elementClose("li");
 };
 

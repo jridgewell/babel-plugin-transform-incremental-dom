@@ -4,6 +4,7 @@ import injectRenderArbitrary from "./runtime/render-arbitrary";
 import iDOMMethod from "./idom-method";
 import isLiteralOrSpecial from "./is-literal-or-special";
 import toString from "./ast/to-string";
+import { getCompletionRecords } from "./completion-records";
 
 
 // String concatenations are special cased, so template literals don't
@@ -23,7 +24,7 @@ function isStringConcatenation(path) {
 
 // Transforms the children into an array of iDOM function calls
 export default function buildChildren(children, plugin) {
-  const { replacedElements } = plugin;
+  const { replacedElements, fastRoots } = plugin;
 
   children = children.reduce((children, child) => {
     const wasInExpressionContainer = child.isJSXExpressionContainer();
@@ -35,7 +36,9 @@ export default function buildChildren(children, plugin) {
       return children;
     }
 
+    let sequence;
     while (child.isSequenceExpression() && !replacedElements.has(child)) {
+      sequence = child;
       const expressions = child.get("expressions");
       let i;
       for (i = 0; i < expressions.length - 1; i++) {
@@ -64,10 +67,17 @@ export default function buildChildren(children, plugin) {
       node = toFunctionCall(iDOMMethod("text", plugin), [value]);
     } else if (isStringConcatenation(child)) {
       node = toFunctionCall(iDOMMethod("text", plugin), [node]);
-    } else if (wasInExpressionContainer && !replacedElements.has(child)) {
-      // Arbitrary expressions, e.g. variables, need to be inspected at runtime
-      // to determine how to render them.
-      node = toFunctionCall(injectRenderArbitrary(plugin), [node]);
+    } else if (wasInExpressionContainer) {
+      let element = sequence || child;
+      if (!replacedElements.has(child) && !fastRoots.has(element)) {
+        const completions = getCompletionRecords(child);
+        const nonJSX = completions.some(c => !replacedElements.has(c));
+        if (nonJSX) {
+          // Arbitrary expressions, e.g. variables, need to be inspected at runtime
+          // to determine how to render them.
+          node = toFunctionCall(injectRenderArbitrary(plugin), [node]);
+        }
+      }
     }
 
     children.push(node);

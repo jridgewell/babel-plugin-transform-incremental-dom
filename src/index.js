@@ -1,8 +1,8 @@
 import isRootJSX from "./helpers/is-root-jsx";
 import isReturned from "./helpers/is-returned";
-import ancestorExpression from "./helpers/ancestry";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator, generateHoistName } from "./helpers/hoist";
+import { isCompletionRecord } from "./helpers/completion-records";
 
 import expressionExtractor from "./helpers/extract-expressions";
 import expressionInliner from "./helpers/inline-expressions";
@@ -52,17 +52,15 @@ export default function ({ types: t, traverse: _traverse }) {
 
     JSXElement: {
       enter(path) {
-        const { secondaryTree, root, closureVarsStack, elementVarsStack } = this;
-        const needsWrapper = secondaryTree || (root !== path && !ancestorExpression(path, this));
+        this.elementVarsStack.push([]);
 
-        elementVarsStack.push([]);
-
+        const needsWrapper = this.secondaryTree || !isCompletionRecord(path, this);
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
         if (needsWrapper) {
           // If this element needs a closure wrapper, we need a new array of
           // closure parameters.
-          closureVarsStack.push([]);
+          this.closureVarsStack.push([]);
 
           const state = Object.assign({}, this, { secondaryTree: false, root: path });
           path.traverse(expressionExtractor, state);
@@ -72,8 +70,8 @@ export default function ({ types: t, traverse: _traverse }) {
 
       exit(path) {
         const { root, secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
-        const ancestorPath = ancestorExpression(path, this);
-        const needsWrapper = secondaryTree || (root !== path && !ancestorPath);
+        // const ancestorPath = ancestorExpression(path, this);
+        const needsWrapper = secondaryTree || !isCompletionRecord(path, this);
 
         const { parentPath } = path;
         const explicitReturn = parentPath.isReturnStatement();
@@ -95,10 +93,8 @@ export default function ({ types: t, traverse: _traverse }) {
         // This will be flattened out into statements later.
         if (!needsWrapper && parentPath.isJSXExpressionContainer()) {
           const sequence = t.sequenceExpression(elements);
-          // Mark this sequence as a JSX Element so we can avoid an unnecessary
-          // renderArbitrary call.
-          replacedElements.add(path);
           path.replaceWith(sequence);
+          replacedElements.add(path);
           return;
         }
 
@@ -142,15 +138,14 @@ export default function ({ types: t, traverse: _traverse }) {
           return;
         }
 
-        if (ancestorPath) {
-          replacedElements.add(ancestorPath);
-        }
 
         // This is the main JSX element. Replace the return statement
         // with all the nested calls, returning the main JSX element.
         if (explicitReturn) {
           parentPath.replaceWithMultiple(elements);
+          replacedElements.add(parentPath);
         } else {
+          replacedElements.add(path);
           path.replaceWithMultiple(elements);
         }
       }
@@ -202,7 +197,8 @@ export default function ({ types: t, traverse: _traverse }) {
           path.traverse(elementVisitor, {
             secondaryTree: true,
             root: null,
-            replacedElements: new Set(),
+            replacedElements: new WeakSet(),
+            fastRoots: new WeakSet(),
             closureVarsStack: [],
             elementVarsStack: [],
             file: this.file,
@@ -220,7 +216,8 @@ export default function ({ types: t, traverse: _traverse }) {
             elements: 0,
             secondaryTree: false,
             root: null,
-            replacedElements: new Set(),
+            replacedElements: new WeakSet(),
+            fastRoots: new WeakSet(),
             closureVarsStack: [],
             elementVarsStack: [],
             file: this.file,

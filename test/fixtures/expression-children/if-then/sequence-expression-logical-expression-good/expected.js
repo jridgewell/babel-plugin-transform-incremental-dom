@@ -36,5 +36,10 @@ function render() {
 
   _renderArbitrary(true && elementVoid("div"));
 
+  1;
+  2;
+
+  _renderArbitrary(false && elementVoid("div"));
+
   return elementClose("div");
 }

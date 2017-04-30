@@ -1,24 +1,22 @@
 import isReturned from "./is-returned";
-import useFastRoot from "./use-fast-root";
+import useFastRoot from "./fast-root";
 import moduleSource from "./module-source";
 
-const map = new WeakMap();
+const rootMap = new WeakMap();
+const patchRootsMap = new WeakMap();
 
 const rootElementFinder = {
   JSXElement(path) {
-    const { jsx, crossedFunction } = this;
+    const { crossedFunction } = this;
 
     // No need to traverse our JSX element.
-    if (path === jsx) {
+    if (path === root) {
       path.skip();
       return;
     }
 
-    const returned = isReturned(jsx);
-    const otherIsReturned = isReturned(path);
-
     // We're looking for a root element, which must be returned by the function.
-    if (otherIsReturned && (crossedFunction || !returned)) {
+    if (crossedFunction && isReturned(path)) {
       this.root = path;
       path.stop();
     }
@@ -36,73 +34,74 @@ function inPatchRoot(path, plugin) {
     return true;
   }
 
-  const importSource = moduleSource(plugin);
-  if (!importSource) {
-    return true;
-  }
+  let patchRoots = patchRootsMap.get(plugin.file);
+  if (!patchRoots) {
+    const importSource = moduleSource(plugin);
+    if (!importSource) {
+      patchRootsMap.set(plugin.file, []);
+      return true;
+    }
 
-  const patchCalls = [];
-  const { imports } = file.metadata.modules;
-  const iDOMImport = imports.find((imported) => {
-    return imported.source === importSource;
-  });
-
-  // Gather all the patch calls
-  if (iDOMImport && iDOMImport.imported.indexOf("patch") > -1) {
-    const patchImport = iDOMImport.specifiers.find((imported) => {
-      return imported.imported === "patch";
+    const patchCalls = [];
+    const { imports } = file.metadata.modules;
+    const iDOMImport = imports.find((imported) => {
+      return imported.source === importSource;
     });
-    const binding = file.scope.getBinding(patchImport.local);
 
-    binding.referencePaths.forEach((reference) => {
-      const { parentPath } = reference;
-      if (parentPath.isCallExpression()) {
-        patchCalls.push(parentPath);
-      }
-    });
-  } else if (iDOMImport && iDOMImport.imported.indexOf("*") > -1) {
-    const starImport = iDOMImport.specifiers.find((imported) => {
-      return imported.kind === "namespace";
-    });
-    const binding = file.scope.getBinding(starImport.local);
+    // Gather all the patch calls
+    if (iDOMImport && iDOMImport.imported.indexOf("patch") > -1) {
+      const patchImport = iDOMImport.specifiers.find((imported) => {
+        return imported.imported === "patch";
+      });
+      const binding = file.scope.getBinding(patchImport.local);
 
-    binding.referencePaths.forEach((reference) => {
-      const { parentPath } = reference;
-      if (parentPath.isMemberExpression()) {
-        const property = parentPath.get("property");
-        if (property.isIdentifier({ name: "patch" })) {
-          const grandParentPath = parentPath.parentPath;
-          if (grandParentPath.isCallExpression()) {
-            patchCalls.push(grandParentPath);
+      binding.referencePaths.forEach((reference) => {
+        const { parentPath } = reference;
+        if (parentPath.isCallExpression()) {
+          patchCalls.push(parentPath);
+        }
+      });
+    } else if (iDOMImport && iDOMImport.imported.indexOf("*") > -1) {
+      const starImport = iDOMImport.specifiers.find((imported) => {
+        return imported.kind === "namespace";
+      });
+      const binding = file.scope.getBinding(starImport.local);
+
+      binding.referencePaths.forEach((reference) => {
+        const { parentPath } = reference;
+        if (parentPath.isMemberExpression()) {
+          const property = parentPath.get("property");
+          if (property.isIdentifier({ name: "patch" })) {
+            const grandParentPath = parentPath.parentPath;
+            if (grandParentPath.isCallExpression()) {
+              patchCalls.push(grandParentPath);
+            }
           }
         }
+      });
+    }
+
+    // Now, gather the renderer function that is the second param.
+    patchRoots = patchCalls.reduce((roots, call) => {
+      const renderer = call.get("arguments.1");
+      if (!renderer) {
+        return roots;
       }
-    });
-  }
 
-  if (!patchCalls.length) {
-    return true;
-  }
+      if (renderer.isFunction()) {
+        roots.push(renderer);
+      } else if (renderer.isIdentifier()) {
+        const { name } = renderer.node;
+        const binding = renderer.scope.getBinding(name);
+        if (binding) {
+          roots.push(binding.path);
+        }
+      }
 
-  // Now, gather the renderer function that is the second param.
-  const patchRoots = patchCalls.reduce((roots, call) => {
-    const renderer = call.get("arguments.1");
-    if (!renderer) {
       return roots;
-    }
-
-    if (renderer.isFunction()) {
-      roots.push(renderer);
-    } else if (renderer.isIdentifier()) {
-      const { name } = renderer.node;
-      const binding = renderer.scope.getBinding(name);
-      if (binding) {
-        roots.push(binding.path);
-      }
-    }
-
-    return roots;
-  }, []);
+    }, []);
+    patchRootsMap.set(plugin.file, patchRoots);
+  }
 
   return !patchRoots.length || path.findParent((parent) => {
     return patchRoots.indexOf(parent) > -1;
@@ -115,8 +114,7 @@ function inPatchRoot(path, plugin) {
 export default function isRootJSX(path, plugin) {
   const state = {
     root: null,
-    crossedFunction: false,
-    jsx: path
+    crossedFunction: false
   };
 
   if (!path.isJSX() && path.getFunctionParent().isProgram()) {
@@ -135,11 +133,11 @@ export default function isRootJSX(path, plugin) {
     if (path.isJSXElement()) {
       state.root = path;
     } else if (path.isFunction() || path.isProgram()) {
-      if (map.has(path)) {
-        state.root = map.get(path);
+      if (rootMap.has(path)) {
+        state.root = rootMap.get(path);
       } else {
         path.traverse(rootElementFinder, state);
-        map.set(path, state.root);
+        rootMap.set(path, state.root);
       }
 
       state.crossedFunction = true;

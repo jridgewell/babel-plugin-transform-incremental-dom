@@ -69,7 +69,7 @@ export default function ({ types: t, traverse: _traverse }) {
       },
 
       exit(path) {
-        const { root, secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
+        const { secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
         // const ancestorPath = ancestorExpression(path, this);
         const needsWrapper = secondaryTree || !isCompletionRecord(path, this);
 

@@ -1,5 +1,6 @@
 import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
 import last from "./last";
+import { getCompletionRecords } from "./completion-records";
 import * as t from "babel-types";
 
 function addClosureVar(expression, closureVars, defaultName) {
@@ -10,55 +11,25 @@ function addClosureVar(expression, closureVars, defaultName) {
   return id;
 }
 
-const collectDeferrables = {
-  CallExpression(path) {
-    if (deferrable(path)) {
-      const args = path.get("arguments").reduce((args, arg) => {
-        if (!(isLiteralOrSpecial(arg) || arg.isJSXElement())) {
-          args.push(arg.node);
-        }
-
-        return args;
-      }, []);
-
-      this.deferred.push(path);
-      this.deferredArgs.push(args);
-      this.deferredArgsLength += args.length;
-    }
-  },
-
-  LogicalExpression() {
-    this.branches += 2;
-  },
-
-  ConditionalExpression() {
-    this.branches += 2;
-  },
-
-  Function(path) {
-    path.skip();
-  }
-};
-
 
 function deferrable(ancestor) {
-  let last;
-  while ((last = ancestor, ancestor = ancestor.parentPath)) {
+  let child;
+  while ((child = ancestor, ancestor = ancestor.parentPath)) {
     if (ancestor.isJSXElement()) {
       return true;
     }
 
     if (ancestor.isSequenceExpression()) {
       const expressions = ancestor.get("expressions");
-      if (expressions[expressions.length - 1] !== last) {
+      if (last(expressions) !== child) {
         return false;
       }
     } else if (ancestor.isConditionalExpression()) {
-      if (last.key === "test") {
+      if (child.key === "test") {
         return false;
       }
     } else if (ancestor.isLogicalExpression()) {
-      if (ancestor.get("left") === last) {
+      if (ancestor.get("left") === child) {
         return false;
       }
     } else if (!ancestor.isJSX()) {
@@ -93,15 +64,20 @@ const expressionExtractor = {
       return;
     }
 
-    // Grab all our deferrable calls
-    const state = Object.assign({}, this, {
-      branches: 0,
-      deferred: [],
-      deferredArgs: [],
-      deferredArgsLength: 0,
+    const completions = getCompletionRecords(expression);
+    const deferred = completions.filter((c) => {
+      // `fn() && other` and `fn() || other` cannot be deferred.
+      return c.key !== "left" && c.isCallExpression();
     });
-    path.traverse(collectDeferrables, state);
-    const { deferred, deferredArgs, deferredArgsLength, branches } = state;
+    const deferredArgs = deferred.map((deferred) => {
+      return deferred.get("arguments").reduce((args, arg) => {
+        if (!(isLiteralOrSpecial(arg) || arg.isJSXElement())) {
+          args.push(arg.node);
+        }
+
+        return args;
+      }, []);
+    });
 
     // Exit early if there's nothing to defer.
     if (deferred.length === 0) {
@@ -109,15 +85,15 @@ const expressionExtractor = {
       return;
     }
 
-    const everyBranchHasCall = deferred.length >= branches;
+    const everyBranchHasCall = deferred.length >= completions.length;
     let deferredId = path.scope.generateUidIdentifier("deferred");
     let argId;
     let branchId;
 
-    if (deferredArgsLength > 0) {
+    if (deferredArgs.some(a => a.length)) {
       argId = path.scope.generateUidIdentifier("args");
     }
-    if (branches > 0) {
+    if (completions.length > 1) {
       branchId = path.scope.generateUidIdentifier("b");
       path.scope.push({ id: branchId, init: t.numericLiteral(0) });
     } else if (deferred.length > 1) {
@@ -134,7 +110,7 @@ const expressionExtractor = {
       // function reference. For member expressions (`obj.fn()`), it's the `obj`.
       // We'll invoke the function properly later on.
       let context = isMemberExpression ? callee.node.object : callee.node;
-      if (branches > 0) {
+      if (branchId) {
         context = t.sequenceExpression([
           t.assignmentExpression("=", branchId, t.numericLiteral(i + 1)),
           context

@@ -57,10 +57,11 @@ const expressionExtractor = {
     }
 
     const closureVars = last(this.closureVarsStack);
+    const { parentPath, scope } = path;
 
     // Only call defer JSX Children Expressions
-    if (!path.parentPath.isJSXElement()) {
-      expression.replaceWith(addClosureVar(expression, closureVars, path.parentPath.node.name.name));
+    if (!parentPath.isJSXElement()) {
+      expression.replaceWith(addClosureVar(expression, closureVars, parentPath.node.name.name));
       return;
     }
 
@@ -68,15 +69,6 @@ const expressionExtractor = {
     const deferred = completions.filter((c) => {
       // `fn() && other` and `fn() || other` cannot be deferred.
       return c.key !== "left" && c.isCallExpression();
-    });
-    const deferredArgs = deferred.map((deferred) => {
-      return deferred.get("arguments").reduce((args, arg) => {
-        if (!(isLiteralOrSpecial(arg) || arg.isJSXElement())) {
-          args.push(arg.node);
-        }
-
-        return args;
-      }, []);
     });
 
     // Exit early if there's nothing to defer.
@@ -86,24 +78,19 @@ const expressionExtractor = {
     }
 
     const everyBranchHasCall = deferred.length >= completions.length;
-    let deferredId = path.scope.generateUidIdentifier("deferred");
+    let deferredId = scope.generateUidIdentifier("deferred");
     let argId;
     let branchId;
 
-    if (deferredArgs.some(a => a.length)) {
-      argId = path.scope.generateUidIdentifier("args");
-    }
     if (completions.length > 1) {
-      branchId = path.scope.generateUidIdentifier("b");
-      path.scope.push({ id: branchId, init: t.numericLiteral(0) });
-    } else if (deferred.length > 1) {
-      throw expression.buildCodeFrameError("No branches?");
+      branchId = scope.generateUidIdentifier("b");
+      scope.push({ id: branchId, init: t.numericLiteral(0) });
     }
 
     // Map our deferred calls into their important information
-    const calls = deferred.map((path, i) => {
-      const { node } = path;
-      const callee = path.get("callee");
+    const calls = deferred.map((call, i) => {
+      const { node } = call;
+      const callee = call.get("callee");
       const isMemberExpression = callee.isMemberExpression();
 
       // Transform our calls into their context. For normal calls, it's just the
@@ -116,7 +103,8 @@ const expressionExtractor = {
           context
         ]);
       }
-      path.replaceWith(context);
+
+      call.replaceWith(context);
 
       return {
         node,
@@ -134,30 +122,6 @@ const expressionExtractor = {
       closureVars.push({ id: branchId, init: branchId });
     }
 
-    // Now that we've evaluated the expression, we need to evaluate the arguments
-    // to the deferred call that "won", if any did.
-    if (argId) {
-      let init = deferredArgs.map((args) => {
-        const { length } = args;
-        return length === 0 ? null : length === 1 ? args[0] : t.arrayExpression(args);
-      }).reduceRight((conditional, args, i) => {
-        if (!args) {
-          return conditional;
-        }
-
-        if (!branchId) {
-          return args;
-        }
-
-        return t.conditionalExpression(
-          t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
-          args,
-          conditional
-        );
-      }, t.nullLiteral());
-      closureVars.push({ id: argId, init });
-    }
-
     // Finally, transform the calls into their evaluted "contex" form.
     const evaluatedBranches = calls.map((struct, i) => {
       const { node, isMemberExpression } = struct;
@@ -171,16 +135,27 @@ const expressionExtractor = {
 
       // Any arguments are now passed through the evaluated args array.
       let index = 0;
-      const deferredArgsLength = deferredArgs[i].length;
+      const args = [];
+      const length = node.arguments.reduce((length, arg) => {
+        if (isLiteralOrSpecialNode(arg) || t.isJSXElement(arg)) {
+          return length;
+        }
+        return length + 1;
+      }, 0);
       node.arguments = node.arguments.map((arg) => {
-        if (isLiteralOrSpecialNode(arg)) {
+        if (isLiteralOrSpecialNode(arg) || t.isJSXElement(arg)) {
           return arg;
         }
 
-        if (deferredArgsLength === 1) {
-          return argId;
+        args.push(arg);
+
+        if (!argId) {
+          argId = scope.generateUidIdentifier("args");
         }
 
+        if (length === 1) {
+          return argId;
+        }
         return t.memberExpression(
           argId,
           t.numericLiteral(index++),
@@ -188,19 +163,39 @@ const expressionExtractor = {
         );
       });
 
-      return node;
+      return {
+        node,
+        args: length === 0 ? null : length === 1 ? args[0] : t.arrayExpression(args),
+      };
     });
-    let evaluated = evaluatedBranches.reduceRight((conditional, node, i) => {
-      if (!branchId) {
-        return node;
+
+    let evaluated;
+    let evaluatedArgs = t.nullLiteral();
+    for (let i = evaluatedBranches.length - 1; i >= 0; i--) {
+      const { node, args } = evaluatedBranches[i];
+      if (args) {
+        if (branchId) {
+          evaluatedArgs = t.conditionalExpression(
+            t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
+            args,
+            evaluatedArgs
+          );
+        } else {
+          evaluatedArgs = args;
+        }
       }
 
-      return t.conditionalExpression(
-        t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
-        node,
-        conditional
-      );
-    });
+      if (evaluated) {
+        evaluated = t.conditionalExpression(
+          t.binaryExpression("==", branchId, t.numericLiteral(i + 1)),
+          node,
+          evaluated
+        );
+      } else {
+        evaluated = node;
+      }
+    }
+
     // If not every branch leads to a deferred call, we need to render the
     // evaluated result. Ie. `1 || <div />` needs to render the `1`.
     if (!everyBranchHasCall) {
@@ -209,6 +204,10 @@ const expressionExtractor = {
         deferredId,
         evaluated
       );
+    }
+
+    if (argId) {
+      closureVars.push({ id: argId, init: evaluatedArgs });
     }
     expression.replaceWith(evaluated);
   }

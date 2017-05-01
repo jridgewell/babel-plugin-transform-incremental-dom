@@ -129,6 +129,11 @@ const expressionExtractor = {
     // and won't actually invoke them.
     closureVars.push({ id: deferredId, init: expression.node });
 
+    // Now, push the branching identifier.
+    if (branchId) {
+      closureVars.push({ id: branchId, init: branchId });
+    }
+
     // Now that we've evaluated the expression, we need to evaluate the arguments
     // to the deferred call that "won", if any did.
     if (argId) {
@@ -151,11 +156,6 @@ const expressionExtractor = {
         );
       }, t.nullLiteral());
       closureVars.push({ id: argId, init });
-    }
-
-    // Now, push the branching identifier.
-    if (branchId) {
-      closureVars.push({ id: branchId, init: branchId });
     }
 
     // Finally, transform the calls into their evaluted "contex" form.

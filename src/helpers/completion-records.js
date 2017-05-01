@@ -3,23 +3,29 @@ import last from "./last";
 
 const map = new WeakMap();
 
-// Gets all the possible values an expression may resolve.
-export function getCompletionRecords(path, all = true, completions = []) {
-  if (path.isSequenceExpression()) {
-    getCompletionRecords(last(path.get("expressions")), all, completions);
-  } else if (path.isConditionalExpression()) {
-    getCompletionRecords(path.get("consequent"), all, completions);
-    getCompletionRecords(path.get("alternate"), all, completions);
-  } else if (path.isLogicalExpression()) {
-    if (all || path.node.operator === "||") {
-      getCompletionRecords(path.get("left"), all, completions);
+export function getCompletionRecords(path, find = null) {
+  const stack = [path];
+  let i = 0;
+  while (i < stack.length) {
+    const p = stack[i];
+    if (p.isSequenceExpression()) {
+      stack[i] = last(p.get("expressions"));
+    } else if (p.isConditionalExpression()) {
+      stack[i] = p.get("consequent");
+      stack.push(p.get("alternate"));
+    } else if (p.isLogicalExpression()) {
+      if (!find || p.node.operator === "||") {
+        stack.push(p.get("left"));
+      }
+      stack[i] = p.get("right");
+    } else if (find && p === find) {
+      return true;
+    } else {
+      i++;
     }
-    getCompletionRecords(path.get("right"), all, completions);
-  } else {
-    completions.push(path);
   }
 
-  return completions;
+  return find ? false : stack;
 }
 
 // Determines if the element is a completion record.
@@ -36,8 +42,7 @@ export function isCompletionRecord(path, { fastRoots, opts }) {
     } else if (container.isJSXAttribute() || container.parentPath.isJSXAttribute()) {
       is = false;
     } else {
-      const completions = getCompletionRecords(container.get("expression"), false);
-      is = completions.indexOf(path) > -1;
+      is = getCompletionRecords(container.get("expression"), path);
     }
   }
 

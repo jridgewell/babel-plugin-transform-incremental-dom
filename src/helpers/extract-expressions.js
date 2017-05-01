@@ -12,32 +12,6 @@ function addClosureVar(expression, closureVars, defaultName) {
 }
 
 
-function deferrable(ancestor) {
-  let child;
-  while ((child = ancestor, ancestor = ancestor.parentPath)) {
-    if (ancestor.isJSXElement()) {
-      return true;
-    }
-
-    if (ancestor.isSequenceExpression()) {
-      const expressions = ancestor.get("expressions");
-      if (last(expressions) !== child) {
-        return false;
-      }
-    } else if (ancestor.isConditionalExpression()) {
-      if (child.key === "test") {
-        return false;
-      }
-    } else if (ancestor.isLogicalExpression()) {
-      if (ancestor.get("left") === child) {
-        return false;
-      }
-    } else if (!ancestor.isJSX()) {
-      return false;
-    }
-  }
-}
-
 // Extracts variable expressions into an array of closure parameters,
 // so that when the closure is finally evaluated, it will have the correct
 // values.
@@ -123,7 +97,7 @@ const expressionExtractor = {
     }
 
     // Finally, transform the calls into their evaluted "contex" form.
-    const evaluatedBranches = calls.map((struct, i) => {
+    const evaluatedBranches = calls.map((struct) => {
       const { node, isMemberExpression } = struct;
 
       // This reverses the context transform done earlier.

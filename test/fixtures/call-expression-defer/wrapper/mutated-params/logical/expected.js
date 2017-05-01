@@ -40,9 +40,9 @@ var _renderArbitrary = function _renderArbitrary(child) {
 var _div$wrapper = function _div$wrapper(_deferred, _b, _args, _deferred2, _b2, _args2) {
   elementOpen("div");
 
-  _renderArbitrary(_b == 0 ? _deferred : _deferred(_args));
+  _renderArbitrary(_b == 1 ? _deferred(_args) : _deferred);
 
-  _renderArbitrary(_b2 == 0 ? _deferred2 : _deferred2(_args2));
+  _renderArbitrary(_b2 == 1 ? _deferred2(_args2) : _deferred2);
 
   return elementClose("div");
 };

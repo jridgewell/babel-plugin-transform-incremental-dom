@@ -169,7 +169,7 @@ const expressionExtractor = {
       };
     });
 
-    let evaluated;
+    let evaluated = everyBranchHasCall ? null : deferredId;
     let evaluatedArgs = t.nullLiteral();
     for (let i = evaluatedBranches.length - 1; i >= 0; i--) {
       const { node, args } = evaluatedBranches[i];
@@ -194,16 +194,6 @@ const expressionExtractor = {
       } else {
         evaluated = node;
       }
-    }
-
-    // If not every branch leads to a deferred call, we need to render the
-    // evaluated result. Ie. `1 || <div />` needs to render the `1`.
-    if (!everyBranchHasCall) {
-      evaluated = t.conditionalExpression(
-        t.binaryExpression("==", branchId, t.numericLiteral(0)),
-        deferredId,
-        evaluated
-      );
     }
 
     if (argId) {

@@ -42,7 +42,7 @@ var _renderArbitrary = function _renderArbitrary(child) {
 var _div$wrapper = function _div$wrapper(_deferred, _b, _deferred2, _b2, _deferred3, _b3, _deferred4, _b4, _deferred5, _b5, _deferred6, _b6) {
   elementOpen('div');
 
-  _renderArbitrary(_b == 0 ? _deferred : _deferred());
+  _renderArbitrary(_b == 1 ? _deferred() : _deferred);
 
   _renderArbitrary(_b2 == 1 ? _deferred2() : _deferred2());
 
@@ -50,9 +50,9 @@ var _div$wrapper = function _div$wrapper(_deferred, _b, _deferred2, _b2, _deferr
 
   _renderArbitrary(_b4 == 1 ? _deferred4() : _deferred4());
 
-  _renderArbitrary(_b5 == 0 ? _deferred5 : _b5 == 1 ? _deferred5() : _deferred5());
+  _renderArbitrary(_b5 == 1 ? _deferred5() : _b5 == 2 ? _deferred5() : _deferred5);
 
-  _renderArbitrary(_b6 == 0 ? _deferred6 : _b6 == 1 ? _deferred6() : _deferred6());
+  _renderArbitrary(_b6 == 1 ? _deferred6() : _b6 == 2 ? _deferred6() : _deferred6);
 
   return elementClose('div');
 };

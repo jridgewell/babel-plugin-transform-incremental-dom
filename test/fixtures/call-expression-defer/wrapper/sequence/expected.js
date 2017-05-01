@@ -46,9 +46,9 @@ var _div$wrapper = function _div$wrapper(_deferred, _deferred2, _deferred3, _b, 
 
   _renderArbitrary(_b == 1 ? _deferred3() : _deferred3());
 
-  _renderArbitrary(_b2 == 0 ? _deferred4 : _deferred4());
+  _renderArbitrary(_b2 == 1 ? _deferred4() : _deferred4);
 
-  _renderArbitrary(_b3 == 0 ? _deferred5 : _deferred5());
+  _renderArbitrary(_b3 == 1 ? _deferred5() : _deferred5);
 
   return elementClose("div");
 };

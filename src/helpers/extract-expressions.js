@@ -121,20 +121,25 @@ const expressionExtractor = {
           return arg;
         }
 
-        args.push(arg);
+        const spread = t.isSpreadElement(arg);
+        args.push(spread ? arg.argument : arg);
 
         if (!argId) {
           argId = scope.generateUidIdentifier("args");
         }
 
+        let evaluated;
         if (length === 1) {
-          return argId;
+          evaluated = argId;
+        } else {
+          evaluated = t.memberExpression(
+            argId,
+            t.numericLiteral(index++),
+            true
+          );
         }
-        return t.memberExpression(
-          argId,
-          t.numericLiteral(index++),
-          true
-        );
+
+        return spread ? t.spreadElement(evaluated) : evaluated;
       });
 
       return {

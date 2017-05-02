@@ -1,44 +1,16 @@
-import isReturned from "./is-returned";
-import useFastRoot from "./fast-root";
 import moduleSource from "./module-source";
 
-const rootMap = new WeakMap();
 const patchRootsMap = new WeakMap();
 
-const rootElementFinder = {
-  JSXElement(path) {
-    const { crossedFunction } = this;
+// Gathers the function nodes that are passed into the iDOM `patch` function.
+export default function patchRoots(plugin) {
+  const { file } = plugin;
 
-    // No need to traverse our JSX element.
-    if (path === root) {
-      path.skip();
-      return;
-    }
-
-    // We're looking for a root element, which must be returned by the function.
-    if (crossedFunction && isReturned(path)) {
-      this.root = path;
-      path.stop();
-    }
-  },
-
-  // Don't traverse into other functions, since they cannot contain the root.
-  Function(path) {
-    path.skip();
-  }
-};
-
-function inPatchRoot(path, plugin) {
-  const { opts, file } = plugin;
-  if (useFastRoot(path, opts)) {
-    return true;
-  }
-
-  let patchRoots = patchRootsMap.get(plugin.file);
+  let patchRoots = patchRootsMap.get(file);
   if (!patchRoots) {
     const importSource = moduleSource(plugin);
     if (!importSource) {
-      patchRootsMap.set(plugin.file, []);
+      patchRootsMap.set(file, []);
       return true;
     }
 
@@ -100,52 +72,8 @@ function inPatchRoot(path, plugin) {
 
       return roots;
     }, []);
-    patchRootsMap.set(plugin.file, patchRoots);
+    patchRootsMap.set(file, patchRoots);
   }
 
-  return !patchRoots.length || path.findParent((parent) => {
-    return patchRoots.indexOf(parent) > -1;
-  });
-}
-
-// Detects if this JSX element is the root element.
-// It is not the root if there is another root element in this
-// or a higher function scope.
-export default function isRootJSX(path, plugin) {
-  const state = {
-    root: null,
-    crossedFunction: false
-  };
-
-  if (!path.isJSX() && path.getFunctionParent().isProgram()) {
-    return true;
-  }
-
-  if (!isReturned(path)) {
-    return false;
-  }
-
-  if (!inPatchRoot(path, plugin)) {
-    return false;
-  }
-
-  path.findParent((path) => {
-    if (path.isJSXElement()) {
-      state.root = path;
-    } else if (path.isFunction() || path.isProgram()) {
-      if (rootMap.has(path)) {
-        state.root = rootMap.get(path);
-      } else {
-        path.traverse(rootElementFinder, state);
-        rootMap.set(path, state.root);
-      }
-
-      state.crossedFunction = true;
-    }
-
-    // End early if another JSXElement is found.
-    return state.root;
-  });
-
-  return !state.root || state.root === path;
+  return patchRoots;
 }

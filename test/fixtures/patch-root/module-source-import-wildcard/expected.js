@@ -2,14 +2,6 @@ var _idomWrapper = require("idom-wrapper");
 
 var iDOM = _interopRequireWildcard(_idomWrapper);
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
-};
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -39,6 +31,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
       _forOwn(child, _renderArbitrary);
     }
   }
+};
+
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
 };
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }

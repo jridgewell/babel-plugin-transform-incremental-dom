@@ -1,27 +1,3 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
-};
-
-var _flipAttr = function _flipAttr(value, name) {
-  attr(name, value);
-};
-
-var _spreadAttribute = function _spreadAttribute(spread) {
-  _forOwn(spread, _flipAttr);
-};
-
-var _hasOwn = Object.prototype.hasOwnProperty;
-
-var _forOwn = function _forOwn(object, iterator) {
-  for (var prop in object) {
-    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-  }
-};
-
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
@@ -43,6 +19,30 @@ var _renderArbitrary = function _renderArbitrary(child) {
       _forOwn(child, _renderArbitrary);
     }
   }
+};
+
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
+};
+
+var _flipAttr = function _flipAttr(value, name) {
+  attr(name, value);
+};
+
+var _hasOwn = Object.prototype.hasOwnProperty;
+
+var _forOwn = function _forOwn(object, iterator) {
+  for (var prop in object) {
+    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
+  }
+};
+
+var _spreadAttribute = function _spreadAttribute(spread) {
+  _forOwn(spread, _flipAttr);
 };
 
 var _div$wrapper = function _div$wrapper(_fn, _fn2) {

@@ -37,19 +37,19 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _ul$wrapper = function _ul$wrapper(_deferred, _args) {
-  elementOpen("ul");
-
-  _renderArbitrary(_deferred.map(_args));
-
-  return elementClose("ul");
-},
-    _li$wrapper = function _li$wrapper(_deferred2, _args2) {
+var _li$wrapper = function _li$wrapper(_deferred, _args) {
   elementOpen("li");
 
-  _renderArbitrary(_deferred2(_args2));
+  _renderArbitrary(_deferred(_args));
 
   return elementClose("li");
+},
+    _ul$wrapper = function _ul$wrapper(_deferred2, _args2) {
+  elementOpen("ul");
+
+  _renderArbitrary(_deferred2.map(_args2));
+
+  return elementClose("ul");
 };
 
 function renderMessage(i) {

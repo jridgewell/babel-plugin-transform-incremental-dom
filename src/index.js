@@ -1,5 +1,4 @@
-import isRootJSX from "./helpers/is-root-jsx";
-import isReturned from "./helpers/is-returned";
+import rootJSX, { isRootOrDescendant } from "./helpers/root-jsx";
 import { setupInjector, injectHelpers } from "./helpers/inject";
 import { setupHoists, hoist, addHoistedDeclarator, generateHoistName } from "./helpers/hoist";
 import { isCompletionRecord } from "./helpers/completion-records";
@@ -23,26 +22,7 @@ import JSX from "babel-plugin-syntax-jsx";
 
 import * as messages from "./messages";
 
-export default function ({ types: t, traverse: _traverse }) {
-  function traverse(path, visitor, state) {
-    _traverse.explode(visitor);
-
-    const { node } = path;
-    if (!node) {
-      return;
-    }
-
-    const { type } = node;
-    const { enter = [], exit = [] } = visitor[type] || {};
-
-    enter.forEach((fn) => fn.call(state, path, state));
-    if (!path.shouldSkip) {
-      path.traverse(visitor, state);
-      exit.forEach((fn) => fn.call(state, path, state));
-    }
-    path.shouldSkip = false;
-  }
-
+export default function ({ types: t }) {
   const elementVisitor = {
     JSXNamespacedName(path) {
       if (!this.opts.namespaceAttributes || path.parentPath.isJSXOpeningElement()) {
@@ -53,6 +33,7 @@ export default function ({ types: t, traverse: _traverse }) {
     JSXElement: {
       enter(path) {
         this.elementVarsStack.push([]);
+        this.secondaryTree = !isRootOrDescendant(path, this);
 
         const needsWrapper = this.secondaryTree || !isCompletionRecord(path, this);
         // If this element needs to be wrapped in a closure, we need to transform
@@ -62,15 +43,15 @@ export default function ({ types: t, traverse: _traverse }) {
           // closure parameters.
           this.closureVarsStack.push([]);
 
-          const state = Object.assign({}, this, { secondaryTree: false, root: path });
-          path.traverse(expressionExtractor, state);
-          path.traverse(elementVisitor, state);
+          path.traverse(expressionExtractor, this);
+          path.traverse(elementVisitor, this);
         }
       },
 
       exit(path) {
+        this.secondaryTree = !isRootOrDescendant(path, this);
+
         const { secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
-        // const ancestorPath = ancestorExpression(path, this);
         const needsWrapper = secondaryTree || !isCompletionRecord(path, this);
 
         const { parentPath } = path;
@@ -91,7 +72,7 @@ export default function ({ types: t, traverse: _traverse }) {
 
         // Expressions Containers must contain an expression and not statements.
         // This will be flattened out into statements later.
-        if (!needsWrapper && parentPath.isJSXExpressionContainer()) {
+        if (!needsWrapper && (implicitReturn || parentPath.isJSXExpressionContainer())) {
           const sequence = t.sequenceExpression(elements);
           path.replaceWith(sequence);
           replacedElements.add(path);
@@ -152,26 +133,6 @@ export default function ({ types: t, traverse: _traverse }) {
     }
   };
 
-  const rootElementVisitor = {
-    JSXElement(path) {
-      const previousRoot = this.root;
-      const sameLevel = !previousRoot || previousRoot.getFunctionParent() === path.getFunctionParent();
-
-      if (sameLevel && isRootJSX(path, this)) {
-        this.root = path;
-        const state = Object.assign({}, this, {
-          secondaryTree: !isReturned(path),
-        });
-
-        traverse(path, elementVisitor, state);
-        return;
-      }
-
-      this.elements++;
-      path.skip();
-    }
-  };
-
   // This visitor first finds the root element, and ignores all the others.
   return {
     inherits: JSX,
@@ -194,41 +155,27 @@ export default function ({ types: t, traverse: _traverse }) {
         },
 
         exit(path) {
-          path.traverse(elementVisitor, {
-            secondaryTree: true,
-            root: null,
-            replacedElements: new WeakSet(),
-            fastRoots: new WeakSet(),
-            closureVarsStack: [],
-            elementVarsStack: [],
-            file: this.file,
-            opts: this.opts,
-          });
-
           hoist(path, this);
           injectHelpers(this);
         }
       },
 
-      Function: {
+      JSXElement: {
         exit(path) {
-          const state = {
-            elements: 0,
-            secondaryTree: false,
-            root: null,
-            replacedElements: new WeakSet(),
-            fastRoots: new WeakSet(),
-            closureVarsStack: [],
-            elementVarsStack: [],
-            file: this.file,
-            opts: this.opts,
-          };
+          const parent = path.getFunctionParent();
+          const root = rootJSX(parent, this);
 
-          path.traverse(rootElementVisitor, state);
-
-          if (state.elements > 0 && state.root) {
-            state.secondaryTree = true;
-            path.traverse(elementVisitor, state);
+          if (!root || root.getFunctionParent() === parent) {
+            const state = {
+              secondaryTree: false,
+              replacedElements: new WeakSet(),
+              fastRoots: new WeakSet(),
+              closureVarsStack: [],
+              elementVarsStack: [],
+              file: this.file,
+              opts: this.opts,
+            };
+            parent.traverse(elementVisitor, state);
           }
         }
       }

@@ -1,13 +1,5 @@
 var _incrementalDom = require("incremental-dom");
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
-};
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _forOwn = function _forOwn(object, iterator) {
@@ -37,6 +29,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
       _forOwn(child, _renderArbitrary);
     }
   }
+};
+
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
 };
 
 var _li$wrapper = function _li$wrapper() {

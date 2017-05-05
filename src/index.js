@@ -33,9 +33,9 @@ export default function ({ types: t }) {
     JSXElement: {
       enter(path) {
         this.elementVarsStack.push([]);
-        this.secondaryTree = !isRootOrDescendant(path, this);
+        const secondaryTree = !isRootOrDescendant(path, this);
+        const needsWrapper = secondaryTree || !isCompletionRecord(path, this);
 
-        const needsWrapper = this.secondaryTree || !isCompletionRecord(path, this);
         // If this element needs to be wrapped in a closure, we need to transform
         // it's children without wrapping them.
         if (needsWrapper) {
@@ -49,9 +49,8 @@ export default function ({ types: t }) {
       },
 
       exit(path) {
-        this.secondaryTree = !isRootOrDescendant(path, this);
-
-        const { secondaryTree, replacedElements, closureVarsStack, elementVarsStack } = this;
+        const { replacedElements } = this;
+        const secondaryTree = !isRootOrDescendant(path, this);
         const needsWrapper = secondaryTree || !isCompletionRecord(path, this);
 
         const { parentPath } = path;
@@ -61,7 +60,7 @@ export default function ({ types: t }) {
 
         const openingElement = elementOpenCall(openingElementPath, this);
         const closingElement = elementCloseCall(openingElementPath, this);
-        const elementVars = elementVarsStack.pop();
+        const elementVars = this.elementVarsStack.pop();
         const isSkipping = hasSkip(openingElementPath.get("attributes"), this);
         const children =  isSkipping ?
           [toFunctionCall(iDOMMethod("skip", this), [])] :
@@ -91,7 +90,7 @@ export default function ({ types: t }) {
         if (needsWrapper) {
           // Create a wrapper around our element, and mark it as a one so later
           // child expressions can identify and "render" it.
-          const closureVars = closureVarsStack.pop();
+          const closureVars = this.closureVarsStack.pop();
           const params = closureVars.map((e) => e.id);
           let wrapper = addHoistedDeclarator(
             path.scope,
@@ -167,7 +166,6 @@ export default function ({ types: t }) {
 
           if (!root || root.getFunctionParent() === parent) {
             const state = {
-              secondaryTree: false,
               replacedElements: new WeakSet(),
               fastRoots: new WeakSet(),
               closureVarsStack: [],

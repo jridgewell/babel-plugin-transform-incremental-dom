@@ -32,11 +32,16 @@ export default function elementOpenCall(path, plugin) {
   // This allows spreads to be transformed into
   // attr(name, value) calls.
   if (hasSpread(attributes)) {
+    const {calls, spreadChildren} = toAttrsCalls(path.parentPath, attrs, plugin);
     const expressions = [
       toFunctionCall(iDOMMethod("elementOpenStart", plugin), args),
-      ...toAttrsCalls(attrs, plugin),
+      ...calls,
       toFunctionCall(iDOMMethod("elementOpenEnd", plugin), [tag])
     ];
+
+    if (spreadChildren) {
+      path.parentPath.unshiftContainer("children", t.jSXExpressionContainer(spreadChildren));
+    }
 
     return t.sequenceExpression(expressions);
   }

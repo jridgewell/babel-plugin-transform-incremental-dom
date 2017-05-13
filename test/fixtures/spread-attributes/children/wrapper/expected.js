@@ -41,29 +41,18 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   }
 };
 
-var _test$wrapper = function _test$wrapper(_props) {
+var _div$wrapper = function _div$wrapper(_children) {
   elementOpenStart("div");
 
-  _spreadAttribute(_props);
+  _spreadAttribute(_children);
 
   elementOpenEnd("div");
 
-  _renderArbitrary(_hasOwn(_props, "children") ? _props.children : undefined);
+  _renderArbitrary(_hasOwn(_children, "children") ? _children.children : undefined);
 
   return elementClose("div");
 };
 
 function render() {
-  var _props2;
-
-  var test = _jsxWrapper(_test$wrapper, [props]);
-  elementOpenStart("div");
-
-  _spreadAttribute(_props2 = props);
-
-  elementOpenEnd("div");
-
-  _renderArbitrary(_hasOwn(_props2, "children") ? _props2.children : undefined);
-
-  return elementClose("div");
+  var div = _jsxWrapper(_div$wrapper, [{ children: [1, 2, 3] }]);
 }

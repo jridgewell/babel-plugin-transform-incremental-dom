@@ -1,3 +1,11 @@
+var _jsxWrapper = function _jsxWrapper(func, args) {
+  return {
+    __jsxDOMWrapper: true,
+    func: func,
+    args: args
+  };
+};
+
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
@@ -25,19 +33,11 @@ var _renderArbitrary = function _renderArbitrary(child) {
   }
 };
 
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
-};
-
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _spreadAttribute = function _spreadAttribute(spread) {
   for (var prop in spread) {
-    if (_hasOwn.call(spread, prop)) attr(prop, spread[prop]);
+    if (prop !== "children" && _hasOwn.call(spread, prop)) attr(prop, spread[prop]);
   }
 };
 
@@ -48,6 +48,9 @@ var _div$wrapper = function _div$wrapper(_fn, _fn2) {
   _spreadAttribute(_fn2);
 
   elementOpenEnd("div");
+
+  _renderArbitrary(_hasOwn(_fn2, "children") ? _fn2.children : undefined);
+
   return elementClose("div");
 };
 

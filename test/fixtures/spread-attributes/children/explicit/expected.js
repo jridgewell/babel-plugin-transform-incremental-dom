@@ -6,17 +6,12 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   }
 };
 
-var _div$statics = ["class", "test", "key", "test"];
 function render() {
-  elementOpenStart("div", "test", _div$statics);
-  attr("id", id);
+  elementOpenStart("div");
 
-  _spreadAttribute(props);
-
-  attr("data-expanded", expanded);
-
-  _spreadAttribute(props.attrs);
+  _spreadAttribute({ children: [1, 2, 3] });
 
   elementOpenEnd("div");
+  elementVoid("div");
   return elementClose("div");
 }

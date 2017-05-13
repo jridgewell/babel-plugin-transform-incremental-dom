@@ -14,7 +14,7 @@ function spreadAttributeAST(plugin, ref, deps) {
   /**
    * function _spreadAttribute(spread) {
    *   for (var prop in spread) {
-   *     if (_hasOwn.call(spread, prop)) {
+   *     if (prop !== 'children' && _hasOwn.call(spread, prop)) {
    *       attr(prop, spread[prop]);
    *     }
    *   }
@@ -28,10 +28,14 @@ function spreadAttributeAST(plugin, ref, deps) {
         t.variableDeclaration("var", [t.variableDeclarator(prop)]),
         spread,
         t.ifStatement(
-          toFunctionCall(t.memberExpression(
-            hasOwn,
-            t.identifier("call")
-          ), [spread, prop]),
+          t.logicalExpression(
+            "&&",
+            t.binaryExpression("!==", prop, t.stringLiteral("children")),
+            toFunctionCall(t.memberExpression(
+              hasOwn,
+              t.identifier("call")
+            ), [spread, prop])
+          ),
           t.expressionStatement(toFunctionCall(iDOMMethod("attr", plugin), [
             prop,
             t.memberExpression(spread, prop, true)

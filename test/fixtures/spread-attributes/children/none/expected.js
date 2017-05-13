@@ -1,11 +1,3 @@
-var _jsxWrapper = function _jsxWrapper(func, args) {
-  return {
-    __jsxDOMWrapper: true,
-    func: func,
-    args: args
-  };
-};
-
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
@@ -41,29 +33,16 @@ var _spreadAttribute = function _spreadAttribute(spread) {
   }
 };
 
-var _test$wrapper = function _test$wrapper(_props) {
-  elementOpenStart("div");
-
-  _spreadAttribute(_props);
-
-  elementOpenEnd("div");
-
-  _renderArbitrary(_hasOwn(_props, "children") ? _props.children : undefined);
-
-  return elementClose("div");
-};
-
 function render() {
-  var _props2;
+  var _children;
 
-  var test = _jsxWrapper(_test$wrapper, [props]);
   elementOpenStart("div");
 
-  _spreadAttribute(_props2 = props);
+  _spreadAttribute(_children = { children: [1, 2, 3] });
 
   elementOpenEnd("div");
 
-  _renderArbitrary(_hasOwn(_props2, "children") ? _props2.children : undefined);
+  _renderArbitrary(_hasOwn(_children, "children") ? _children.children : undefined);
 
   return elementClose("div");
 }

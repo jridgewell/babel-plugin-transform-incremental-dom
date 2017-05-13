@@ -1,5 +1,5 @@
 import inject from "../inject";
-import injectForOwn from "./for-own";
+import injectHasOwn from "./has-own";
 import toFunctionCall from "../ast/to-function-call";
 import iDOMMethod from "../idom-method";
 import * as t from "babel-types";
@@ -61,17 +61,14 @@ function isPlainObject(value) {
 // Valid types are strings, numbers, and JSX element closures.
 // It may also be an Array or Object, which will be iterated
 // recursively to find a valid type.
-// Depends on the _forOwn helper.
 function renderArbitraryAST(plugin, ref, deps) {
-  const { forOwn } = deps;
+  const { hasOwn } = deps;
   const child = t.identifier("child");
   const type = t.identifier("type");
   const func = t.identifier("func");
   const args = t.identifier("args");
-  const forEach = t.memberExpression(
-    child,
-    t.identifier("forEach")
-  );
+  const i = t.identifier("i");
+  const prop = t.identifier("prop");
 
   /**
    * function _renderArbitrary(child) {
@@ -79,7 +76,9 @@ function renderArbitraryAST(plugin, ref, deps) {
    *   if (type === "number" || (type === string || type === 'object' && child instanceof String)) {
    *     text(child);
    *   } else if (Array.isArray(child)) {
-   *     child.forEach(_renderArbitrary);
+   *     for (var i = 0; i < child.length; i++) {
+   *       _renderArbitrary(child[i]);
+   *     }
    *   } else if (type === "object") {
    *     if (child.__jsxDOMWrapper) {
    *       var func = child.func, args = child.args;
@@ -89,7 +88,11 @@ function renderArbitraryAST(plugin, ref, deps) {
    *         func();
    *       }
    *     } else if (String(child) === "[object Object]") {
-   *       _forOwn(child, _renderArbitrary);
+   *       for (var prop in child) {
+   *         if (_hasOwn.call(child, prop)) {
+   *           renderArbitrary(child[prop])
+   *         }
+   *       }
    *     }
    *   }
    * }
@@ -112,7 +115,14 @@ function renderArbitraryAST(plugin, ref, deps) {
         t.ifStatement(
           isArray(child),
           t.blockStatement([
-            t.expressionStatement(toFunctionCall(forEach, [ref]))
+            t.forStatement(
+              t.variableDeclaration("var", [t.variableDeclarator(i, t.numericLiteral(0))]),
+              t.binaryExpression("<", i, t.memberExpression(child, t.identifier("length"))),
+              t.updateExpression("++", i),
+              t.expressionStatement(toFunctionCall(ref, [
+                t.memberExpression(child, i, true)
+              ]))
+            )
           ]),
           t.ifStatement(
             isObject(type),
@@ -139,7 +149,19 @@ function renderArbitraryAST(plugin, ref, deps) {
                 t.ifStatement(
                   isPlainObject(child),
                   t.blockStatement([
-                    t.expressionStatement(toFunctionCall(forOwn, [child, ref]))
+                    t.forInStatement(
+                      t.variableDeclaration("var", [t.variableDeclarator(prop)]),
+                      child,
+                      t.ifStatement(
+                        toFunctionCall(t.memberExpression(
+                          hasOwn,
+                          t.identifier("call")
+                        ), [child, i]),
+                        t.expressionStatement(toFunctionCall(ref, [
+                          t.memberExpression(child, i, true)
+                        ]))
+                      )
+                    )
                   ])
                 )
               )
@@ -153,6 +175,6 @@ function renderArbitraryAST(plugin, ref, deps) {
 
 export default function injectRenderArbitrary(plugin) {
   return inject(plugin, "renderArbitrary", renderArbitraryAST, {
-    forOwn: injectForOwn
+    hasOwn: injectHasOwn
   });
 }

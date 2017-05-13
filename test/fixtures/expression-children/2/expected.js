@@ -8,19 +8,15 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 
 var _hasOwn = Object.prototype.hasOwnProperty;
 
-var _forOwn = function _forOwn(object, iterator) {
-  for (var prop in object) {
-    if (_hasOwn.call(object, prop)) iterator(object[prop], prop);
-  }
-};
-
 var _renderArbitrary = function _renderArbitrary(child) {
   var type = typeof child;
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
   } else if (Array.isArray(child)) {
-    child.forEach(_renderArbitrary);
+    for (var i = 0; i < child.length; i++) {
+      _renderArbitrary(child[i]);
+    }
   } else if (type === "object") {
     if (child.__jsxDOMWrapper) {
       var func = child.func,
@@ -32,7 +28,9 @@ var _renderArbitrary = function _renderArbitrary(child) {
         func();
       }
     } else if (String(child) === "[object Object]") {
-      _forOwn(child, _renderArbitrary);
+      for (var prop in child) {
+        if (_hasOwn.call(child, i)) _renderArbitrary(child[i]);
+      }
     }
   }
 };

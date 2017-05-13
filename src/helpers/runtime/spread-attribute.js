@@ -1,32 +1,49 @@
 import inject from "../inject";
-import injectForOwn from "./for-own";
-import injectFlipAttr from "./attr";
+import injectHasOwn from "./has-own";
 import toFunctionCall from "../ast/to-function-call";
+import iDOMMethod from "../idom-method";
 import * as t from "babel-types";
 
 // Iterates over a SpreadAttribute, assigning each property as an attribute
 // on the element.
 function spreadAttributeAST(plugin, ref, deps) {
-  const { forOwn, attr } = deps;
+  const { hasOwn } = deps;
   const spread = t.identifier("spread");
+  const prop = t.identifier("prop");
 
   /**
    * function _spreadAttribute(spread) {
-   *   _forOwn(spread, _attr);
+   *   for (var prop in spread) {
+   *     if (_hasOwn.call(spread, prop)) {
+   *       attr(prop, spread[prop]);
+   *     }
+   *   }
    * }
    */
   return t.functionExpression(
     ref,
     [spread],
     t.blockStatement([
-      t.expressionStatement(toFunctionCall(forOwn, [spread, attr]))
+      t.forInStatement(
+        t.variableDeclaration("var", [t.variableDeclarator(prop)]),
+        spread,
+        t.ifStatement(
+          toFunctionCall(t.memberExpression(
+            hasOwn,
+            t.identifier("call")
+          ), [spread, prop]),
+          t.expressionStatement(toFunctionCall(iDOMMethod("attr", plugin), [
+            prop,
+            t.memberExpression(spread, prop, true)
+          ]))
+        )
+      )
     ])
   );
 }
 
 export default function injectSpreadAttribute(plugin) {
   return inject(plugin, "spreadAttribute", spreadAttributeAST, {
-    forOwn: injectForOwn,
-    attr: injectFlipAttr
+    hasOwn: injectHasOwn
   });
 }

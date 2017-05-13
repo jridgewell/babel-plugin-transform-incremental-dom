@@ -77,8 +77,7 @@ export default function extractOpenArguments(path, plugin) {
             return;
           }
 
-          const id = scope.generateUidIdentifier(name ? name.value : "spread");
-          scope.push({ id });
+          const id = scope.generateDeclaredUidIdentifier(name ? name.value : "spread");
           elementVars.push(t.assignmentExpression("=", id, value));
           attr.value = id;
         });

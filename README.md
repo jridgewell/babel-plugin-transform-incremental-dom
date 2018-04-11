@@ -4,6 +4,8 @@ Turn JSX into [Incremental DOM](http://google.github.io/incremental-dom/).
 
 ## Example
 
+## Foobar
+
 **In**
 
 ```javascript

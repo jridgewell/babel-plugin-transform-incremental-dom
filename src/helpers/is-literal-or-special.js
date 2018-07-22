@@ -7,6 +7,9 @@ export default function isLiteralOrSpecial(path) {
 }
 
 export function isLiteralOrSpecialNode(node) {
+  if (t.isTemplateLiteral(node)) {
+    return node.expressions.every(isLiteralOrSpecialNode);
+  }
   return t.isLiteral(node) ||
     t.isUnaryExpression(node, { operator: "void" }) ||
     t.isIdentifier(node, { name: "undefined" }) ||

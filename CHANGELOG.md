@@ -9,6 +9,12 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 4.2.1
+
+- **Bug Fix**
+  - Fix literal detection with `TemplateLiteral`s
+    - [47454659](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/commit/4745465902ca1b0a9d08e047ef21fe391522a1bb)
+
 ## 4.1.1
 
 - **Bug Fix**

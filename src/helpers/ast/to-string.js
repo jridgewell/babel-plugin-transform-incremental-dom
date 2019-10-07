@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Helper to transform a literal into an string literal.
 export default function toString(literal, restricted = false) {

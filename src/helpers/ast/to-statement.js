@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Helper to transform an expression into an expression statement.
 export default function toStatement(expression) {

@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 const nonWhitespace = /\S/;
 const whitespace = /\s+/g;

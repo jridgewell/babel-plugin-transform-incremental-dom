@@ -1,4 +1,4 @@
-import { transform } from "babel-core";
+import { transform } from "@babel/core";
 import assert from "assert";
 import plugin from "../../../src/index";
 

@@ -18,7 +18,7 @@ import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 import { hasSkip } from "./helpers/attributes";
 
-import JSX from "babel-plugin-syntax-jsx";
+import JSX from "@babel/plugin-syntax-jsx";
 
 import * as messages from "./messages";
 

@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Helper to transform a JSX identifier into a normal reference.
 export default function toReference(node, identifier = false) {

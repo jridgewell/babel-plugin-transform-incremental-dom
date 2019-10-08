@@ -1,4 +1,5 @@
 var _div$statics = ["key", ""];
+
 function render(id) {
   var key = id;
   var _key = key;

@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Ensures the final statement is a return statement.
 export default function statementsWithReturnLast(statements) {

@@ -1,5 +1,5 @@
 import inject from "../inject";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Wraps a JSX element in a lazy evaluation struct, capturing the arguments
 // that its attributes and children need to render.

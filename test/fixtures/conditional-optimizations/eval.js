@@ -1,4 +1,4 @@
-import { transform } from "babel-core";
+import { transform } from "@babel/core";
 import assert from "assert";
 import plugin from "../../../src/index";
 
@@ -13,15 +13,15 @@ const cases = [
   [ true, true, true ],
 ];
 const operations = [
-  ['||', '||'],
-  ['||', '&&'],
-  ['&&', '||'],
-  ['&&', '&&'],
+  ["||", "||"],
+  ["||", "&&"],
+  ["&&", "||"],
+  ["&&", "&&"],
 ];
 const groupings = [
-  [' ', ' ', ' ', ' ', ' ', ' '],
-  [' ', ' ', '(', ' ', ' ', ')'],
-  ['(', ' ', ' ', ')', ' ', ' '],
+  [" ", " ", " ", " ", " ", " "],
+  [" ", " ", "(", " ", " ", ")"],
+  ["(", " ", " ", ")", " ", " "],
 ];
 
 
@@ -33,11 +33,11 @@ function renderArbitrary() { }
 function elementVoid() { }
 function jsxWrapper() {
   wrappers++;
-  return 'wrapper';
+  return "wrapper";
 }
 function pass() {
   passes++;
-  return 'pass';
+  return "pass";
 }
 
 function mockRequire() {
@@ -49,13 +49,13 @@ for (let i = 0; i < cases.length; i++) {
   for (let j = 0; j < c.length; j++) {
     const bool = c.slice();
     const jsx = c.slice();
-    bool.splice(j, 1, 'pass()');
-    jsx.splice(j, 1, '<div />');
+    bool.splice(j, 1, "pass()");
+    jsx.splice(j, 1, "<div />");
 
 
     for (let k = 0; k < operations.length; k++) {
       const operation = operations[k];
-      for (var l = 0; l < groupings.length; l++) {
+      for (let l = 0; l < groupings.length; l++) {
         const grouping = groupings[l];
 
         test(bool, jsx, operation, grouping);
@@ -82,18 +82,18 @@ function test(bool, jsx, operation, grouping) {
     const expected = eval(boolCode);
     const transformed = transform(`function render() { return <div>{${jsxCode}}</div>; }; render()`, {
       plugins: [
-        'transform-es2015-modules-commonjs',
-        [plugin, {runtimeModuleSource: 'test'}]
+        "@babel/plugin-transform-modules-commonjs",
+        [plugin, {runtimeModuleSource: "test"}]
       ]
     }).code;
 
     const require = mockRequire;
     const result = eval(transformed);
 
-    if (expected === 'pass') {
-      assert.equal(wrappers, 0, 'wrapper was created');
+    if (expected === "pass") {
+      assert.equal(wrappers, 0, "wrapper was created");
     } else {
-      assert.equal(wrappers, passes, passes === 1 ? 'wrapper was not created' : 'wrapper was created');
+      assert.equal(wrappers, passes, passes === 1 ? "wrapper was not created" : "wrapper was created");
     }
   });
 }

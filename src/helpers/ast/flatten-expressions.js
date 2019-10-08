@@ -1,5 +1,5 @@
 import toStatement from "./to-statement";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Helper to flatten out sequence expressions into a top level
 // expression statements.

@@ -1,3 +1,5 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _jsxWrapper = function _jsxWrapper(func, args) {
   return {
     __jsxDOMWrapper: true,
@@ -9,7 +11,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
@@ -57,8 +59,11 @@ function render() {
       _b3 = 0;
 
   function fn() {}
+
   function fn2() {}
+
   var div = _jsxWrapper(_div$wrapper, [(1, 2, fn2), (1, fn(), fn2), true ? (1, 2, (_b = 1, fn2)) : (1, 2, (_b = 2, fn2)), _b, true && (1, fn(), (_b2 = 1, fn2)), _b2, true || (1, fn(), (_b3 = 1, fn2)), _b3]);
+
   elementOpen("root");
 
   _renderArbitrary(div);

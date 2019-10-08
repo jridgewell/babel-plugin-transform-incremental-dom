@@ -1,3 +1,4 @@
+import collectImports from "./collect-imports";
 import resolvePath from "./resolve-path";
 
 // Determines the import module source for iDOM.
@@ -8,7 +9,7 @@ export default function moduleSource({ opts, file }) {
   }
 
   // See if we can find the incremental-dom import.
-  const { imports } = file.metadata.modules;
+  const imports = collectImports(file.path);
   const imported = imports.find((imported) => {
     return imported.source === "incremental-dom";
   });

@@ -1,7 +1,7 @@
 import isLiteralOrSpecial, { isLiteralOrSpecialNode } from "./is-literal-or-special";
 import last from "./last";
 import { getCompletionRecords } from "./completion-records";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 function addClosureVar(expression, closureVars, defaultName) {
   const init = expression.node;

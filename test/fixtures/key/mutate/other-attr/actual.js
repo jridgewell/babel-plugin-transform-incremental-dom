@@ -2,14 +2,14 @@ function render() {
   return <div attr={i} key={i++} />;
 }
 
-function render() {
+function render2() {
   return <div key={i++} attr={i} />;
 }
 
-function render() {
+function render3() {
   return <div attr={i++} key={i} />;
 }
 
-function render() {
+function render4() {
   return <div key={i} attr={i++} />;
 }

@@ -3,7 +3,7 @@ import { generateHoistName, addHoistedDeclarator } from "./hoist";
 import uuid from "./uuid";
 import toString from "./ast/to-string";
 import last from "./last";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Extracts attributes into the appropriate
 // attribute array. Static attributes and the key

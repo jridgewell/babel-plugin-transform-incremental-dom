@@ -18,7 +18,7 @@ import elementCloseCall from "./helpers/element-close-call";
 import buildChildren from "./helpers/build-children";
 import { hasSkip } from "./helpers/attributes";
 
-import JSX from "babel-plugin-syntax-jsx";
+import JSX from "@babel/plugin-syntax-jsx";
 
 import * as messages from "./messages";
 
@@ -161,7 +161,7 @@ export default function ({ types: t }) {
 
       JSXElement: {
         exit(path) {
-          const parent = path.getFunctionParent();
+          const parent = path.findParent((p) => p.isFunction() || p.isProgram());
           const root = rootJSX(parent, this);
 
           if (!root || root.getFunctionParent() === parent) {

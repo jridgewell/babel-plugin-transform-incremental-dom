@@ -1,9 +1,11 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _idomWrapper = require("idom-wrapper");
 
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     (0, _idomWrapper.text)(child);
@@ -46,7 +48,6 @@ var _li$wrapper = function _li$wrapper() {
 var todoItems = items.map(function (x) {
   return _jsxWrapper(_li$wrapper);
 });
-
 (0, _idomWrapper.patch)(container, function () {
   (0, _idomWrapper.elementOpen)("div");
 

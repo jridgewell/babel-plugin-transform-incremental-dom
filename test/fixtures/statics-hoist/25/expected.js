@@ -1,4 +1,5 @@
 var _div$statics = ["id", "id", "key", ""];
+
 function test(props) {
   var _div$key;
 

@@ -1,4 +1,5 @@
 var _div$statics = ["id", "id", "key", ""];
+
 function test() {
   var key = 'test';
   key = 1;

@@ -2,7 +2,7 @@ import inject from "../inject";
 import injectHasOwn from "./has-own";
 import toFunctionCall from "../ast/to-function-call";
 import iDOMMethod from "../idom-method";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Iterates over a SpreadAttribute, assigning each property as an attribute
 // on the element.

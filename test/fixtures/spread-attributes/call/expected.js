@@ -25,6 +25,7 @@ var _test$wrapper = function _test$wrapper(_props) {
 
 function render() {
   var test = _jsxWrapper(_test$wrapper, [props()]);
+
   elementOpenStart("div");
 
   _spreadAttribute(props());

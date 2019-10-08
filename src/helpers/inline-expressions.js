@@ -1,5 +1,5 @@
 import expressionExtractor from "./extract-expressions";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Take single use variable declarations and move them inside
 // the JSX Expression Container where they are referenced.

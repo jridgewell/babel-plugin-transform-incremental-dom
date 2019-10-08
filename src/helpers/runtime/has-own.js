@@ -1,5 +1,5 @@
 import inject from "../inject";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Caches a reference to Object#hasOwnProperty.
 function hasOwnAST() {

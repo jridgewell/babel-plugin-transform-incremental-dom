@@ -1,12 +1,12 @@
-import { transform } from "babel-core";
+import { transform } from "@babel/core";
 import assert from "assert";
 import plugin from "../../../../../src/index";
 
 const originals = [
-  '(1, 2, fn())',
-  '(true ? fn() : fn())',
-  '(true && fn())',
-  '(true || fn())',
+  "(1, 2, fn())",
+  "(true ? fn() : fn())",
+  "(true && fn())",
+  "(true || fn())",
 ];
 
 let cases = [...originals];
@@ -40,11 +40,11 @@ for (let i = 0; i < originals.length; i++) {
 cases = tests;
 tests = [];
 for (let i = 0; i < cases.length; i++) {
-  const kase = cases[i].split('fn()');
+  const kase = cases[i].split("fn()");
 
   const perms = Math.pow(2, kase.length - 1);
   for (let j = 0; j < perms; j++) {
-    const bits = j.toString(2).split('');
+    const bits = j.toString(2).split("");
     while (bits.length < kase.length - 1) {
       bits.unshift("0");
     }
@@ -60,11 +60,11 @@ for (let i = 0; i < cases.length; i++) {
 cases = tests;
 tests = [];
 for (let i = 0; i < cases.length; i++) {
-  const kase = cases[i].split('true');
+  const kase = cases[i].split("true");
 
   const perms = Math.pow(2, kase.length - 1);
   for (let j = 0; j < perms; j++) {
-    const bits = j.toString(2).split('').map((b) => b == "1");
+    const bits = j.toString(2).split("").map((b) => b == "1");
 
     while (bits.length < kase.length - 1) {
       bits.unshift(false);
@@ -80,11 +80,11 @@ for (let i = 0; i < cases.length; i++) {
 cases = tests;
 tests = [];
 for (let i = 0; i < cases.length; i++) {
-  const kase = cases[i].split('()');
+  const kase = cases[i].split("()");
 
   const perms = Math.pow(2, kase.length - 1);
   for (let j = 0; j < perms; j++) {
-    const bits = j.toString(2).split('').map((b) => b == "1");
+    const bits = j.toString(2).split("").map((b) => b == "1");
 
     while (bits.length < kase.length - 1) {
       bits.unshift(false);
@@ -100,11 +100,11 @@ for (let i = 0; i < cases.length; i++) {
 cases = tests;
 tests = [];
 for (let i = 0; i < cases.length; i++) {
-  const kase = cases[i].split('arg');
+  const kase = cases[i].split("arg");
 
   const perms = Math.pow(2, kase.length - 1);
   for (let j = 0; j < perms; j++) {
-    const bits = j.toString(2).split('').map((b) => b == "1");
+    const bits = j.toString(2).split("").map((b) => b == "1");
 
     while (bits.length < kase.length - 1) {
       bits.unshift(false);
@@ -120,11 +120,11 @@ for (let i = 0; i < cases.length; i++) {
 cases = tests;
 tests = [];
 for (let i = 0; i < cases.length; i++) {
-  const kase = cases[i].split('arg');
+  const kase = cases[i].split("arg");
 
   const perms = Math.pow(2, kase.length - 1);
   for (let j = 0; j < perms; j++) {
-    const bits = j.toString(2).split('').map((b) => b == "1");
+    const bits = j.toString(2).split("").map((b) => b == "1");
 
     while (bits.length < kase.length - 1) {
       bits.unshift(false);
@@ -183,7 +183,7 @@ for (let i = 0; i < tests.length; i++) {
   const test = tests[i]
 
   it(test, () => {
-    val = '';
+    val = "";
     args.fill(0);
 
     const expected = eval(test);
@@ -191,8 +191,8 @@ for (let i = 0; i < tests.length; i++) {
 
     const transformed = transform(`function render() { var div = <div>{${test}}</div>; return <div />; }; render()`, {
       plugins: [
-        'transform-es2015-modules-commonjs',
-        [plugin, {runtimeModuleSource: 'test'}]
+        "@babel/plugin-transform-modules-commonjs",
+        [plugin, {runtimeModuleSource: "test"}]
       ]
     }).code;
 
@@ -202,6 +202,6 @@ for (let i = 0; i < tests.length; i++) {
     const count = args.reduce((sum, i) => sum + (i & 1));
 
     assert.equal(val, expected);
-    assert.equal(count, expectedCount, 'arguments were eagerly evaluated');
+    assert.equal(count, expectedCount, "arguments were eagerly evaluated");
   });
 }

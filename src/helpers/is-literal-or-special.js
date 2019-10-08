@@ -1,4 +1,4 @@
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Literals and `undefined` are treated as constant values in attributes and
 // children.

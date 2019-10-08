@@ -4,7 +4,7 @@ import iDOMMethod from "./idom-method";
 import isComponent from "./is-component";
 import extractOpenArguments from "./extract-open-arguments";
 import { hasSpread, hasSkip, toAttrsArray, toAttrsCalls } from "./attributes";
-import * as t from "babel-types";
+import * as t from "@babel/types";
 
 // Returns the opening element's function call.
 export default function elementOpenCall(path, plugin) {

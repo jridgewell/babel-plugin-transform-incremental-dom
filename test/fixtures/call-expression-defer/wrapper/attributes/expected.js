@@ -1,5 +1,7 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
@@ -53,7 +55,9 @@ var _div$wrapper = function _div$wrapper(_fn, _fn2) {
 
 function render() {
   function fn() {}
+
   var div = _jsxWrapper(_div$wrapper, [fn(), fn()]);
+
   elementOpen("root");
 
   _renderArbitrary(div);

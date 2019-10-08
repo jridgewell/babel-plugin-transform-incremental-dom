@@ -1,3 +1,5 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _jsxWrapper = function _jsxWrapper(func, args) {
   return {
     __jsxDOMWrapper: true,
@@ -9,7 +11,7 @@ var _jsxWrapper = function _jsxWrapper(func, args) {
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
@@ -60,6 +62,7 @@ function render() {
   var ul = _jsxWrapper(_ul$wrapper, [[0, 1, 2, 3, 4], function (i) {
     return _jsxWrapper(_li$wrapper, [renderMessage, i]);
   }]);
+
   elementOpen("root");
 
   _renderArbitrary(ul);

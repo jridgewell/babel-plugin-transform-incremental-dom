@@ -17,5 +17,6 @@ var _a$statics = ["id", "id2", "key", ""],
 
 function fn8(key4) {
   var a = _jsxWrapper(_a$wrapper, [key4]);
+
   return elementVoid("root");
 }

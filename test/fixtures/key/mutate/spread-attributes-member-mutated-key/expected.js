@@ -7,6 +7,7 @@ var _spreadAttribute = function _spreadAttribute(spread) {
 };
 
 var _div$statics = ["key", ""];
+
 function render() {
   var _spread, _div$key;
 

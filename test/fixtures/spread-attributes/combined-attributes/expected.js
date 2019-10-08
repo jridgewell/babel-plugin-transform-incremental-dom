@@ -7,6 +7,7 @@ var _spreadAttribute = function _spreadAttribute(spread) {
 };
 
 var _div$statics = ["class", "test", "key", "test"];
+
 function render() {
   elementOpenStart("div", "test", _div$statics);
   attr("id", id);

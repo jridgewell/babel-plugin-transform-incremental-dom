@@ -1,4 +1,5 @@
 var _div$statics = ["class", "null"];
+
 function render() {
   elementOpen("root");
   elementOpen("div", "__uuid__0__", _div$statics);

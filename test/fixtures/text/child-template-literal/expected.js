@@ -1,7 +1,9 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
@@ -29,10 +31,14 @@ var _renderArbitrary = function _renderArbitrary(child) {
 
 function render() {
   elementOpen("div");
-  text("" + i);
-  text("text " + i);
-  text(i + " text");
-  text("text " + i + " text");
+
+  _renderArbitrary("".concat(i));
+
+  _renderArbitrary("text ".concat(i));
+
+  _renderArbitrary("".concat(i, " text"));
+
+  _renderArbitrary("text ".concat(i, " text"));
 
   _renderArbitrary("text" - i);
 

@@ -1,3 +1,4 @@
+import addImport from "./add-import";
 import resolvePath from "./resolve-path";
 
 const namespace = "incremental-dom-helpers";
@@ -5,7 +6,8 @@ const namespace = "incremental-dom-helpers";
 function getHelperRef({ file, opts }, helper) {
   const { runtimeModuleSource } = opts;
   if (runtimeModuleSource) {
-    return file.addImport(
+    return addImport(
+      file,
       resolvePath(file.opts.filename, runtimeModuleSource),
       helper
     );

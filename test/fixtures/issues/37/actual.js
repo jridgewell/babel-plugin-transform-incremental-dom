@@ -15,7 +15,7 @@ const renderInput = () => (
   </div>
 );
 
-function renderMain() {
+function renderMain2() {
   return <div id="app">
     {renderInput()}
   </div>;
@@ -24,7 +24,7 @@ function renderMain() {
 
 // - - - - - - -
 
-function renderMain(flag) {
+function renderMain3(flag) {
   if (flag) {
     return <div id="app"></div>;
   }

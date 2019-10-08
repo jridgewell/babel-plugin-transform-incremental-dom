@@ -1,7 +1,9 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var _hasOwn = Object.prototype.hasOwnProperty;
 
 var _renderArbitrary = function _renderArbitrary(child) {
-  var type = typeof child;
+  var type = _typeof(child);
 
   if (type === "number" || type === "string" || type === "object" && child instanceof String) {
     text(child);
@@ -51,6 +53,7 @@ function renderMain() {
   var renderInput = function renderInput() {
     return _jsxWrapper(_div$wrapper);
   };
+
   elementOpen("div", "__uuid__1__", _div$statics);
 
   _renderArbitrary(renderInput());
@@ -64,21 +67,21 @@ var renderInput = function renderInput() {
   return elementClose("div");
 };
 
-function renderMain() {
+function renderMain2() {
   elementOpen("div", "__uuid__3__", _div$statics2);
 
   _renderArbitrary(renderInput());
 
   return elementClose("div");
-}
+} // - - - - - - -
 
-// - - - - - - -
 
-function renderMain(flag) {
+function renderMain3(flag) {
   if (flag) {
     elementOpen("div", "__uuid__4__", _div$statics3);
     return elementClose("div");
   }
+
   elementOpen("div", "__uuid__5__", _div$statics4);
 
   _renderArbitrary(renderInput());

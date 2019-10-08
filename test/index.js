@@ -41,7 +41,7 @@ function uuidReplacer(str) {
     return str;
   }
   return matches.reduce(function(str, uuid, i) {
-    return str.replace(new RegExp(uuid, 'g'), `__uuid__${i}__`);
+    return str.replace(new RegExp(uuid, "g"), `__uuid__${i}__`);
   }, str);
 }
 
@@ -71,7 +71,7 @@ function test(dir) {
   }
 
   actual = uuidReplacer(stripUseStrict(trim(actual)));
-  if (expected) {
+  if (!process.env.OVERWRITE && expected) {
     assert.equal(actual, trim(expected));
   } else {
     fs.writeFileSync(path.join(dir, "expected.js"), actual);

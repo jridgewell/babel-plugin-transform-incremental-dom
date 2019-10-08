@@ -1,3 +1,4 @@
+import collectImports from "./collect-imports";
 import moduleSource from "./module-source";
 
 const patchRootsMap = new WeakMap();
@@ -11,11 +12,11 @@ export default function patchRoots(plugin) {
     const importSource = moduleSource(plugin);
     if (!importSource) {
       patchRootsMap.set(file, []);
-      return true;
+      return [];
     }
 
     const patchCalls = [];
-    const { imports } = file.metadata.modules;
+    const imports = collectImports(file.path);
     const iDOMImport = imports.find((imported) => {
       return imported.source === importSource;
     });

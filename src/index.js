@@ -161,7 +161,7 @@ export default function ({ types: t }) {
 
       JSXElement: {
         exit(path) {
-          const parent = path.getFunctionParent();
+          const parent = path.findParent((p) => p.isFunction() || p.isProgram());
           const root = rootJSX(parent, this);
 
           if (!root || root.getFunctionParent() === parent) {

@@ -18,9 +18,11 @@ function render() {
   function fn1() {
     return _jsxWrapper(_div$wrapper);
   }
+
   function fn2() {
     return _jsxWrapper(_div$wrapper2);
   }
+
   elementOpen("root");
   return elementClose("root");
 }

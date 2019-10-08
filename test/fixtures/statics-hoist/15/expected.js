@@ -13,8 +13,10 @@ var _div$statics = ["id", "id", "key", "key"],
 
 function fn7(items) {
   var els = [];
+
   for (var i = 0; i < items.length; i++) {
     els.push(_jsxWrapper(_div$wrapper));
   }
+
   return els;
 }

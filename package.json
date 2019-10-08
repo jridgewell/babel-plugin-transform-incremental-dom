@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-incremental-dom",
-  "version": "4.2.1",
+  "version": "5.0.0",
   "description": "Turn jsx into incremental-dom",
   "repository": "jridgewell/babel-plugin-transform-incremental-dom",
   "license": "MIT",

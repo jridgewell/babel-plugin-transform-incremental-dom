@@ -9,6 +9,12 @@ Changelog
 > - [Polish]
 > - [Change]
 
+## 5.0.0
+
+- **New Feature**
+  - Support Babel 7
+    - [#99](https://github.com/jridgewell/babel-plugin-transform-incremental-dom/pull/99)
+
 ## 4.2.1
 
 - **Bug Fix**
